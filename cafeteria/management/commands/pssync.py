@@ -141,6 +141,7 @@ class Command(BaseCommand):
                     email_address = str(member['id']) + '@nrcaknights.com'
                 # if a new student is created, create the corresponding user
                 if created:
+                    print('new student: {}'.format(member))
                     user = User.objects.create(
                         first_name = member['name']['first_name'],
                         last_name = member['name']['last_name'],
@@ -154,10 +155,22 @@ class Command(BaseCommand):
                 # if the student already exists, update the user info
                 else:
                     user = student.user
-                    user.first_name = member['name']['first_name']
-                    user.last_name = member['name']['last_name']
-                    user.email = email_address
-                    user.username = email_address
+                    if user:
+                        user.first_name = member['name']['first_name']
+                        user.last_name = member['name']['last_name']
+                        user.email = email_address
+                        user.username = email_address
+                        print('student: {}, user: {}'.format(student, user))
+                    else:
+                        print('No user assigned to {}'.format(student))
+                        user, created = User.object.get_or_create(
+                            first_name = member['name']['first_name'],
+                            last_name = member['name']['last_name'],
+                            email = email_address,
+                            username = email_address,
+                        )
+                        student.user = user
+                        student.save()
                     user.save()
             print('Retreived {} students, created {} new students'.format(len(active_students), newly_created))
 
