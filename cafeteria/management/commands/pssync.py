@@ -89,6 +89,7 @@ class Command(BaseCommand):
                 )
                 staff.current_balance = 0
                 staff.user = user
+                staff.save()
                 newly_created = newly_created + 1
             # if the staff member already exists, update the user info
             else:
