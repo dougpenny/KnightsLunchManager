@@ -163,7 +163,7 @@ class Command(BaseCommand):
                         print('student: {}, user: {}'.format(student, user))
                     else:
                         print('No user assigned to {}'.format(student))
-                        user, created = User.object.get_or_create(
+                        user, created = User.objects.get_or_create(
                             first_name = member['name']['first_name'],
                             last_name = member['name']['last_name'],
                             email = email_address,
