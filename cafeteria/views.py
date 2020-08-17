@@ -62,15 +62,14 @@ def delete_order(request):
 
 def index(request):
     context = {}
-    # time = datetime.now()
-    time = datetime(2020, 8, 14)
+    time = datetime.now()
     context['time'] = time
     menu = MenuItem.objects.filter(days_available__name=time.date().strftime("%A"))
     context['menu'] = menu
     context['orders_open'] = Transaction.accepting_orders()
     if request.user.is_authenticated:
         context['user'] = request.user
-        # context['balance'] = request.user.profile.current_balance
+        context['balance'] = request.user.profile.current_balance
         context['transaction'] = todays_transaction(request.user.profile)
         if request.user.profile.role == Profile.STAFF:
             if request.user.profile.students.all():
