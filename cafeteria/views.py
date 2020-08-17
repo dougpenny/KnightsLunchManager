@@ -267,6 +267,9 @@ def homeroom_orders_report(request):
             teacher = orders['teacher']
             title = teacher.user.last_name + ' - ' + teacher.room
             data.append(platypus.Paragraph(title, title_style))
+            teachers_order = todays_transaction(teacher)
+            if teachers_order:
+                data.append(playtpus.Paragraph(teachers_order.description, normal_style))
             data.append(platypus.FrameBreak())
             order_groups = orders['orders'].values('description').annotate(dcount=Count('description'))
             for group in order_groups:
@@ -274,9 +277,10 @@ def homeroom_orders_report(request):
                 data.append(platypus.Paragraph(str(group['dcount']), group_count_style))
                 for student in orders['orders'].filter(description=group['description']):
                     name = student.transactee.name()
-                    data.append(platypus.Paragraph(name, styles['Normal']))
+                    data.append(platypus.Paragraph(name, normal_style))
                 data.append(platypus.FrameBreak())
-            # data.append(platypus.PageBreak())
+            if len(order_groups) < 2:
+                data.append(platypus.FrameBreak())
         document.build(data)
         buffer.seek(0)
         return FileResponse(buffer, as_attachment=True, filename='homeroom_orders.pdf')
