@@ -104,7 +104,7 @@ AUTH_ADFS = {
         'email': 'upn'
     },
     'GROUP_TO_FLAG_MAPPING': {
-        'is_staff': 'IT Department',
+        'is_staff': 'Cafeteria',
         'is_superuser': 'IT Department'
     },
 }
