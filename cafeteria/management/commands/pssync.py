@@ -162,7 +162,7 @@ class Command(BaseCommand):
                         user.username = email_address
                         print('student: {}, user: {}'.format(student, user))
                     else:
-                        print('No user assigned to {}'.format(student))
+                        print('No user assigned to {}'.format(student.dcid))
                         user, created = User.objects.get_or_create(
                             first_name = member['name']['first_name'],
                             last_name = member['name']['last_name'],
