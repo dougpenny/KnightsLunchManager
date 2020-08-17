@@ -268,6 +268,7 @@ def homeroom_orders_report(request):
             title = teacher.user.last_name + ' - ' + teacher.room
             data.append(platypus.Paragraph(title, title_style))
             teachers_order = todays_transaction(teacher)
+            print('Teachers Order: {}'.format(teachers_order))
             if teachers_order:
                 data.append(playtpus.Paragraph(teachers_order.description, normal_style))
             data.append(platypus.FrameBreak())
@@ -285,4 +286,5 @@ def homeroom_orders_report(request):
         buffer.seek(0)
         return FileResponse(buffer, as_attachment=True, filename='homeroom_orders.pdf')
     else:
-        return redirect('#')
+        messages.warning(request, 'No orders were found for today.')
+        return redirect('admin')
