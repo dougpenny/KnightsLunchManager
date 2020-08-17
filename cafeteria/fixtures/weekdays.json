@@ -1,0 +1,42 @@
+[
+  {
+    "model": "cafeteria.weekday",
+    "pk": 1,
+    "fields": {
+      "abbreviation": "Mon",
+      "name": "Monday"
+    }
+  },
+  {
+    "model": "cafeteria.weekday",
+    "pk": 2,
+    "fields": {
+      "abbreviation": "Tue",
+      "name": "Tuesday"
+    }
+  },
+  {
+    "model": "cafeteria.weekday",
+    "pk": 3,
+    "fields": {
+      "abbreviation": "Wed",
+      "name": "Wednesday"
+    }
+  },
+  {
+    "model": "cafeteria.weekday",
+    "pk": 4,
+    "fields": {
+      "abbreviation": "Thr",
+      "name": "Thursday"
+    }
+  },
+  {
+    "model": "cafeteria.weekday",
+    "pk": 5,
+    "fields": {
+      "abbreviation": "Fri",
+      "name": "Friday"
+    }
+  }
+]
