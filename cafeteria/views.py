@@ -249,10 +249,11 @@ def homeroom_orders_report(request):
         normal_style.leading = 16
         title_style = styles['Title']
         title_style.fontSize = 42
+        title_style.spaceAfter = 32
         document = platypus.BaseDocTemplate(buffer, pagesize=letter)
         frames = []
         frame_width = document.width / 2.0
-        title_frame_height = 1 * inch
+        title_frame_height = 1.5 * inch
         title_frame_bottom = document.height + document.bottomMargin - title_frame_height
         title_frame = platypus.Frame(document.leftMargin, title_frame_bottom, document.width, title_frame_height)
         frames.append(title_frame)
@@ -268,9 +269,8 @@ def homeroom_orders_report(request):
             title = teacher.user.last_name + ' - ' + teacher.room
             data.append(platypus.Paragraph(title, title_style))
             teachers_order = todays_transaction(teacher)
-            print('Teachers Order: {}'.format(teachers_order))
             if teachers_order:
-                data.append(playtpus.Paragraph(teachers_order.description, normal_style))
+                data.append(platypus.Paragraph(teachers_order.description, group_title_style))
             data.append(platypus.FrameBreak())
             order_groups = orders['orders'].values('description').annotate(dcount=Count('description'))
             for group in order_groups:
