@@ -10,6 +10,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Count
+from django.db.models import Q
 from django.http import FileResponse
 from django.http import HttpRequest
 from django.shortcuts import render
@@ -215,8 +216,10 @@ def submit_batch_entry(request):
 def orders_for_homeroom(staff: Profile):
     if staff.students.all():
         orders = Transaction.objects.filter(
+            Q(transactee__in=staff.students.all())
+            | Q(transactee=staff)
+        ).filter(
             submitted__date=datetime.now().date(),
-            transactee__in=staff.students.all(),
             transaction_type=Transaction.DEBIT
         )
         if orders.count() == 0:
@@ -249,11 +252,10 @@ def homeroom_orders_report(request):
         normal_style.leading = 16
         title_style = styles['Title']
         title_style.fontSize = 42
-        title_style.spaceAfter = 32
         document = platypus.BaseDocTemplate(buffer, pagesize=letter)
         frames = []
         frame_width = document.width / 2.0
-        title_frame_height = 1.5 * inch
+        title_frame_height = 1 * inch
         title_frame_bottom = document.height + document.bottomMargin - title_frame_height
         title_frame = platypus.Frame(document.leftMargin, title_frame_bottom, document.width, title_frame_height)
         frames.append(title_frame)
@@ -268,9 +270,6 @@ def homeroom_orders_report(request):
             teacher = orders['teacher']
             title = teacher.user.last_name + ' - ' + teacher.room
             data.append(platypus.Paragraph(title, title_style))
-            teachers_order = todays_transaction(teacher)
-            if teachers_order:
-                data.append(platypus.Paragraph(teachers_order.description, group_title_style))
             data.append(platypus.FrameBreak())
             order_groups = orders['orders'].values('description').annotate(dcount=Count('description'))
             for group in order_groups:
