@@ -192,11 +192,18 @@ def submit_batch_entry(request):
                 if deposit[0] != '' and deposit[2] != '':
                     student = Profile.objects.get(user__id=deposit[0])
                     new_balance = student.current_balance + Decimal(deposit[2])
+                    description = ''
+                    if deposit[1].lower() == 'lc':
+                        description = 'Previous lunch card balance'
+                    elif deposit[1] == '':
+                        description = 'Cash'
+                    else:
+                        description = 'Check #' + deposit[1]
                     transaction = Transaction.objects.create(
                         amount=Decimal(deposit[2]),
                         beginning_balance=student.current_balance,
                         completed=datetime.now().date(),
-                        description='Check #' + deposit[1] if deposit[1] != '' else 'Cash',
+                        description=description,
                         new_balance=new_balance,
                         submitted=datetime.now().date(),
                         transaction_type=Transaction.CREDIT,
