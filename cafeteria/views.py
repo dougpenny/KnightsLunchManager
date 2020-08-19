@@ -220,22 +220,9 @@ def orders_for_homeroom(staff: Profile):
             Q(transaction__transactee__in=staff.students.all())
             | Q(transaction__transactee=staff)
         ).filter(transaction__submitted__date=datetime.now().date())
-        # orders = Transaction.objects.filter(
-        #     Q(transactee__in=staff.students.all())
-        #     | Q(transactee=staff)
-        # ).filter(
-        #     submitted__date=datetime.now().date(),
-        #     transaction_type=Transaction.DEBIT
-        # )
         if orders.count() == 0:
             return None
         else:
-            # menu_items = {}
-            # for items in orders.line_item:
-            #     if items.menu_item.short_name in menu_items:
-            #         menu_items[items.menu_item.short_name] = items.menu_item.short_name + items.quantity
-            #     else:
-            #         menu_items[items.menu_item.short_name] = items.quantity
             homeroom_orders = {
                 'teacher': staff,
                 'orders': orders
