@@ -9,8 +9,8 @@ from decimal import Decimal
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.db.models import Count
 from django.db.models import Q
+from django.db.models import Sum
 from django.http import FileResponse
 from django.http import HttpRequest
 from django.shortcuts import render
@@ -24,6 +24,7 @@ from reportlab.lib.units import inch
 from lunchmanager.powerschool.powerschool import Powerschool
 from menu.models import MenuItem
 from profiles.models import Profile
+from transactions.models import MenuLineItem
 from transactions.models import Transaction
 
 
@@ -215,16 +216,26 @@ def submit_batch_entry(request):
 
 def orders_for_homeroom(staff: Profile):
     if staff.students.all():
-        orders = Transaction.objects.filter(
-            Q(transactee__in=staff.students.all())
-            | Q(transactee=staff)
-        ).filter(
-            submitted__date=datetime.now().date(),
-            transaction_type=Transaction.DEBIT
-        )
+        orders = MenuLineItem.objects.filter(
+            Q(transaction__transactee__in=staff.students.all())
+            | Q(transaction__transactee=staff)
+        ).filter(transaction__submitted__date=datetime.now().date())
+        # orders = Transaction.objects.filter(
+        #     Q(transactee__in=staff.students.all())
+        #     | Q(transactee=staff)
+        # ).filter(
+        #     submitted__date=datetime.now().date(),
+        #     transaction_type=Transaction.DEBIT
+        # )
         if orders.count() == 0:
             return None
         else:
+            # menu_items = {}
+            # for items in orders.line_item:
+            #     if items.menu_item.short_name in menu_items:
+            #         menu_items[items.menu_item.short_name] = items.menu_item.short_name + items.quantity
+            #     else:
+            #         menu_items[items.menu_item.short_name] = items.quantity
             homeroom_orders = {
                 'teacher': staff,
                 'orders': orders
@@ -243,10 +254,11 @@ def homeroom_orders_report(request):
         buffer = io.BytesIO()
         styles = getSampleStyleSheet()
         group_title_style = copy.copy(styles['Title'])
-        group_title_style.fontSize = 12
+        group_title_style.fontSize = 34
+        group_title_style.spaceAfter = 32
         group_count_style = copy.copy(styles['Title'])
-        group_count_style.fontSize = 22
-        group_count_style.spaceAfter = 16
+        group_count_style.fontSize = 34
+        group_count_style.spaceAfter = 46
         normal_style = styles['Normal']
         normal_style.fontSize = 12
         normal_style.leading = 16
@@ -271,12 +283,12 @@ def homeroom_orders_report(request):
             title = teacher.user.last_name + ' - ' + teacher.room
             data.append(platypus.Paragraph(title, title_style))
             data.append(platypus.FrameBreak())
-            order_groups = orders['orders'].values('description').annotate(dcount=Count('description'))
+            order_groups = orders['orders'].values('menu_item__short_name').annotate(sum=Sum('quantity'))
             for group in order_groups:
-                data.append(platypus.Paragraph(group['description'], group_title_style))
-                data.append(platypus.Paragraph(str(group['dcount']), group_count_style))
-                for student in orders['orders'].filter(description=group['description']):
-                    name = student.transactee.name()
+                data.append(platypus.Paragraph(group['menu_item__short_name'], group_title_style))
+                data.append(platypus.Paragraph(str(group['sum']), group_count_style))
+                for student in orders['orders'].filter(menu_item__short_name=group['menu_item__short_name']):
+                    name = student.transaction.transactee.name()
                     data.append(platypus.Paragraph(name, normal_style))
                 data.append(platypus.FrameBreak())
             if len(order_groups) < 2:
