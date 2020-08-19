@@ -10,7 +10,7 @@ class MenuItemSerializer(serializers.ModelSerializer):
         fields = ['id', 'cost', 'days_available', 'schools_available', 'name', 'sequence']
 
 
-class StudentSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
 
     name = serializers.SerializerMethodField()
 

@@ -27,7 +27,7 @@
                     Student
                 </label>
                 <div class="mt-1">
-                    <v-select v-model="selected.student_{{ forloop.counter }}" name="student_{{ forloop.counter }}" id="student_selection_{{ forloop.counter }}" as="name:id:id" from="{{ request.scheme }}://{{ request.site }}/api/v1/students/basic/?search=%s"></v-select>
+                    <v-select v-model="selected.student_{{ forloop.counter }}" name="student_{{ forloop.counter }}" id="student_selection_{{ forloop.counter }}" as="name:id:id" from="{{ request.scheme }}://{{ request.site }}/api/v1/users/basic/?search=%s"></v-select>
                 </div>
             </div>
             <div class="w-1/4 sm:w-1/5 px-2">

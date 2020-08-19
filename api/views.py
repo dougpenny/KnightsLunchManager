@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 from rest_framework import filters
 from rest_framework import generics
@@ -6,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from api.serializers import MenuItemSerializer
-from api.serializers import StudentSerializer
+from api.serializers import UserSerializer
 from menu.models import MenuItem
 from profiles.models import Profile
 
@@ -21,8 +22,8 @@ class DetailMenuItem(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = MenuItemSerializer
 
 
-class StudentSearch(generics.ListCreateAPIView):
+class UserSearch(generics.ListCreateAPIView):
     search_fields = ['first_name', 'last_name']
     filter_backends = [filters.SearchFilter]
-    queryset = User.objects.filter(profile__role=Profile.STUDENT)
-    serializer_class = StudentSerializer
+    queryset = User.objects.filter(Q(profile__role=Profile.STUDENT) | Q(profile__role=Profile.STAFF))
+    serializer_class = UserSerializer
