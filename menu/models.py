@@ -29,6 +29,11 @@ class MenuItem(models.Model):
         max_length=100
     )
     sequence = models.SmallIntegerField(help_text='Order item will appear in menu')
+    short_name = models.CharField(
+        help_text='Will be used on reports to quickly identify the item',
+        max_length=10,
+        blank=True
+    )
 
     class Meta:
         ordering = ['sequence']
