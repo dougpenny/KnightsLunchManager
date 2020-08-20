@@ -78,7 +78,7 @@ class Command(BaseCommand):
                 try:
                     email_address = member['loginid'] + '@nrcaknights.com'
                 except:
-                    email_address = member['dcid'] + '@nrcaknights.com'
+                    email_address = member['user_dcid'] + '@nrcaknights.com'
             # if a new profile is created, create the corresponding user
             if created:
                 user = User.objects.create(
