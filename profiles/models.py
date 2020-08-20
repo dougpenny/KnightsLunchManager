@@ -12,7 +12,6 @@ class Profile(models.Model):
         (STUDENT, 'Student'),
     ]
     current_balance = models.DecimalField(blank=True, decimal_places=2, max_digits=6, null=True)
-    dcid = models.IntegerField(unique=True)
     grade_level = models.SmallIntegerField(default=None, null=True)
     homeroom_teacher = models.ForeignKey(
         'self',
@@ -28,6 +27,8 @@ class Profile(models.Model):
     room = models.TextField(max_length=64, blank=True, default='')
     school = models.ForeignKey(School, null=True, on_delete=models.SET_NULL)
     status = models.BooleanField(default=False)
+    student_dcid = models.IntegerField(blank=True, null=True, unique=True)
+    user_dcid = models.IntegerField(blank=True, null=True, unique=True)
     user_number = models.IntegerField(blank=True, null=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
 

@@ -61,7 +61,7 @@ class Command(BaseCommand):
             except:
                 room = 'n/a'
             # look for an existing profile and create a new one if not found
-            staff, created = Profile.objects.update_or_create(dcid=member['dcid'],
+            staff, created = Profile.objects.update_or_create(user_dcid=member['dcid'],
                 defaults={
                     'last_sync': timezone.now(),
                     'lunch_id': member['lunch_id'],
@@ -100,7 +100,7 @@ class Command(BaseCommand):
                 user.username = email_address
                 user.save()
             # if the staff member has a homeroom, update their roster
-            homeroom_roster = client.homeroom_roster_for_teacher(staff.dcid)
+            homeroom_roster = client.homeroom_roster_for_teacher(staff.user_dcid)
             if homeroom_roster:
                 try:
                     staff.grade_level = int(homeroom_roster[0]['grade_level'])
@@ -109,7 +109,7 @@ class Command(BaseCommand):
                 staff.students.clear()
                 for student in homeroom_roster:
                     try:
-                        student = Profile.objects.get(dcid=int(student['dcid']))
+                        student = Profile.objects.get(student_dcid=int(student['dcid']))
                         staff.students.add(student)
                     except:
                         pass
@@ -124,7 +124,7 @@ class Command(BaseCommand):
             newly_created = 0
             for member in active_students:
                 # look for an existing student and create a new one if not found
-                student, created = Profile.objects.update_or_create(dcid=member['id'],
+                student, created = Profile.objects.update_or_create(student_dcid=member['id'],
                     defaults={
                         'grade_level': member['school_enrollment']['grade_level'],
                         'last_sync': timezone.now(),
@@ -161,7 +161,7 @@ class Command(BaseCommand):
                         user.username = email_address
                         user.save()
                     else:
-                        print('No user assigned to DCID: {}'.format(student.dcid))
+                        print('No user assigned to DCID: {}'.format(student.student_dcid))
                         user, created = User.objects.get_or_create(
                             first_name = member['name']['first_name'],
                             last_name = member['name']['last_name'],
