@@ -60,10 +60,10 @@
                 <td class="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200 text-sm leading-5 text-gray-900">
                 {% if orders_open %}
                   <div class="relative">
-                    <select name="orders" id="order-{{ transaction.student.dcid }}" class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
-                      <option value="{'person': {{ transaction.student.dcid }}, 'item': ''}" {% if transaction.transaction is None %}selected{% endif %}>No order</option>
+                    <select name="orders" id="order-{{ transaction.student.id }}" class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
+                      <option value="{'person': {{ transaction.student.id }}, 'item': ''}" {% if transaction.transaction is None %}selected{% endif %}>No order</option>
                       {% for item in menu %}
-                      <option value="{'person': {{ transaction.student.dcid }}, 'item': {{ item.id }}}" {% if transaction.transaction.description == item.name %}selected{% endif %}>{{ item.name }}</option>
+                      <option value="{'person': {{ transaction.student.id }}, 'item': {{ item.id }}}" {% if transaction.transaction.description == item.name %}selected{% endif %}>{{ item.name }}</option>
                       {% endfor %}
                     </select>
                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
@@ -85,10 +85,10 @@
                 <td class="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200 text-sm leading-5 text-gray-900">
                   {% if orders_open %}
                   <div class="relative">
-                    <select name="orders" id="order-{{ user.profile.dcid }}" class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
-                      <option value="{'person': {{ user.profile.dcid }}, 'item': ''}" {% if transaction is None %}selected{% endif %}>No order</option>
+                    <select name="orders" id="order-{{ user.profile.id }}" class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
+                      <option value="{'person': {{ user.profile.id }}, 'item': ''}" {% if transaction is None %}selected{% endif %}>No order</option>
                       {% for item in menu %}
-                      <option value="{'person': {{ user.profile.dcid }}, 'item': {{ item.id }}}" {% if transaction.description == item.name %}selected{% endif %}>{{ item.name }}</option>
+                      <option value="{'person': {{ user.profile.id }}, 'item': {{ item.id }}}" {% if transaction.description == item.name %}selected{% endif %}>{{ item.name }}</option>
                       {% endfor %}
                     </select>
                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">

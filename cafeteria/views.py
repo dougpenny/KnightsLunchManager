@@ -112,14 +112,14 @@ def submit_order(request):
                 for order in request.POST.getlist('orders'):
                     order = ast.literal_eval(order)
                     if order['item'] == '':
-                        profile = Profile.objects.get(dcid=order['person'])
+                        profile = Profile.objects.get(id=order['person'])
                         transaction = todays_transaction(profile)
                         if transaction:
                             transaction.delete()
                     else:
                         try:
                             menu_item = MenuItem.objects.get(id=order['item'])
-                            profile = Profile.objects.get(dcid=order['person'])
+                            profile = Profile.objects.get(id=order['person'])
                             transaction, created = Transaction.objects.update_or_create(
                                 submitted__date=datetime.now().date(),
                                 transaction_type=Transaction.DEBIT,
