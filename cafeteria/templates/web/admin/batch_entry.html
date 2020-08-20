@@ -17,7 +17,7 @@
   </div>
   {% include 'web/includes/messages.html' %}
   <div id="app">
-  <form @submit="handleSubmit" action="{% url 'submit-batch-entry' %}" method="post">
+  <form @submit.prevent="handleSubmit" action="{% url 'submit-batch-entry' %}" method="post">
     {% csrf_token %}
   <div class="mx-8 mt-4 p-6 bg-white shadow rounded-lg">
     {% for i in num_entries %}

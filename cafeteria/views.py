@@ -17,6 +17,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 
 from reportlab import platypus
+from reportlab.lib import enums
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
@@ -247,6 +248,9 @@ def homeroom_orders_report(request):
     if todays_orders:
         buffer = io.BytesIO()
         styles = getSampleStyleSheet()
+        grade_style = copy.copy(styles['Title'])
+        grade_style.fontSize = 28
+        grade_style.spaceBefore = 26
         group_title_style = copy.copy(styles['Title'])
         group_title_style.fontSize = 34
         group_title_style.spaceAfter = 32
@@ -261,7 +265,7 @@ def homeroom_orders_report(request):
         document = platypus.BaseDocTemplate(buffer, pagesize=letter)
         frames = []
         frame_width = document.width / 2.0
-        title_frame_height = 1 * inch
+        title_frame_height = 1.5 * inch
         title_frame_bottom = document.height + document.bottomMargin - title_frame_height
         title_frame = platypus.Frame(document.leftMargin, title_frame_bottom, document.width, title_frame_height)
         frames.append(title_frame)
@@ -276,6 +280,8 @@ def homeroom_orders_report(request):
             teacher = orders['teacher']
             title = teacher.user.last_name + ' - ' + teacher.room
             data.append(platypus.Paragraph(title, title_style))
+            grade_level = 'Grade: ' + str(teacher.grade_level)
+            data.append(platypus.Paragraph(grade_level, grade_style))
             data.append(platypus.FrameBreak())
             order_groups = orders['orders'].values('menu_item__short_name').annotate(sum=Sum('quantity'))
             for group in order_groups:
