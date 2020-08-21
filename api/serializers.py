@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from menu.models import MenuItem
+from profiles.models import Profile
 
 
 class MenuItemSerializer(serializers.ModelSerializer):
@@ -15,7 +16,11 @@ class UserSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
 
     def get_name(self, obj):
-        return obj.first_name + ' ' + obj.last_name + ' - ' + str(obj.profile.grade_level)
+        if obj.profile.role == Profile.STAFF:
+            grade = 'Teacher'
+        else:
+            grade = str(obj.profile.grade_level)
+        return obj.first_name + ' ' + obj.last_name + ' - ' + grade
 
     class Meta:
         model = User
