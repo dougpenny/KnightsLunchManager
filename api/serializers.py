@@ -17,7 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_name(self, obj):
         if obj.profile.role == Profile.STAFF:
-            grade = 'Teacher'
+            grade = 'Staff'
         else:
             grade = str(obj.profile.grade_level)
         return obj.first_name + ' ' + obj.last_name + ' - ' + grade
