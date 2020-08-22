@@ -93,22 +93,26 @@ def submit_order(request):
     if request.method == 'POST':
         if Transaction.accepting_orders():
             if request.POST.__contains__('itemID'):
-                menu_item = MenuItem.objects.get(id=request.POST.get('itemID'))
-                try:
-                    transaction = Transaction(
-                        amount=menu_item.cost,
-                        description=menu_item.name,
-                        transaction_type = Transaction.DEBIT,
-                        transactee=request.user.profile
-                    )
-                    transaction.save()
-                    transaction.menu_items.add(menu_item, through_defaults={'quantity': 1 })
-                    messages.success(request, 'Your order was successfully submitted.')
+                if not todays_transaction(request.user.profile):
+                    menu_item = MenuItem.objects.get(id=request.POST.get('itemID'))
+                    try:
+                        transaction = Transaction(
+                            amount=menu_item.cost,
+                            description=menu_item.name,
+                            transaction_type = Transaction.DEBIT,
+                            transactee=request.user.profile
+                        )
+                        transaction.save()
+                        transaction.menu_items.add(menu_item, through_defaults={'quantity': 1 })
+                        messages.success(request, 'Your order was successfully submitted.')
+                        return redirect('today')
+                    except Exception as e:
+                        messages.error(request, 'There was a problem submitting your order.')
+                        print('An exception was caught when creating a transaction: {}'.format(e))
+                        return redirect('index')
+                else:
+                    messages.warning(request, 'You have already submitted an order today.')
                     return redirect('today')
-                except Exception as e:
-                    messages.error(request, 'There was a problem submitting your order.')
-                    print('An exception was caught when creating a transaction: {}'.format(e))
-                    return redirect('index')
             elif request.POST.__contains__('orders'):
                 for order in request.POST.getlist('orders'):
                     order = ast.literal_eval(order)
