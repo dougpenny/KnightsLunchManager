@@ -87,8 +87,8 @@ class Command(BaseCommand):
             # if a new profile is created, create the corresponding user
             if created:
                 user, created = User.objects.get_or_create(
-                    first_name = member['name']['first_name'],
-                    last_name = member['name']['last_name'],
+                    first_name = member['first_name'],
+                    last_name = member['last_name'],
                     email = email_address,
                     username = email_address,
                 )
@@ -100,15 +100,15 @@ class Command(BaseCommand):
             else:
                 user = staff.user
                 if user:
-                    user.first_name = member['name']['first_name']
-                    user.last_name = member['name']['last_name']
+                    user.first_name = member['first_name']
+                    user.last_name = member['last_name']
                     user.email = email_address
                     user.username = email_address
                     user.save()
                 else:
                     user, created = User.objects.get_or_create(
-                        first_name = member['name']['first_name'],
-                        last_name = member['name']['last_name'],
+                        first_name = member['first_name'],
+                        last_name = member['last_name'],
                         email = email_address,
                         username = email_address,
                     )
