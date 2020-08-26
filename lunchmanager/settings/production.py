@@ -3,7 +3,7 @@ from .base import *
 import logging.config
 
 
-ALLOWED_HOSTS = [os.getenv("ALLOWED_HOSTS")]
+ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS')]
 
 DATABASES = {
     'default': {
@@ -39,27 +39,33 @@ REST_FRAMEWORK = {
 }
 
 
-# setup logging for Docker
-LOGGING_CONFIG = None
-LOGLEVEL = os.getenv('DJANGO_LOGLEVEL', 'info').upper()
-logging.config.dictConfig({
+# setup Django to log to a file
+LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'formatters': {
-        'console': {
-            'format': '%(asctime)s %(levelname)s [%(name)s:%(lineno)s] %(module)s %(process)d %(thread)d %(message)s',
-        },
-    },
+    'root': {'level': 'INFO', 'handlers': ['file']},
     'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'console',
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': '/var/log/lunchmanager/django.log',
+            'formatter': 'app',
         },
     },
     'loggers': {
-        '': {
-            'level': LOGLEVEL,
-            'handlers': ['console',],
+        'django': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True
         },
     },
-})
+    'formatters': {
+        'app': {
+            'format': (
+                u'%(asctime)s [%(levelname)-8s] '
+                '(%(module)s.%(funcName)s) %(message)s'
+            ),
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+    },
+}

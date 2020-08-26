@@ -1,6 +1,7 @@
 import ast
 import copy
 import io
+import logging
 import os
 
 from decimal import Decimal
@@ -29,6 +30,8 @@ from transactions.models import MenuLineItem
 from transactions.models import Transaction
 
 
+logger = logging.getLogger(__file__)
+
 def todays_transaction(profile: Profile) -> Transaction:
     try:
         transactions = Transaction.objects.filter(
@@ -52,8 +55,8 @@ def delete_order(request):
                     messages.success(request, 'Your order was successfully deleted.')
                     return redirect('index')
                 except Exception as e:
+                    logger.exception('An exception occured when trying to delete a transaction.')
                     messages.error(request, 'There was a problem deleting your order.')
-                    print('caught exception when deleting transaction: {}'.format(e))
                     return redirect('today')
             else:
                 messages.error(request, 'No order was found to delete.')
@@ -107,8 +110,8 @@ def submit_order(request):
                         messages.success(request, 'Your order was successfully submitted.')
                         return redirect('today')
                     except Exception as e:
+                        logger.exception('An exception occured when trying to create a transaction.')
                         messages.error(request, 'There was a problem submitting your order.')
-                        print('An exception was caught when creating a transaction: {}'.format(e))
                         return redirect('index')
                 else:
                     messages.warning(request, 'You have already submitted an order today.')
@@ -137,8 +140,8 @@ def submit_order(request):
                             transaction.menu_items.clear()
                             transaction.menu_items.add(menu_item, through_defaults={'quantity': 1 })
                         except Exception as e:
+                            logger.exception('An exception occured when trying to create a transaction.')
                             messages.error(request, 'There was a problem submitting the order.')
-                            print('An exception was caught when creating a transaction: {}'.format(e))
                             return redirect('index')
                 messages.success(request, 'Your order was successfully submitted.')
                 return redirect('index')
@@ -217,8 +220,8 @@ def submit_batch_entry(request):
                     student.save()
                     deposit_count = deposit_count + 1
             except Exception as e:
+                logger.exception('An exception occured submitting a batch deposit.')
                 messages.error(request, 'There was a problem submitting the batch deposit.')
-                print('An exception was caught when submitting a batch deposit: {}'.format(e))
                 return redirect('batch-entry')
         messages.success(request, 'Successfully processed {} deposits.'.format(deposit_count))
         return redirect('batch-entry')

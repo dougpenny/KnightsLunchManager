@@ -3,11 +3,15 @@ from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
 from django.utils import timezone
 
+import logging
 import requests
 
 from cafeteria.models import School
 from lunchmanager.powerschool.powerschool import Powerschool
 from profiles.models import Profile
+
+
+logger = logging.getLogger(__file__)
 
 
 class Command(BaseCommand):
@@ -37,7 +41,7 @@ class Command(BaseCommand):
 
 
     def sync_schools_using_client(self, client):
-        print('Synchronizing schools...')
+        logger.info('Synchronizing schools...')
         schools = client.schools()
         for item in schools:
             school, created = School.objects.update_or_create(id=item['id'], 
@@ -46,10 +50,10 @@ class Command(BaseCommand):
                     'school_number': item['school_number']
                 }
             )
-        print('All schools successfully synchronized...')
+        logger.info('All schools successfully synchronized...')
             
     def sync_staff_using_client(self, client):
-        print('Synchronizing staff...')
+        logger.info('Synchronizing staff...')
         active_staff = client.active_staff()
         newly_created = 0
         for member in active_staff:
@@ -125,12 +129,12 @@ class Command(BaseCommand):
                     except:
                         pass
                 staff.save()
-        print('Retreived {} staff, created {} new staff members'.format(len(active_staff), newly_created))
+        logger.info('Retrieved {} staff, created {} new staff members'.format(len(active_staff), newly_created))
 
     def sync_students_using_client(self, client):
-        print('Synchronizing students...')
+        logger.info('Synchronizing students...')
         for school in School.objects.filter(active__exact=True):
-            print('Sycning students from {} (id {})...'.format(school, school.id))
+            logger.info('Sycning students from {} (id {})...'.format(school, school.id))
             active_students = client.studentsForSchool(school.id, 'lunch,school_enrollment')
             newly_created = 0
             for member in active_students:
@@ -180,7 +184,4 @@ class Command(BaseCommand):
                         )
                         student.user = user
                         student.save()
-            print('Retreived {} students, created {} new students'.format(len(active_students), newly_created))
-
-
-
+            logger.info('Retreived {} students, created {} new students'.format(len(active_students), newly_created))
