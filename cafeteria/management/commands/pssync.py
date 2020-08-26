@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth.models import User
+from django.db.utils import IntegrityError
 from django.utils import timezone
 
 import requests
@@ -81,9 +82,9 @@ class Command(BaseCommand):
                     email_address = member['user_dcid'] + '@nrcaknights.com'
             # if a new profile is created, create the corresponding user
             if created:
-                user = User.objects.create(
-                    first_name = member['first_name'],
-                    last_name = member['last_name'],
+                user, created = User.objects.get_or_create(
+                    first_name = member['name']['first_name'],
+                    last_name = member['name']['last_name'],
                     email = email_address,
                     username = email_address,
                 )
@@ -94,11 +95,21 @@ class Command(BaseCommand):
             # if the staff member already exists, update the user info
             else:
                 user = staff.user
-                user.first_name = member['first_name']
-                user.last_name = member['last_name']
-                user.email = email_address
-                user.username = email_address
-                user.save()
+                if user:
+                    user.first_name = member['name']['first_name']
+                    user.last_name = member['name']['last_name']
+                    user.email = email_address
+                    user.username = email_address
+                    user.save()
+                else:
+                    user, created = User.objects.get_or_create(
+                        first_name = member['name']['first_name'],
+                        last_name = member['name']['last_name'],
+                        email = email_address,
+                        username = email_address,
+                    )
+                    staff.user = user
+                    staff.save()
             # if the staff member has a homeroom, update their roster
             homeroom_roster = client.homeroom_roster_for_teacher(staff.user_dcid)
             if homeroom_roster:
@@ -141,7 +152,7 @@ class Command(BaseCommand):
                     email_address = str(member['id']) + '@nrcaknights.com'
                 # if a new student is created, create the corresponding user
                 if created:
-                    user = User.objects.create(
+                    user, created = User.objects.get_or_create(
                         first_name = member['name']['first_name'],
                         last_name = member['name']['last_name'],
                         email = email_address,
@@ -161,7 +172,6 @@ class Command(BaseCommand):
                         user.username = email_address
                         user.save()
                     else:
-                        print('No user assigned to DCID: {}'.format(student.student_dcid))
                         user, created = User.objects.get_or_create(
                             first_name = member['name']['first_name'],
                             last_name = member['name']['last_name'],

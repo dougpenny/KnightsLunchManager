@@ -11,7 +11,7 @@ class Profile(models.Model):
         (STAFF, 'Staff'),
         (STUDENT, 'Student'),
     ]
-    current_balance = models.DecimalField(blank=True, decimal_places=2, max_digits=6, null=True)
+    current_balance = models.DecimalField(default=0, decimal_places=2, max_digits=6)
     grade_level = models.SmallIntegerField(default=None, null=True)
     homeroom_teacher = models.ForeignKey(
         'self',
