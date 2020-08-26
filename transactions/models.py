@@ -1,7 +1,10 @@
+from datetime import date
 from datetime import datetime
+from datetime import time
 import os
 
 from django.db import models
+from django.utils import timezone
 
 
 class MenuLineItem(models.Model):
@@ -30,19 +33,22 @@ class Transaction(models.Model):
     transaction_type = models.CharField(choices=TYPE_CHOICES, default=DEBIT, max_length=2)
     transactee = models.ForeignKey('profiles.Profile', on_delete=models.CASCADE)
 
+    class Meta:
+        ordering = ['-submitted']
+
     @property
     def status(self):
+        midnight_today = timezone.make_aware(datetime.combine(date.today(), time(0, 0)))
+        cutoff_time = datetime.time(datetime.strptime(os.getenv('ORDER_CUTOFF'), '%H:%M'))
+        cutoff_today = timezone.make_aware(datetime.combine(date.today(), cutoff_time))
         if self.completed:
             return 'Complete'
-        elif not self.__class__.accepting_orders():
-            return 'Processing'
-        elif self.submitted:
+        elif self.submitted > midnight_today and self.submitted < cutoff_today:
             return 'Submitted'
         else:
-            return 'Unknown'
+            return 'Processing'
 
     @staticmethod
     def accepting_orders() -> bool:
-            time_format = '%H:%M'
-            cutoff_time = datetime.time(datetime.strptime(os.getenv('ORDER_CUTOFF'), time_format))
+            cutoff_time = datetime.time(datetime.strptime(os.getenv('ORDER_CUTOFF'), '%H:%M'))
             return cutoff_time > datetime.now().time()

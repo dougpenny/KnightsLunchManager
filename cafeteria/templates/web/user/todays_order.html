@@ -57,8 +57,8 @@
                         </td>
                         <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                            {% if transaction.status == 'Completed' %}bg-green-100 text-green-800
-                            {% elif transaction.status == 'Processing' %}bg-orange-100 text-orange-800
+                            {% if transaction.status == 'Complete' %}bg-green-100 text-green-800
+                            {% elif transaction.status == 'Processing' %}bg-yellow-100 text-yellow-800
                             {% elif transaction.status == 'Submitted' %}bg-red-100 text-red-800
                             {% else %}bg-gray-100 text-gray-800{% endif %}">
                               {{ transaction.status }}
