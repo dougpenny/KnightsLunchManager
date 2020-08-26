@@ -28,6 +28,17 @@ EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
 SERVER_EMAIL = os.getenv('SERVER_EMAIL')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 
+
+# Django REST Framework Settings
+# https://www.django-rest-framework.org/api-guide/settings/
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
+
+
 # setup logging for Docker
 LOGGING_CONFIG = None
 LOGLEVEL = os.getenv('DJANGO_LOGLEVEL', 'info').upper()
