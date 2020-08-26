@@ -3,7 +3,6 @@ import copy
 import io
 import os
 
-from datetime import datetime
 from decimal import Decimal
 
 from django.contrib import messages
@@ -15,6 +14,7 @@ from django.http import FileResponse
 from django.http import HttpRequest
 from django.shortcuts import render
 from django.shortcuts import redirect
+from django.utils import timezone
 
 from reportlab import platypus
 from reportlab.lib import enums
@@ -34,7 +34,7 @@ def todays_transaction(profile: Profile) -> Transaction:
         transactions = Transaction.objects.filter(
             transactee=profile,
             transaction_type=Transaction.DEBIT,
-            submitted__date=datetime.now().date(),
+            submitted__date=timezone.now().date(),
         )
         return transactions.latest('submitted')
     except:
@@ -65,7 +65,7 @@ def delete_order(request):
 
 def index(request):
     context = {}
-    time = datetime.now()
+    time = timezone.now()
     context['time'] = time
     menu = MenuItem.objects.filter(days_available__name=time.date().strftime("%A"))
     context['menu'] = menu
@@ -126,7 +126,7 @@ def submit_order(request):
                             menu_item = MenuItem.objects.get(id=order['item'])
                             profile = Profile.objects.get(id=order['person'])
                             transaction, created = Transaction.objects.update_or_create(
-                                submitted__date=datetime.now().date(),
+                                submitted__date=timezone.now().date(),
                                 transaction_type=Transaction.DEBIT,
                                 transactee=profile,
                                 defaults = {
@@ -154,7 +154,7 @@ def submit_order(request):
 @login_required
 def todays_order(request):
     context = {}
-    today = datetime.now().date()
+    today = timezone.now()
     context['today'] = today
     context['orders_open'] = Transaction.accepting_orders()
     context['user'] = request.user
@@ -165,7 +165,7 @@ def todays_order(request):
 @login_required
 def admin_dashboard(request):
     context = {}
-    time = datetime.now()
+    time = timezone.now()
     context['time'] = time
     context['user'] = request.user
     order_count = {}
@@ -189,7 +189,7 @@ def submit_batch_entry(request):
     if request.method == 'POST':
         student_deposits = []
         for item in request.POST.lists():
-            if item[0][:8] == 'student_':
+            if item[0][:5] == 'user_':
                 student_deposits.append(item[1])
         deposit_count = 0
         for deposit in student_deposits:
@@ -207,10 +207,9 @@ def submit_batch_entry(request):
                     transaction = Transaction.objects.create(
                         amount=Decimal(deposit[2]),
                         beginning_balance=student.current_balance,
-                        completed=datetime.now().date(),
+                        completed=timezone.now(),
                         description=description,
                         new_balance=new_balance,
-                        submitted=datetime.now().date(),
                         transaction_type=Transaction.CREDIT,
                         transactee=student,
                     )
@@ -231,7 +230,7 @@ def orders_for_homeroom(staff: Profile):
         orders = MenuLineItem.objects.filter(
             Q(transaction__transactee__in=staff.students.all())
             | Q(transaction__transactee=staff)
-        ).filter(transaction__submitted__date=datetime.now().date())
+        ).filter(transaction__submitted__date=timezone.now().date())
         if orders.count() == 0:
             return None
         else:

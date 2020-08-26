@@ -22,19 +22,20 @@
     {% for i in num_entries %}
         <div class="flex row-gap-6 col-gap-4 -mx-2 pb-4 mb-4 {% if not forloop.last %}border-b border-gray-300{% endif %}">
             <div class="w-1/2 sm:w-3/5 px-2">
-                <label for="student_selection-{{ forloop.counter }}" class="block text-sm font-medium leading-5 text-gray-700">
+                <label for="user_selection-{{ forloop.counter }}" class="block text-sm font-medium leading-5 text-gray-700">
                     Student
                 </label>
                 <div class="mt-1">
-                    <v-select v-model="selected.student_{{ forloop.counter }}" name="student_{{ forloop.counter }}" id="student_selection_{{ forloop.counter }}" as="name:id:id" from="{{ request.scheme }}://{{ request.site }}/api/v1/users/basic/?search=%s"></v-select>
+                    <v-select v-model="selected.user_{{ forloop.counter }}" as="name:id:id" from="{{ request.scheme }}://{{ request.site }}/api/v1/users/basic/?search=%s"></v-select>
                 </div>
+                <input type="hidden" name="user_{{ forloop.counter }}" id="user_selection_{{ forloop.counter }}">
             </div>
             <div class="w-1/4 sm:w-1/5 px-2">
                 <label for="check_num-{{ forloop.counter }}" class="block text-sm font-medium leading-5 text-gray-700">
                     Check #
                 </label>
                 <div class="mt-1 rounded-sm">
-                    <input name="student_{{ forloop.counter }}" id="check_num_{{ forloop.counter }}" class="border border-gray-400 py-2 px-2 text-xs rounded-sm block w-full transition duration-150 ease-in-out" type="text">
+                    <input name="user_{{ forloop.counter }}" id="check_num_{{ forloop.counter }}" class="border border-gray-400 py-2 px-2 text-xs rounded-sm block w-full transition duration-150 ease-in-out" type="text">
                 </div>
             </div>
             <div class="w-1/4 sm:w-1/5 px-2">
@@ -42,7 +43,7 @@
                     Amount
                 </label>
                 <div class="mt-1 rounded-sm">
-                    <input name="student_{{ forloop.counter }}" id="amount_{{ forloop.counter }}" class="border border-gray-400 py-2 px-2 text-xs rounded-sm block w-full transition duration-150 ease-in-out" type="text">
+                    <input name="user_{{ forloop.counter }}" id="amount_{{ forloop.counter }}" class="border border-gray-400 py-2 px-2 text-xs rounded-sm block w-full transition duration-150 ease-in-out" type="text">
                 </div>
             </div>
         </div>
@@ -69,7 +70,7 @@ new Vue({
   data: {
     selected: {
         {% for i in num_entries %}
-            student_{{ forloop.counter }}: '',
+            user_{{ forloop.counter }}: '',
         {% endfor %}
     },
   },
@@ -79,7 +80,7 @@ new Vue({
     },
     handleSubmit() {
         {% for i in num_entries %}
-            document.getElementById("student_selection_{{ forloop.counter }}").value = this.selected.student_{{ forloop.counter }}
+            document.getElementById("user_selection_{{ forloop.counter }}").value = this.selected.user_{{ forloop.counter }}
         {% endfor %}
     }
   }
