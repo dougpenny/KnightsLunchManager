@@ -13,5 +13,5 @@ urlpatterns = [
     path('admin/submit-batch-entry', views.submit_batch_entry, name='submit-batch-entry'),
     path('admin/homeroom-orders-report', views.homeroom_orders_report, name='homerooms-report'),
     path('admin/transactions', views.manage_transactions, name='transactions'),
-    path('admin/user/', include('profiles.urls'))
+    # path('admin/user/', include('profiles.urls'))
 ]

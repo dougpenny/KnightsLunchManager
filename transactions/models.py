@@ -23,13 +23,13 @@ class Transaction(models.Model):
         (DEBIT, 'Debit'),
         (CREDIT, 'Credit'),
     ]
-    amount = models.DecimalField(blank=True, decimal_places=2, max_digits=6, null=True)
+    amount = models.DecimalField(decimal_places=2, default=0, max_digits=6)
     beginning_balance = models.DecimalField(decimal_places=2, max_digits=6, null=True)
     completed = models.DateTimeField(blank=True, default=None, null=True)
     description = models.TextField(blank=True, default='')
     menu_items = models.ManyToManyField('menu.MenuItem', blank=True, related_name='transactions',through=MenuLineItem)
     new_balance = models.DecimalField(decimal_places=2, max_digits=6, null=True)
-    submitted = models.DateTimeField(auto_now_add=True)
+    submitted = models.DateTimeField(default=timezone.now)
     transaction_type = models.CharField(choices=TYPE_CHOICES, default=DEBIT, max_length=2)
     transactee = models.ForeignKey('profiles.Profile', on_delete=models.CASCADE)
 
