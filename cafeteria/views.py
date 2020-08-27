@@ -247,7 +247,7 @@ def orders_for_homeroom(staff: Profile):
 
 def homeroom_orders_report(request):
     todays_orders = []
-    for staff in Profile.objects.filter(role=Profile.STAFF):
+    for staff in Profile.objects.filter(role=Profile.STAFF).ordered_by('grade_level', 'user__last_name'):
         homeroom_order = orders_for_homeroom(staff)
         if homeroom_order:
             todays_orders.append(homeroom_order)
