@@ -1,0 +1,126 @@
+{% extends "web/admin/base_admin.html" %}
+
+{% block head-scripts %}
+<script src="https://cdn.jsdelivr.net/combine/npm/vue@2,npm/@desislavsd/vue-select@0.5.0"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@desislavsd/vue-select@0.5.0/dist/vue-select.min.css">
+{% endblock %}
+
+{% block admin-content %}
+  <div class="mx-8 mt-12">
+    <h2 class="text-2xl leading-6 font-medium text-gray-900">
+      New Transaction
+    </h2>
+  </div>
+  {% include 'web/includes/messages.html' %}
+  <div id="app">
+  <form @submit="handleSubmit" action="" method="post">
+    {% csrf_token %}
+      <div class="mx-8 mt-4 p-6 bg-white shadow rounded-lg">
+        <div>
+            <div class="mt-6 grid grid-cols-1 row-gap-5 col-gap-4 sm:grid-cols-4">
+                <div class="sm:col-span-4">
+                    <label for="country" class="block text-sm font-medium leading-5 text-gray-700">
+                        Student / Staff
+                    </label>
+                    <div class="mt-1 rounded-md shadow-sm">
+                        {{ form.transactee }}
+                        <!-- <select id="country" class="form-select block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+                            <option>Lydia Penny</option>
+                            <option>Joshua Penny</option>
+                            <option>Doug Penny</option>
+                        </select> -->
+                    </div>
+                </div>
+
+                <div class="sm:col-span-2">
+                    <label for="city" class="block text-sm font-medium leading-5 text-gray-700">
+                        Amount
+                    </label>
+                    <div class="mt-1 rounded-md shadow-sm">
+                        {{ form.amount }}
+                    </div>
+                </div>
+
+                <div class="sm:col-span-2">
+                    <label for="state" class="block text-sm font-medium leading-5 text-gray-700">
+                        Type
+                    </label>
+                    <div class="mt-1 rounded-md shadow-sm">
+                        {{ form.transaction_type }}
+                    </div>
+                </div>
+                
+                <div class="sm:col-span-4">
+                    <label for="about" class="block text-sm font-medium leading-5 text-gray-700">
+                        Description
+                    </label>
+                    <div class="mt-1 rounded-md shadow-sm">
+                        {{ form.description }}
+                    </div>
+                </div>
+
+                <div class="sm:col-span-4">
+                    <label for="email" class="block text-sm font-medium leading-5 text-gray-700">
+                        Menu Items
+                    </label>
+                    <div class="mt-1 rounded-md shadow-sm">
+                        {{ form.menu_items }}
+                        <!-- <input id="items"class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"> -->
+                    </div>
+                </div>
+
+                <div class="sm:col-span-2">
+                    <label for="city" class="block text-sm font-medium leading-5 text-gray-700">
+                        Submitted
+                    </label>
+                    <div class="mt-1 rounded-md shadow-sm">
+                        {{ form.submitted }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 border-t border-gray-200 pt-5">
+            <div class="flex justify-end">
+                <span class="inline-flex rounded-md shadow-sm">
+                    <button type="button" class="py-2 px-4 border border-gray-300 rounded-md text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-50 active:text-gray-800 transition duration-150 ease-in-out">
+                        Cancel
+                    </button>
+                </span>
+                <span class="ml-3 inline-flex rounded-md shadow-sm">
+                    <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition duration-150 ease-in-out">
+                        Save
+                    </button>
+                </span>
+            </div>
+        </div>
+    </div>
+</form>
+</div>
+{% endblock %}
+
+{% block end-scripts %}
+<script>
+new Vue({
+  el: "#app",
+  components: { vSelect: VueSelect.vSelect },
+  data: {
+    selected: {
+        {% for i in num_entries %}
+            student_{{ forloop.counter }}: '',
+        {% endfor %}
+    },
+  },
+  methods: {
+    setSelected(value) {
+        this.selected = value
+    },
+    handleSubmit() {
+        {% for i in num_entries %}
+            document.getElementById("student_selection_{{ forloop.counter }}").value = this.selected.student_{{ forloop.counter }}
+        {% endfor %}
+    }
+  }
+});
+</script>
+{% endblock %}

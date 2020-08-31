@@ -1,8 +1,8 @@
 from django.urls import include, path
 
-# from . import views
+from . import views
 
-# urlpatterns = [
-#     path('', views.IndexView.as_view(), name='index'),
-#     path('<int:pk>/', views.DetailView.as_view(), name='detail'),
-# ]
+urlpatterns = [
+    path('profile-autocomplete/', views.ProfileAutocomplete.as_view(), name='profile-autocomplete'),
+    #path('<int:pk>/', views.DetailView.as_view(), name='detail'),
+]

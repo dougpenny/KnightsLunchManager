@@ -22,9 +22,9 @@
 </div>
         <div class="mt-4 flex flex-col">
           {% include 'web/includes/messages.html' %}
-          {% if transactions %}
+          {% if object_list %}
             <div x-data="confirmAction()" class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-              <div class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
+              <div class="align-middle inline-block min-w-full overflow-hidden border-b border-gray-200">
                 <table class="min-w-full divide-y divide-gray-200">
                   <thead>
                     <tr>
@@ -52,7 +52,7 @@
                     </tr>
                   </thead>
                   <tbody class="bg-white divide-y divide-gray-200">
-                    {% for transaction in transactions %}
+                    {% for transaction in object_list %}
                       <tr>
                           <td class="px-6 py-4 text-left border-b border-gray-200 text-sm leading-5 text-gray-900">
                             {{ transaction.transactee }}

@@ -303,10 +303,3 @@ def homeroom_orders_report(request):
     else:
         messages.warning(request, 'No orders were found for today.')
         return redirect('admin')
-
-@login_required
-def manage_transactions(request):
-    context = {}
-    context['user'] = request.user
-    context['transactions'] = Transaction.objects.all()
-    return render(request, 'web/admin/transactions.html', context=context)

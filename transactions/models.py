@@ -4,6 +4,7 @@ from datetime import time
 import os
 
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
 
 
@@ -35,6 +36,9 @@ class Transaction(models.Model):
 
     class Meta:
         ordering = ['-submitted']
+
+    def get_absolute_url(self):
+        return reverse('transactions:transaction-detail', kwargs={'pk': self.pk})
 
     @property
     def status(self):
