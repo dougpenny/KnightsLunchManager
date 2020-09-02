@@ -23,7 +23,7 @@
         <div class="flex row-gap-6 col-gap-4 -mx-2 pb-4 mb-4 {% if not forloop.last %}border-b border-gray-300{% endif %}">
             <div class="w-1/2 sm:w-3/5 px-2">
                 <label for="user_selection-{{ forloop.counter }}" class="block text-sm font-medium leading-5 text-gray-700">
-                    Student
+                    Student / Staff
                 </label>
                 <div class="mt-1">
                     <v-select v-model="selected.user_{{ forloop.counter }}" as="name:id:id" from="{{ request.scheme }}://{{ request.site }}/api/v1/users/basic/?search=%s"></v-select>
