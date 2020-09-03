@@ -68,7 +68,7 @@ class Command(BaseCommand):
             # look for an existing profile and create a new one if not found
             staff, created = Profile.objects.update_or_create(user_dcid=member['dcid'],
                 defaults={
-                    'last_sync': timezone.now(),
+                    'last_sync': timezone.localtime(timezone.now()),
                     'lunch_id': member['lunch_id'],
                     'phone': phone,
                     'role': Profile.STAFF,
@@ -142,7 +142,7 @@ class Command(BaseCommand):
                 student, created = Profile.objects.update_or_create(student_dcid=member['id'],
                     defaults={
                         'grade_level': member['school_enrollment']['grade_level'],
-                        'last_sync': timezone.now(),
+                        'last_sync': timezone.localtime(timezone.now()),
                         'lunch_id': member['lunch']['lunch_id'],
                         'role': Profile.STUDENT,
                         'school': School.objects.get(id=member['school_enrollment']['school_id']),
