@@ -1,24 +1,96 @@
 {% extends "web/admin/base_admin.html" %}
 
 {% block admin-content %}
-<div class="mx-8 mt-12 flex items-center justify-between">
-    <h3 class="text-2xl leading-6 font-medium text-gray-900">
-      Transactions
-    </h3>
+<h3 class="ml-8 mt-12 text-2xl leading-6 font-medium text-gray-700">
+  {% if filter == "deposits" %}
+    Deposits
+  {% elif filter == "orders" %}
+    Orders
+  {% else %}
+    Transactions
+  {% endif %}
+</h3>
+<div class="mx-8 mt-6 flex items-center justify-between">
+
+<span class="relative z-0 inline-flex shadow-sm rounded-md">
+
+{% if previous_day %}
+  {% if filter == "deposits" %}
+    <a href="{% url 'transaction-date-deposits' previous_day.year previous_day.month previous_day.day %}">
+  {% elif filter == "orders" %}
+    <a href="{% url 'transaction-date-orders' previous_day.year previous_day.month previous_day.day %}">
+  {% else %}
+    <a href="{% url 'transaction-date-list' previous_day.year previous_day.month previous_day.day %}">
+  {% endif %}
+  <button type="button" title="{{ previous_day|date:'l, M jS' }}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150" aria-label="Previous">
+    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+    </svg>
+  </button>
+  </a>
+{% endif %}
+{% if previous_day or next_day %}
+  {% if not previous_day%}
+  <span class="-ml-px relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700">
+  {% elif not next_day %}
+  <span class="-ml-px relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700">
+  {% else %}
+  <span class="-ml-px relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700">
+  {% endif %}
+    {% if today.date == day %}
+      Today
+    {% else %}
+      {{ day|date:'l, M jS' }}
+    {% endif %}
+  </span>
+{% endif %}
+{% if next_day %}
+  {% if filter == "deposits" %}
+    <a href="{% url 'transaction-date-deposits' next_day.year next_day.month next_day.day %}">
+  {% elif filter == "orders" %}
+    <a href="{% url 'transaction-date-orders' next_day.year next_day.month next_day.day %}">
+  {% else %}
+    <a href="{% url 'transaction-date-list' next_day.year next_day.month next_day.day %}">
+  {% endif %}
+  <button type="button" title="{{ next_day|date:'l, M jS' }}" class="-ml-px relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150" aria-label="Next">
+    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+    </svg>
+  </button>
+  </a>
+{% endif %}
+</span>
+{% if filter == "deposits" %}
     <div class="mt-8 flex flex-shrink-0 sm:mt-0">
       <div class="inline-flex rounded-md shadow">
-        <a href="#">
-        <button class="inline-flex items-center justify-center pl-4 pr-5 py-2 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+        <a href="{% url 'transaction-deposit-create' %}">
+        <button class="inline-flex items-center justify-center pl-4 pr-5 py-2 border border-transparent text-base leading-6 rounded-md text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
           <svg xmlns="http://www.w3.org/2000/svg" class="mr-4" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <path stroke="none" d="M0 0h24v24H0z"/>
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
-          <span>New Transaction</span>
+          <span>New Deposit</span>
         </button>
         </a>
       </div>
     </div>
+  {% elif filter == "orders" %}
+    <div class="mt-8 flex flex-shrink-0 sm:mt-0">
+      <div class="inline-flex rounded-md shadow">
+        <a href="#">
+        <button class="inline-flex items-center justify-center pl-4 pr-5 py-2 border border-transparent text-base leading-6 rounded-md text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+          <svg xmlns="http://www.w3.org/2000/svg" class="mr-4" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z"/>
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          <span>New Order</span>
+        </button>
+        </a>
+      </div>
+    </div>
+  {% endif %}
 </div>
         <div class="mt-4 flex flex-col">
           {% include 'web/includes/messages.html' %}
@@ -74,10 +146,10 @@
                         </td>
                         <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-cool-gray-500 md:bloc">
                             <span class="px-2.5 py-0.5 inline-flex text-xs leading-4 font-medium rounded-full 
-                            {% if transaction.status == 'Complete' %}bg-green-200 text-green-800
-                            {% elif transaction.status == 'Processing' %}bg-yellow-200 text-yellow-800
-                            {% elif transaction.status == 'Submitted' %}bg-blue-200 text-blue-800
-                            {% else %}bg-gray-200 text-gray-800{% endif %}">
+                            {% if transaction.status == 'Complete' %}bg-green-100 text-green-800
+                            {% elif transaction.status == 'Processing' %}bg-yellow-100 text-yellow-800
+                            {% elif transaction.status == 'Submitted' %}bg-blue-100 text-blue-800
+                            {% else %}bg-gray-100 text-gray-800{% endif %}">
                               {{ transaction.status }}
                             </span>
                         </td>
@@ -149,12 +221,57 @@
                 </div>
               </div>
             </div>
-
             </div>
+
+            <div class="mx-8 mt-12 flex items-center justify-between">
+            <span class="inline-flex">
+</span>
+{% if filter == "deposits" %}
+    <div class="mt-8 flex flex-shrink-0 sm:mt-0">
+      <div class="inline-flex rounded-md shadow">
+        <a href="#">
+        <button class="inline-flex items-center justify-center pl-4 pr-5 py-2 border border-transparent text-base leading-6 rounded-md text-white bg-green-600 hover:bg-green-500 focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+          <svg xmlns="http://www.w3.org/2000/svg" class="mr-4" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+  <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+  <line x1="12" y1="11" x2="12" y2="17" />
+  <polyline points="9 14 12 17 15 14" />
+</svg>
+          <span>Export Deposits</span>
+        </button>
+        </a>
+      </div>
+    </div>
+  {% elif filter == "orders" %}
+    <div class="mt-8 flex flex-shrink-0 sm:mt-0">
+      <div class="inline-flex rounded-md shadow">
+        <a href="#">
+        <button class="inline-flex items-center justify-center pl-4 pr-5 py-2 border border-transparent text-base leading-6 rounded-md text-white bg-green-600 hover:bg-green-500 focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+          <svg xmlns="http://www.w3.org/2000/svg" class="mr-4" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+  <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+  <path d="M9 15l2 2l4 -4" />
+</svg>
+          <span>Process Orders</span>
+        </button>
+        </a>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
           {% else %}
-            <h3 class="mt-2 text-l leading-8 font-extrabold tracking-tight text-gray-900 sm:text-xl sm:leading-10">
-              Sorry, but you do not have an order for today.
-            </h3>
+          <h3 class="w-full text-center mt-14 text-lg font-medium text-gray-700 sm:text-3xl">
+          {% if filter == "deposits" %}
+              There are no deposits for {% if today.date == day %}today{% else %}{{ day|date:'l, M jS' }}{% endif %}.
+          {% elif filter == "orders" %}
+              There are no orders for {% if today.date == day %}today{% else %}{{ day|date:'l, M jS' }}{% endif %}.
+          {% else %}
+              There are no transactions for {% if today.date == day %}today{% else %}{{ day|date:'l, M jS' }}{% endif %}.
+          {% endif %}
+          </h3>
           {% endif %}
         </div>
 
