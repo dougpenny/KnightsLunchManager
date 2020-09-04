@@ -1,11 +1,20 @@
+import logging
 
 from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.utils import timezone
 from django.views import View
 from django.views.generic import CreateView, ListView, DetailView, FormView, DayArchiveView, TodayArchiveView
+from django.contrib import messages
 
+from datetime import date
+
+from profiles.models import Profile
 from .models import Transaction
 from .forms import TransactionForm, TransactionDepositForm
+
+
+logger = logging.getLogger(__file__)
 
 
 class TransactionMixin:
@@ -47,9 +56,8 @@ class TransactionsTodayArchiveView(TransactionMixin, TodayArchiveView):
     template_name = 'transactions/transactions_list.html'
 
 
-class TransactionDetailView(DetailView):
+class TransactionDetailView(TransactionMixin, DetailView):
     template_name = 'transactions/transaction_detail.html'
-    queryset = Transaction.objects.all()
 
 
 class TransactionDepositView(FormView):
@@ -65,13 +73,62 @@ class TransactionDepositView(FormView):
 
 
 class TransactionProcessView(View):
+    def process_transaction(self, order: Transaction):
+        try:
+            transactee = order.transactee
+            order.beginning_balance = transactee.current_balance
+            order.ending_balance = transactee.current_balance - order.amount
+            order.completed = timezone.now()
+            order.save()
+            transactee.current_balance = order.ending_balance
+            transactee.save()
+        except:
+            raise Exception
+
+    def process_transactions_for_day(self, day: date) -> (bool, str):
+        try:
+            orders = Transaction.objects.filter(
+                transaction_type=Transaction.DEBIT,
+                submitted__date=day,
+                completed__date=None,
+            )
+            if orders:
+                for order in orders:
+                    self.process_transaction(order)
+                return True, 'Successfully processed {} transactions for {}.'.format(orders.count(), day.strftime('%b %-d, %Y'))
+            else:
+                raise Exception
+        except:
+            logger.info('When processing transactions, no transactions found for: {}'.format(day))
+            return False, 'No transactions found on {} for processing.'.format(day.strftime('%b %-d, %Y'))
+
+    def process_single_transaction(self, id: int) -> (bool, str):
+        try:
+            print('Transaction lookup: {}'.format(id))
+            order = Transaction.objects.get(id=id)
+            if not order.completed:
+                self.process_transaction(order)
+                return True, 'Successfully processed transaction #{}.'.format(id)
+            else:
+                raise Exception
+        except:
+            logger.info('When processing a transaction, no transaction found for id: {}'.format(id))
+            return False, 'Transaction #{} was either not found or does not need to be processed.'.format(id)
+
     def get(self, request, *args, **kwargs):
-        if self.kwargs['year']:
-            print('Year: {}'.format(self.kwargs['year']))
-        if self.kwargs['month']:
-            print('Year: {}'.format(self.kwargs['month']))
-        if self.kwargs['day']:
-            print('Year: {}'.format(self.kwargs['day']))
-        if self.kwargs['pk']:
-            print('Year: {}'.format(self.kwargs['pk']))
-        return HttpResponse('Hello, World!')
+        success = False
+        message = None
+        if ('year' in self.kwargs) and ('month' in self.kwargs) and ('day' in self.kwargs):
+            day = date(self.kwargs['year'], self.kwargs['month'], self.kwargs['day'])
+            success, message = self.process_transactions_for_day(day)
+        elif 'pk' in self.kwargs:
+            success, message = self.process_single_transaction(self.kwargs['pk'])
+        if success and message:
+            messages.success(request, message)
+        elif message:
+            messages.warning(request, message)
+        original_url = request.path_info
+        elements = original_url.split('/')
+        elements.remove('process')
+        redirect_url = '/'.join(elements)
+        return redirect(redirect_url)

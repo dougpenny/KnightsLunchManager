@@ -212,7 +212,7 @@ def submit_batch_entry(request):
                         beginning_balance=student.current_balance,
                         completed=timezone.now(),
                         description=description,
-                        new_balance=new_balance,
+                        ending_balance=new_balance,
                         transaction_type=Transaction.CREDIT,
                         transactee=student,
                     )

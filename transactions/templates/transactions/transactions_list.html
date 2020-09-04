@@ -238,7 +238,7 @@
   <line x1="12" y1="11" x2="12" y2="17" />
   <polyline points="9 14 12 17 15 14" />
 </svg>
-          <span>Export Deposits</span>
+          <span>Export Checks</span>
         </button>
         </a>
       </div>
@@ -246,14 +246,14 @@
   {% elif filter == "orders" %}
     <div class="mt-8 flex flex-shrink-0 sm:mt-0">
       <div class="inline-flex rounded-md shadow">
-        <a href="#">
+        <a href="{% url 'transaction-date-process' day.year day.month day.day %}">
         <button class="inline-flex items-center justify-center pl-4 pr-5 py-2 border border-transparent text-base leading-6 rounded-md text-white bg-green-600 hover:bg-green-500 focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
           <svg xmlns="http://www.w3.org/2000/svg" class="mr-4" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-  <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
-  <path d="M9 15l2 2l4 -4" />
-</svg>
+            <path stroke="none" d="M0 0h24v24H0z"/>
+            <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+            <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+            <path d="M9 15l2 2l4 -4" />
+          </svg>
           <span>Process Orders</span>
         </button>
         </a>

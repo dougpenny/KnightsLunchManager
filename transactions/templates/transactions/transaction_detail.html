@@ -6,11 +6,15 @@
 {% endblock %}
 
 {% block admin-content %}
-  <div class="mx-8 mt-12">
-    <h2 class="text-2xl leading-6 font-medium text-gray-900">
-      Transaction Detail
-    </h2>
-  </div>
+<h3 class="ml-8 mt-12 text-2xl leading-6 font-medium text-gray-700">
+    {% if filter == "deposits" %}
+        Deposit Details
+    {% elif filter == "orders" %}
+        Order Details
+    {% else %}
+        Transaction Details
+    {% endif %}
+</h3>
   {% include 'web/includes/messages.html' %}
       <div class="mx-8 mt-4 p-6 bg-white shadow rounded-lg">
         <div>
@@ -92,7 +96,7 @@
                         Ending Balance
                     </label>
                     <div class="mt-1 rounded-md shadow-sm">
-                        <p>{{ object.new_balance }}</p>
+                        <p>{{ object.ending_balance }}</p>
                     </div>
                 </div>
             </div>

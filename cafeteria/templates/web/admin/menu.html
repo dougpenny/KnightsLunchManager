@@ -16,21 +16,35 @@
 </svg>
                     Home
                   </a>
-<!--
-                  <a href="#" class="group flex items-center px-2 py-2 text-sm leading-6 font-medium rounded-md text-gray-100 hover:text-white hover:bg-blue-500 focus:outline-none focus:bg-blue-500  transition ease-in-out duration-150">
+
+                  <a href="{% url 'transaction-today-orders' %}" class="group flex items-center px-2 py-2 text-sm leading-6 font-medium rounded-md text-gray-100 hover:text-white hover:bg-blue-500 focus:outline-none focus:bg-blue-500  transition ease-in-out duration-150">
                     <svg class="mr-4 h-6 w-6 text-gray-300 group-hover:text-gray-200 group-focus:text-gray-200 transition ease-in-out duration-150" fill="none" viewBox="0 0 24 24" stroke="currentColor">
   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
 </svg>
-                    Students
+                    Today's Orders
+                  </a>
+
+                  <a href="{% url 'transaction-order-create' %}" class="group flex items-center px-2 py-2 text-sm leading-6 font-medium rounded-md text-gray-100 hover:text-white hover:bg-blue-500 focus:outline-none focus:bg-blue-500  transition ease-in-out duration-150">
+                    <svg class="mr-4 h-6 w-6 text-gray-300 group-hover:text-gray-200 group-focus:text-gray-200 transition ease-in-out duration-150" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+</svg>
+                    New Order
                   </a>
                 
-                  <a href="#" class="group flex items-center px-2 py-2 text-sm leading-6 font-medium rounded-md text-gray-100 hover:text-white hover:bg-blue-500 focus:outline-none focus:bg-blue-500  transition ease-in-out duration-150">
+                  <a href="{% url 'transaction-today-deposits' %}" class="group flex items-center px-2 py-2 text-sm leading-6 font-medium rounded-md text-gray-100 hover:text-white hover:bg-blue-500 focus:outline-none focus:bg-blue-500  transition ease-in-out duration-150">
                     <svg class="mr-4 h-6 w-6 text-gray-300 group-hover:text-gray-200 group-focus:text-gray-200 transition ease-in-out duration-150" fill="none" viewBox="0 0 24 24" stroke="currentColor">
   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path>
 </svg>
-                    Staff
+                    Today's Deposits
                   </a>
-                
+
+                  <a href="{% url 'transaction-deposit-create' %}" class="group flex items-center px-2 py-2 text-sm leading-6 font-medium rounded-md text-gray-100 hover:text-white hover:bg-blue-500 focus:outline-none focus:bg-blue-500  transition ease-in-out duration-150">
+                    <svg class="mr-4 h-6 w-6 text-gray-300 group-hover:text-gray-200 group-focus:text-gray-200 transition ease-in-out duration-150" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path>
+</svg>
+                    New Deposit
+                  </a>
+<!--
                   <a href="#" class="group flex items-center px-2 py-2 text-sm leading-6 font-medium rounded-md text-gray-100 hover:text-white hover:bg-blue-500 focus:outline-none focus:bg-blue-500  transition ease-in-out duration-150">
                     <svg class="mr-4 h-6 w-6 text-gray-300 group-hover:text-gray-200 group-focus:text-gray-200 transition ease-in-out duration-150" fill="none" viewBox="0 0 24 24" stroke="currentColor">
   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
