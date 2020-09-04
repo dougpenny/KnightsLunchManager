@@ -1,9 +1,9 @@
 import ast
 import copy
 import io
+import logging
 import os
 
-from datetime import datetime
 from decimal import Decimal
 
 from django.contrib import messages
@@ -15,6 +15,7 @@ from django.http import FileResponse
 from django.http import HttpRequest
 from django.shortcuts import render
 from django.shortcuts import redirect
+from django.utils import timezone
 
 from reportlab import platypus
 from reportlab.lib import enums
@@ -29,12 +30,14 @@ from transactions.models import MenuLineItem
 from transactions.models import Transaction
 
 
+logger = logging.getLogger(__file__)
+
 def todays_transaction(profile: Profile) -> Transaction:
     try:
         transactions = Transaction.objects.filter(
             transactee=profile,
             transaction_type=Transaction.DEBIT,
-            submitted__date=datetime.now().date(),
+            submitted__date=timezone.now().date(),
         )
         return transactions.latest('submitted')
     except:
@@ -52,8 +55,8 @@ def delete_order(request):
                     messages.success(request, 'Your order was successfully deleted.')
                     return redirect('index')
                 except Exception as e:
+                    logger.exception('An exception occured when trying to delete a transaction.')
                     messages.error(request, 'There was a problem deleting your order.')
-                    print('caught exception when deleting transaction: {}'.format(e))
                     return redirect('today')
             else:
                 messages.error(request, 'No order was found to delete.')
@@ -65,9 +68,9 @@ def delete_order(request):
 
 def index(request):
     context = {}
-    time = datetime.now()
+    time = timezone.now()
     context['time'] = time
-    menu = MenuItem.objects.filter(days_available__name=time.date().strftime("%A"))
+    menu = MenuItem.objects.filter(days_available__name=timezone.localtime(timezone.now()).date().strftime("%A"))
     context['menu'] = menu
     context['orders_open'] = Transaction.accepting_orders()
     if request.user.is_authenticated:
@@ -107,8 +110,8 @@ def submit_order(request):
                         messages.success(request, 'Your order was successfully submitted.')
                         return redirect('today')
                     except Exception as e:
+                        logger.exception('An exception occured when trying to create a transaction.')
                         messages.error(request, 'There was a problem submitting your order.')
-                        print('An exception was caught when creating a transaction: {}'.format(e))
                         return redirect('index')
                 else:
                     messages.warning(request, 'You have already submitted an order today.')
@@ -126,7 +129,7 @@ def submit_order(request):
                             menu_item = MenuItem.objects.get(id=order['item'])
                             profile = Profile.objects.get(id=order['person'])
                             transaction, created = Transaction.objects.update_or_create(
-                                submitted__date=datetime.now().date(),
+                                submitted__date=timezone.now().date(),
                                 transaction_type=Transaction.DEBIT,
                                 transactee=profile,
                                 defaults = {
@@ -137,8 +140,8 @@ def submit_order(request):
                             transaction.menu_items.clear()
                             transaction.menu_items.add(menu_item, through_defaults={'quantity': 1 })
                         except Exception as e:
+                            logger.exception('An exception occured when trying to create a transaction.')
                             messages.error(request, 'There was a problem submitting the order.')
-                            print('An exception was caught when creating a transaction: {}'.format(e))
                             return redirect('index')
                 messages.success(request, 'Your order was successfully submitted.')
                 return redirect('index')
@@ -154,7 +157,7 @@ def submit_order(request):
 @login_required
 def todays_order(request):
     context = {}
-    today = datetime.now().date()
+    today = timezone.now()
     context['today'] = today
     context['orders_open'] = Transaction.accepting_orders()
     context['user'] = request.user
@@ -165,7 +168,7 @@ def todays_order(request):
 @login_required
 def admin_dashboard(request):
     context = {}
-    time = datetime.now()
+    time = timezone.now()
     context['time'] = time
     context['user'] = request.user
     order_count = {}
@@ -189,7 +192,7 @@ def submit_batch_entry(request):
     if request.method == 'POST':
         student_deposits = []
         for item in request.POST.lists():
-            if item[0][:8] == 'student_':
+            if item[0][:5] == 'user_':
                 student_deposits.append(item[1])
         deposit_count = 0
         for deposit in student_deposits:
@@ -207,10 +210,9 @@ def submit_batch_entry(request):
                     transaction = Transaction.objects.create(
                         amount=Decimal(deposit[2]),
                         beginning_balance=student.current_balance,
-                        completed=datetime.now().date(),
+                        completed=timezone.now(),
                         description=description,
                         new_balance=new_balance,
-                        submitted=datetime.now().date(),
                         transaction_type=Transaction.CREDIT,
                         transactee=student,
                     )
@@ -218,8 +220,8 @@ def submit_batch_entry(request):
                     student.save()
                     deposit_count = deposit_count + 1
             except Exception as e:
+                logger.exception('An exception occured submitting a batch deposit.')
                 messages.error(request, 'There was a problem submitting the batch deposit.')
-                print('An exception was caught when submitting a batch deposit: {}'.format(e))
                 return redirect('batch-entry')
         messages.success(request, 'Successfully processed {} deposits.'.format(deposit_count))
         return redirect('batch-entry')
@@ -231,7 +233,7 @@ def orders_for_homeroom(staff: Profile):
         orders = MenuLineItem.objects.filter(
             Q(transaction__transactee__in=staff.students.all())
             | Q(transaction__transactee=staff)
-        ).filter(transaction__submitted__date=datetime.now().date())
+        ).filter(transaction__submitted__date=timezone.now().date())
         if orders.count() == 0:
             return None
         else:
@@ -245,7 +247,7 @@ def orders_for_homeroom(staff: Profile):
 
 def homeroom_orders_report(request):
     todays_orders = []
-    for staff in Profile.objects.filter(role=Profile.STAFF):
+    for staff in Profile.objects.filter(role=Profile.STAFF).order_by('grade_level', 'user__last_name'):
         homeroom_order = orders_for_homeroom(staff)
         if homeroom_order:
             todays_orders.append(homeroom_order)

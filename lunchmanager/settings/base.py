@@ -136,11 +136,3 @@ MEDIA_ROOT = BASE_DIR / 'resources/'
 MEDIA_URL = '/resources/'
 
 
-# Django REST Framework Settings
-# https://www.django-rest-framework.org/api-guide/settings/
-
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ]
-}
