@@ -60,37 +60,6 @@
   </a>
 {% endif %}
 </span>
-{% if filter == "deposits" %}
-    <div class="mt-8 flex flex-shrink-0 sm:mt-0">
-      <div class="inline-flex rounded-md shadow">
-        <a href="{% url 'transaction-deposit-create' %}">
-        <button class="inline-flex items-center justify-center pl-4 pr-5 py-2 border border-transparent text-base leading-6 rounded-md text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
-          <svg xmlns="http://www.w3.org/2000/svg" class="mr-4" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path stroke="none" d="M0 0h24v24H0z"/>
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          <span>New Deposit</span>
-        </button>
-        </a>
-      </div>
-    </div>
-  {% elif filter == "orders" %}
-    <div class="mt-8 flex flex-shrink-0 sm:mt-0">
-      <div class="inline-flex rounded-md shadow">
-        <a href="#">
-        <button class="inline-flex items-center justify-center pl-4 pr-5 py-2 border border-transparent text-base leading-6 rounded-md text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
-          <svg xmlns="http://www.w3.org/2000/svg" class="mr-4" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path stroke="none" d="M0 0h24v24H0z"/>
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          <span>New Order</span>
-        </button>
-        </a>
-      </div>
-    </div>
-  {% endif %}
 </div>
         <div class="mt-4 flex flex-col">
           {% include 'web/includes/messages.html' %}
@@ -104,15 +73,12 @@
                         Name
                       </th>
                       <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                        Type
-                      </th>
-                      <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                         Description
                       </th>
-                      <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                      <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                         Amount
                       </th>
-                      <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                      <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                         Status
                       </th>
                       <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
@@ -129,22 +95,13 @@
                           <td class="px-6 py-4 text-left border-b border-gray-200 text-sm leading-5 text-gray-900">
                             {{ transaction.transactee }}
                           </td>
-                        {% if transaction.transaction_type == 'DB' %}
-                          <td class="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200 text-sm leading-5 text-red-900">
-                            Debit
-                          </td>
-                        {% else %}
-                          <td class="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200 text-sm leading-5 text-green-900">
-                            Credit
-                          </td>
-                        {% endif %}
                         <td class="px-6 py-4 text-left border-b border-gray-200 text-sm leading-5 text-gray-900">
                           {{ transaction.description }}
                         </td>
-                        <td class="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200 text-sm leading-5 text-gray-900">
+                        <td class="px-6 py-4 whitespace-no-wrap text-center border-b border-gray-200 text-sm leading-5 text-gray-900">
                           ${{ transaction.amount }}
                         </td>
-                        <td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-cool-gray-500 md:bloc">
+                        <td class="px-6 py-4 whitespace-no-wrap text-center text-sm leading-5 text-cool-gray-500 md:bloc">
                             <span class="px-2.5 py-0.5 inline-flex text-xs leading-4 font-medium rounded-full 
                             {% if transaction.status == 'Complete' %}bg-green-100 text-green-800
                             {% elif transaction.status == 'Processing' %}bg-yellow-100 text-yellow-800
@@ -158,6 +115,7 @@
                         </td>
                         <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
                             <div class="mx-auto flex-shrink-0 flex items-center justify-center h-20 w-20 sm:mx-0 sm:h-10 sm:w-10">
+                            <!--
                             <button @click="open({{ transaction.id }}, '{{ transaction.transactee.name|addslashes }}')">
                               <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-600" viewBox="-8 -8 40 40" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z"/>
@@ -168,7 +126,9 @@
                                 <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
                               </svg>
                             </button>
-                            <button @click="open({{ transaction.id }}, '{{ transaction.transactee.name|addslashes }}')">
+
+                            <a href="{% url 'transaction-deposit-detail' transaction.pk %}">
+                            <button>
                               <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-600 mx-4" viewBox="-8 -8 40 40" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z"/>
                                 <path d="M9 7 h-3a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-3" />
@@ -176,6 +136,8 @@
                                 <line x1="16" y1="5" x2="19" y2="8" />
                               </svg>
                             </button>
+                            </a>
+                            -->
                             </div>
                         </td>
                       </tr>
@@ -229,7 +191,7 @@
 {% if filter == "deposits" %}
     <div class="mt-8 flex flex-shrink-0 sm:mt-0">
       <div class="inline-flex rounded-md shadow">
-        <a href="#">
+        <a href="{% if day %}{% url 'transaction-date-export-checks' day.year day.month day.day %}{% else %}{% url 'transaction-export-checks' %}{% endif %}">
         <button class="inline-flex items-center justify-center pl-4 pr-5 py-2 border border-transparent text-base leading-6 rounded-md text-white bg-green-600 hover:bg-green-500 focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
           <svg xmlns="http://www.w3.org/2000/svg" class="mr-4" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
   <path stroke="none" d="M0 0h24v24H0z"/>
@@ -243,7 +205,7 @@
         </a>
       </div>
     </div>
-  {% elif filter == "orders" %}
+  {% elif filter == "orders" and day %}
     <div class="mt-8 flex flex-shrink-0 sm:mt-0">
       <div class="inline-flex rounded-md shadow">
         <a href="{% url 'transaction-date-process' day.year day.month day.day %}">

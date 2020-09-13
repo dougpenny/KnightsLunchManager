@@ -1,20 +1,52 @@
+import io
 import logging
+import xlsxwriter
 
+from django.http import FileResponse
 from django.http import HttpResponse
 from django.shortcuts import redirect
+from django.urls import reverse
 from django.utils import timezone
 from django.views import View
 from django.views.generic import CreateView, ListView, DetailView, FormView, DayArchiveView, TodayArchiveView
 from django.contrib import messages
+from django.contrib.auth.models import User
 
 from datetime import date
 
+from menu.models import MenuItem
 from profiles.models import Profile
-from .models import Transaction
-from .forms import TransactionForm, TransactionDepositForm
+
+from .models import Transaction, MenuLineItem
+from .forms import TransactionForm, TransactionDepositForm, TransactionOrderForm, MenuLineItemFormSet, DepositFormSet
 
 
 logger = logging.getLogger(__file__)
+
+
+class DepositMixin:
+    def create_deposit(self, deposit: dict) -> None:
+        profile = Profile.objects.get(user__id=deposit['transactee'])
+        new_balance = profile.current_balance + deposit['amount']
+        description = ''
+        if deposit['check_num'].lower() == 'lc':
+            description = 'Previous lunch card balance'
+        elif deposit['check_num'] == '':
+            description = 'Cash'
+        else:
+            description = 'Check #' + deposit['check_num']
+        transaction = Transaction(
+            amount=deposit['amount'],
+            beginning_balance=profile.current_balance,
+            completed=timezone.now(),
+            description=description,
+            ending_balance=new_balance,
+            transaction_type=Transaction.CREDIT,
+            transactee=profile,
+        )
+        transaction.save()
+        profile.current_balance = new_balance
+        profile.save()
 
 
 class TransactionMixin:
@@ -60,16 +92,140 @@ class TransactionDetailView(TransactionMixin, DetailView):
     template_name = 'transactions/transaction_detail.html'
 
 
-class TransactionDepositView(FormView):
-    form_class = TransactionDepositForm
-    template_name = 'transactions/transaction_single_deposit.html'
-    success_url = '/admin/transactions/'
+class TransactionBatchDepositView(DepositMixin, FormView):
+    form_class = DepositFormSet
+    template_name = 'transactions/transaction_batch_deposit.html'
+    success_url = '/admin/transactions/deposits/batch'
 
     def form_valid(self, form):
-        print('User ID: {}'.format(form.cleaned_data['transactee']))
-        print('Check #: {}'.format(form.cleaned_data['check_num']))
-        print('Amount: {}'.format(form.cleaned_data['amount']))
+        count = 0
+        try:
+            for deposit in form.cleaned_data:
+                if deposit:
+                    self.create_deposit(deposit)
+                    count = count + 1
+            messages.success(self.request, 'Successfully processed {} deposits.'.format(count))
+        except Exception as e:
+            logger.error('An error occured processing a batch deposit: {}'.format(e))
+            messages.error(self.request, 'An error occured creating the deposit transactions.')
         return super().form_valid(form)
+
+class TransactionCreateDepositView(DepositMixin, FormView):
+    form_class = TransactionDepositForm
+    template_name = 'transactions/transaction_single_deposit.html'
+    success_url = '/admin/transactions/deposits/today'
+
+    def form_valid(self, form):
+        try:
+            self.create_deposit(form.cleaned_data)
+            profile = Profile.objects.get(user__id=form.cleaned_data['transactee'])
+            messages.success(self.request, 'Successfully processed deposit for {}.'.format(profile.name()))
+        except Exception as e:
+            logger.error('An error occured processing the deposit: {}'.format(e))
+            messages.error(self.request, 'An error occured creating the deposit transaction.')
+        return super().form_valid(form)
+
+
+class TransactionCreateOrderView(FormView):
+    form_class = TransactionOrderForm
+    template_name = 'transactions/transaction_single_order.html'
+    success_url = '/admin/transactions/'
+
+    def get(self, request, *args, **kwargs):
+        self.object = None
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        menu_item_form = MenuLineItemFormSet()
+        return self.render_to_response(self.get_context_data(form=form, menu_item_form=menu_item_form))
+
+    def post(self, request, *args, **kwargs):
+        self.object = None
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        menu_item_form = MenuLineItemFormSet(self.request.POST)
+        if (form.is_valid() and menu_item_form.is_valid()):
+            return self.form_valid(form, menu_item_form)
+        else:
+            return self.form_invalid(form, menu_item_form)
+
+    def form_invalid(self, form, menu_item_form):
+        return self.render_to_response(self.get_context_data(form=form,menu_item_form=menu_item_form))
+
+    def form_valid(self, form, menu_item_form):
+        profile = User.objects.get(pk=form.cleaned_data['transactee']).profile
+        new_order = Transaction(
+            beginning_balance=profile.current_balance,
+            completed=timezone.now(),
+            submitted=timezone.now(),
+            transactee=profile,
+            transaction_type=Transaction.DEBIT
+        )
+        new_order.save()
+        description = ''
+        amount = 0
+        for item in menu_item_form.cleaned_data:
+            menu_item = item['menu_item']
+            quantity = item['quantity']
+            if description == '':
+                description = menu_item.name
+            else:
+                description = description + ', {}'.format(menu_item.name)
+            amount = amount + (menu_item.cost * quantity)
+            new_menu_line_item = MenuLineItem.objects.create(menu_item=menu_item, transaction=new_order, quantity=quantity)
+        new_order.amount = amount
+        new_order.description = description
+        new_order.ending_balance = new_order.beginning_balance - amount
+        new_order.save()
+        profile.current_balance = new_order.ending_balance
+        profile.save()
+        return super().form_valid(form)
+
+
+class TransactionExportChecksView(View):
+    def get(self, request, *args, **kwargs):
+        checks = Transaction.objects.filter(
+                description__icontains='Check #',
+                transaction_type=Transaction.CREDIT,
+            )
+        workbook_name = 'check-reconciliation.xlsx'
+        if ('year' in self.kwargs) and ('month' in self.kwargs) and ('day' in self.kwargs):
+            day = date(self.kwargs['year'], self.kwargs['month'], self.kwargs['day'])
+            checks = checks.filter(completed__date=day)
+            workbook_name = 'check-reconciliation_{}-{}-{}.xlsx'.format(self.kwargs['year'], self.kwargs['month'], self.kwargs['day'])
+        if checks:
+            output = io.BytesIO()
+            workbook = xlsxwriter.Workbook(output)
+            worksheet = workbook.add_worksheet()
+            bold = workbook.add_format({'bold': True})
+            currency_bold = workbook.add_format({'bold': True, 'num_format': '[$$-409]#,##0.00'})
+            currency_format = workbook.add_format({'num_format': '[$$-409]#,##0.00'})
+            date_format = workbook.add_format({'num_format': 'yyyy-m-d'})
+            date_format.set_align('left')
+            number_format = workbook.add_format({'align': 'left'})
+            worksheet.set_column('A:A', 12)
+            worksheet.set_column('B:B', 9)
+            worksheet.set_column('C:C', 32)
+            worksheet.set_column('D:D', 12)
+            worksheet.write(0, 0, 'Date', bold)
+            worksheet.write(0, 1, 'Check #', bold)
+            worksheet.write(0, 2, 'Student', bold)
+            worksheet.write(0, 3, 'Amount', bold)
+            row = 1
+            col = 0
+            for check in checks:
+                worksheet.write(row, col, check.completed.date(), date_format)
+                worksheet.write(row, col + 1, int(check.description[7:]), number_format)
+                worksheet.write(row, col + 2, check.transactee.name())
+                worksheet.write(row, col + 3, check.amount, currency_format)
+                row += 1
+            worksheet.write(row + 1, 0, 'Total', bold)
+            worksheet.write(row + 1, 3, '=SUM(D2:D{})'.format(checks.count() + 1), currency_bold)
+            workbook.close()
+            output.seek(0)
+            return FileResponse(output, as_attachment=True, filename=workbook_name)
+        else:
+            messages.warning(request, 'No checks found to export.')
+            return redirect(request.path_info)
 
 
 class TransactionProcessView(View):

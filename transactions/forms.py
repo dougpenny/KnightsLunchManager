@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Transaction
+from .models import Transaction, MenuLineItem
 
 
 class TransactionForm(forms.ModelForm):
@@ -30,8 +30,32 @@ class TransactionDepositForm(forms.Form):
         widget=forms.HiddenInput()
     )
     check_num = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'border border-gray-400 py-2 px-2 text-xs rounded-sm block w-full transition duration-150 ease-in-out'})
+        widget=forms.TextInput(attrs={'class': 'border border-gray-400 py-2 px-2 text-xs rounded-sm block w-full transition duration-150 ease-in-out'}),
+        required=False
     )
     amount = forms.DecimalField(
         widget=forms.NumberInput(attrs={'class': 'border border-gray-400 py-2 px-2 text-xs rounded-sm block w-full transition duration-150 ease-in-out'})
     )
+
+DepositFormSet = forms.formset_factory(
+    TransactionDepositForm,
+    extra=25
+)
+
+
+class TransactionOrderForm(forms.Form):
+    transactee = forms.CharField(
+        widget=forms.HiddenInput()
+    )
+
+MenuLineItemFormSet = forms.inlineformset_factory(
+    Transaction,
+    MenuLineItem,
+    can_delete=True,
+    max_num=1,
+    fields=('menu_item', 'quantity'),
+    widgets={
+        'menu_item': forms.Select(attrs={'class': 'border border-gray-400 py-2 px-2 text-xs rounded-sm block w-full transition duration-150 ease-in-out'}),
+        'quantity': forms.NumberInput(attrs={'class': 'border border-gray-400 py-2 px-2 text-xs rounded-sm block w-full transition duration-150 ease-in-out'}),
+    }
+)

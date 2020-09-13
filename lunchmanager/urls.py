@@ -24,7 +24,7 @@ admin.site.index_title = "Welcome to the NRCA Cafeteria Portal"
 
 urlpatterns = [
     path('', include('cafeteria.urls')),
-    path('backally/', admin.site.urls, name='admin'),
+    path('backally/', admin.site.urls, name='django-admin'),
     path('api/v1/', include('api.urls')),
     path('oauth2/', include('django_auth_adfs.urls')),
 ]

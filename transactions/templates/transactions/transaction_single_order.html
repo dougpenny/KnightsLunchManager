@@ -8,7 +8,7 @@
 {% block admin-content %}
   <div class="mx-8 mt-12">
     <h2 class="text-2xl leading-6 font-medium text-gray-900">
-      New Deposit
+      New Order
     </h2>
   </div>
   {% include 'web/includes/messages.html' %}
@@ -16,9 +16,8 @@
   <form @submit="handleSubmit" action="" method="post">
     {% csrf_token %}
       <div class="mx-8 mt-4 p-6 bg-white shadow rounded-lg">
-            <div class="flex row-gap-6 col-gap-4 -mx-2 pb-4 mb-4">
-                {{ form.errors }}
-                <div class="w-1/2 sm:w-3/5 px-2">
+            <div class="grid grid-cols-8 row-gap-6 col-gap-4 -mx-2 pb-4 mb-4">
+                <div class="col-start-1 col-span-7 sm:col-span-5 px-2">
                     <label for="user" class="block text-sm font-medium leading-5 text-gray-700">
                         Student / Staff
                     </label>
@@ -27,24 +26,28 @@
                     </div>
                     {{ form.transactee }}
                 </div>
-
-                <div class="w-1/4 sm:w-1/5 px-2">
-                    <label for="check_num" class="block text-sm font-medium leading-5 text-gray-700">
-                        Check #
+                {{ menu_item_form.management_form }}
+                {% for item_form in menu_item_form %}
+                    {{ menu_item_form.non_field_errors }}
+                    <p>{{ item_form.id }}</p>
+                <div class="col-start-1 col-span-5 sm:col-span-4 px-2">
+                    <label for="city" class="block text-sm font-medium leading-5 text-gray-700">
+                        Menu Item
                     </label>
                     <div class="mt-1 rounded-sm">
-                        {{ form.check_num }}
+                        {{ item_form.menu_item }}
                     </div>
                 </div>
 
-                <div class="w-1/4 sm:w-1/5 px-2">
-                    <label for="amount" class="block text-sm font-medium leading-5 text-gray-700">
-                        Amount
+                <div class="col-span-1 sm:col-span-1 px-2">
+                    <label for="state" class="block text-sm font-medium leading-5 text-gray-700">
+                        Quantity
                     </label>
                     <div class="mt-1 rounded-sm">
-                        {{ form.amount }}
+                        {{ item_form.quantity }}
                     </div>
                 </div>
+                {% endfor %}
             </div>
 
         <div class="mt-8 border-t border-gray-200 pt-5">
