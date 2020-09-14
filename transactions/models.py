@@ -1,7 +1,6 @@
-from datetime import date
-from datetime import datetime
-from datetime import time
 import os
+
+from datetime import date, datetime, time
 
 from django.db import models
 from django.urls import reverse

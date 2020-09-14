@@ -9,12 +9,9 @@ from decimal import Decimal
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.db.models import Q
-from django.db.models import Sum
-from django.http import FileResponse
-from django.http import HttpRequest
-from django.shortcuts import render
-from django.shortcuts import redirect
+from django.db.models import Q, Sum
+from django.http import FileResponse, HttpRequest
+from django.shortcuts import redirect, render
 from django.utils import timezone
 
 from reportlab import platypus
@@ -183,51 +180,6 @@ def admin_dashboard(request):
     context['orders'] = orders
     return render(request, 'web/admin/index_admin.html', context=context)
 
-@login_required
-def batch_entry(request):
-    context = { 'num_entries': range(25) }
-    return render(request, 'web/admin/batch_entry.html', context=context)
-
-def submit_batch_entry(request):
-    if request.method == 'POST':
-        student_deposits = []
-        for item in request.POST.lists():
-            if item[0][:5] == 'user_':
-                student_deposits.append(item[1])
-        deposit_count = 0
-        for deposit in student_deposits:
-            try:
-                if deposit[0] != '' and deposit[2] != '':
-                    student = Profile.objects.get(user__id=deposit[0])
-                    new_balance = student.current_balance + Decimal(deposit[2])
-                    description = ''
-                    if deposit[1].lower() == 'lc':
-                        description = 'Previous lunch card balance'
-                    elif deposit[1] == '':
-                        description = 'Cash'
-                    else:
-                        description = 'Check #' + deposit[1]
-                    transaction = Transaction.objects.create(
-                        amount=Decimal(deposit[2]),
-                        beginning_balance=student.current_balance,
-                        completed=timezone.now(),
-                        description=description,
-                        ending_balance=new_balance,
-                        transaction_type=Transaction.CREDIT,
-                        transactee=student,
-                    )
-                    student.current_balance = new_balance
-                    student.save()
-                    deposit_count = deposit_count + 1
-            except Exception as e:
-                logger.exception('An exception occured submitting a batch deposit.')
-                messages.error(request, 'There was a problem submitting the batch deposit.')
-                return redirect('batch-entry')
-        messages.success(request, 'Successfully processed {} deposits.'.format(deposit_count))
-        return redirect('batch-entry')
-    else:
-        return redirect('batch-entry')
-
 def orders_for_homeroom(staff: Profile):
     if staff.students.all():
         orders = MenuLineItem.objects.filter(
@@ -245,6 +197,7 @@ def orders_for_homeroom(staff: Profile):
     else:
         return None
 
+@login_required
 def homeroom_orders_report(request):
     todays_orders = []
     for staff in Profile.objects.filter(role=Profile.STAFF).order_by('grade_level', 'user__last_name'):

@@ -2,13 +2,13 @@ import io
 import logging
 import xlsxwriter
 
-from django.http import FileResponse
-from django.http import HttpResponse
+from django.http import FileResponse, HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import timezone
 from django.views import View
-from django.views.generic import CreateView, ListView, DetailView, FormView, DayArchiveView, TodayArchiveView
+from django.views.generic import CreateView, ListView, DetailView, FormView
+from django.views.generic import DayArchiveView, TodayArchiveView
 from django.contrib import messages
 from django.contrib.auth.models import User
 
@@ -17,8 +17,9 @@ from datetime import date
 from menu.models import MenuItem
 from profiles.models import Profile
 
-from .models import Transaction, MenuLineItem
-from .forms import TransactionForm, TransactionDepositForm, TransactionOrderForm, MenuLineItemFormSet, DepositFormSet
+from transactions.models import Transaction, MenuLineItem
+from transactions.forms import TransactionForm, TransactionDepositForm
+from transactions.forms import TransactionOrderForm, MenuLineItemFormSet, DepositFormSet
 
 
 logger = logging.getLogger(__file__)
@@ -69,30 +70,7 @@ class TransactionMixin:
             return Transaction.objects.all()
 
 
-class TransactionCreateView(CreateView):
-    model = Transaction
-    form_class = TransactionForm
-    template_name = 'transactions/transaction_create.html'
-    queryset = Transaction.objects.all()
-
-
-class TransactionListView(TransactionMixin, ListView):
-    template_name = 'transactions/transactions_list.html'
-
-
-class TransactionsDateArchiveView(TransactionMixin, DayArchiveView):
-    template_name = 'transactions/transactions_list.html'
-
-
-class TransactionsTodayArchiveView(TransactionMixin, TodayArchiveView):
-    template_name = 'transactions/transactions_list.html'
-
-
-class TransactionDetailView(TransactionMixin, DetailView):
-    template_name = 'transactions/transaction_detail.html'
-
-
-class TransactionBatchDepositView(DepositMixin, FormView):
+class BatchDepositView(DepositMixin, FormView):
     form_class = DepositFormSet
     template_name = 'transactions/transaction_batch_deposit.html'
     success_url = '/admin/transactions/deposits/batch'
@@ -110,7 +88,8 @@ class TransactionBatchDepositView(DepositMixin, FormView):
             messages.error(self.request, 'An error occured creating the deposit transactions.')
         return super().form_valid(form)
 
-class TransactionCreateDepositView(DepositMixin, FormView):
+
+class CreateDepositView(DepositMixin, FormView):
     form_class = TransactionDepositForm
     template_name = 'transactions/transaction_single_deposit.html'
     success_url = '/admin/transactions/deposits/today'
@@ -126,7 +105,7 @@ class TransactionCreateDepositView(DepositMixin, FormView):
         return super().form_valid(form)
 
 
-class TransactionCreateOrderView(FormView):
+class CreateOrderView(FormView):
     form_class = TransactionOrderForm
     template_name = 'transactions/transaction_single_order.html'
     success_url = '/admin/transactions/'
@@ -181,7 +160,7 @@ class TransactionCreateOrderView(FormView):
         return super().form_valid(form)
 
 
-class TransactionExportChecksView(View):
+class ExportChecksView(View):
     def get(self, request, *args, **kwargs):
         checks = Transaction.objects.filter(
                 description__icontains='Check #',
@@ -226,6 +205,29 @@ class TransactionExportChecksView(View):
         else:
             messages.warning(request, 'No checks found to export.')
             return redirect(request.path_info)
+
+
+class TransactionCreateView(CreateView):
+    model = Transaction
+    form_class = TransactionForm
+    template_name = 'transactions/transaction_create.html'
+    queryset = Transaction.objects.all()
+
+
+class TransactionsDateArchiveView(TransactionMixin, DayArchiveView):
+    template_name = 'transactions/transactions_list.html'
+
+
+class TransactionDetailView(TransactionMixin, DetailView):
+    template_name = 'transactions/transaction_detail.html'
+
+
+class TransactionListView(TransactionMixin, ListView):
+    template_name = 'transactions/transactions_list.html'
+
+
+class TransactionsTodayArchiveView(TransactionMixin, TodayArchiveView):
+    template_name = 'transactions/transactions_list.html'
 
 
 class TransactionProcessView(View):

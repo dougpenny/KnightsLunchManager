@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Transaction, MenuLineItem
+from transactions.models import Transaction, MenuLineItem
 
 
 class TransactionForm(forms.ModelForm):

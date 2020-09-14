@@ -1,6 +1,6 @@
 from django.urls import include, path
 
-from . import views
+from profiles import views
 
 urlpatterns = [
     #path('profile-autocomplete/', views.ProfileAutocomplete.as_view(), name='profile-autocomplete'),

@@ -92,7 +92,6 @@ class Command(BaseCommand):
                     email = email_address,
                     username = email_address,
                 )
-                staff.current_balance = 0
                 staff.user = user
                 staff.save()
                 newly_created = newly_created + 1
@@ -162,7 +161,6 @@ class Command(BaseCommand):
                         email = email_address,
                         username = email_address,
                     )
-                    student.current_balance = 0
                     student.user = user
                     student.save()
                     newly_created = newly_created + 1
