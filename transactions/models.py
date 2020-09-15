@@ -46,7 +46,7 @@ class Transaction(models.Model):
         cutoff_today = timezone.make_aware(datetime.combine(date.today(), cutoff_time))
         if self.completed:
             return 'Complete'
-        elif self.submitted > midnight_today and self.submitted < cutoff_today:
+        elif self.submitted > midnight_today and timezone.now() < cutoff_today:
             return 'Submitted'
         else:
             return 'Processing'

@@ -2,6 +2,9 @@ import io
 import logging
 import xlsxwriter
 
+from django.contrib import messages
+from django.contrib.auth.models import User
+from django.db.models import Q
 from django.http import FileResponse, HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -9,8 +12,6 @@ from django.utils import timezone
 from django.views import View
 from django.views.generic import CreateView, ListView, DetailView, FormView
 from django.views.generic import DayArchiveView, TodayArchiveView
-from django.contrib import messages
-from django.contrib.auth.models import User
 
 from datetime import date
 
@@ -162,43 +163,57 @@ class CreateOrderView(FormView):
 
 class ExportChecksView(View):
     def get(self, request, *args, **kwargs):
-        checks = Transaction.objects.filter(
-                description__icontains='Check #',
-                transaction_type=Transaction.CREDIT,
+        deposits = Transaction.objects.filter(
+                Q(description__icontains='Check #')
+                | Q(description__icontains='Cash')
             )
+        deposits = deposits.filter(transaction_type=Transaction.CREDIT)
         workbook_name = 'check-reconciliation.xlsx'
         if ('year' in self.kwargs) and ('month' in self.kwargs) and ('day' in self.kwargs):
             day = date(self.kwargs['year'], self.kwargs['month'], self.kwargs['day'])
-            checks = checks.filter(completed__date=day)
+            deposits = deposits.filter(completed__date=day)
             workbook_name = 'check-reconciliation_{}-{}-{}.xlsx'.format(self.kwargs['year'], self.kwargs['month'], self.kwargs['day'])
-        if checks:
+        if deposits:
             output = io.BytesIO()
             workbook = xlsxwriter.Workbook(output)
             worksheet = workbook.add_worksheet()
             bold = workbook.add_format({'bold': True})
+            center_bold = workbook.add_format({'align': 'center', 'bold': True})
             currency_bold = workbook.add_format({'bold': True, 'num_format': '[$$-409]#,##0.00'})
             currency_format = workbook.add_format({'num_format': '[$$-409]#,##0.00'})
             date_format = workbook.add_format({'num_format': 'yyyy-m-d'})
             date_format.set_align('left')
-            number_format = workbook.add_format({'align': 'left'})
+            center_format = workbook.add_format({'align': 'center'})
             worksheet.set_column('A:A', 12)
-            worksheet.set_column('B:B', 9)
-            worksheet.set_column('C:C', 32)
+            worksheet.set_column('B:B', 32)
+            worksheet.set_column('C:C', 12)
             worksheet.set_column('D:D', 12)
-            worksheet.write(0, 0, 'Date', bold)
-            worksheet.write(0, 1, 'Check #', bold)
-            worksheet.write(0, 2, 'Student', bold)
-            worksheet.write(0, 3, 'Amount', bold)
+            worksheet.set_column('E:E', 9)
+            worksheet.set_column('F:F', 12)
+            worksheet.write(0, 0, 'Date', center_bold)
+            worksheet.write(0, 1, 'Student', center_bold)
+            worksheet.write(0, 2, 'Grade', center_bold)
+            worksheet.write(0, 3, 'Check Amt', center_bold)
+            worksheet.write(0, 4, 'Check #', center_bold)
+            worksheet.write(0, 5, 'Cash', center_bold)
             row = 1
             col = 0
-            for check in checks:
-                worksheet.write(row, col, check.completed.date(), date_format)
-                worksheet.write(row, col + 1, int(check.description[7:]), number_format)
-                worksheet.write(row, col + 2, check.transactee.name())
-                worksheet.write(row, col + 3, check.amount, currency_format)
+            for deposit in deposits:
+                worksheet.write(row, col, deposit.completed.date(), date_format)
+                worksheet.write(row, col + 1, deposit.transactee.name())
+                worksheet.write(row, col + 2, deposit.transactee.grade_level if deposit.transactee.grade_level else 'Staff', center_format)
+                if 'check #' in deposit.description.lower():
+                    worksheet.write(row, col + 3, deposit.amount, currency_format)
+                    worksheet.write(row, col + 4, int(deposit.description[7:]), center_format)
+                else:
+                    worksheet.write(row, col + 5, deposit.amount, currency_format)
                 row += 1
-            worksheet.write(row + 1, 0, 'Total', bold)
-            worksheet.write(row + 1, 3, '=SUM(D2:D{})'.format(checks.count() + 1), currency_bold)
+            worksheet.write(row + 1, 2, 'Sub Total', bold)
+            worksheet.write(row + 1, 3, '=SUM(D2:D{})'.format(deposits.count() + 1), currency_bold)
+            worksheet.write(row + 1, 5, '=SUM(F2:F{})'.format(deposits.count() + 1), currency_bold)
+            worksheet.write(row + 2, 2, 'Grand Total', bold)
+            merge_format = workbook.add_format({'align': 'center','bold': True, 'num_format': '[$$-409]#,##0.00'})
+            worksheet.merge_range(row + 2, 3, row + 2, 5, '=D{}+F{}'.format(row + 2, row + 2), merge_format)
             workbook.close()
             output.seek(0)
             return FileResponse(output, as_attachment=True, filename=workbook_name)

@@ -72,6 +72,9 @@
                       <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                         Name
                       </th>
+                      <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                        Grade
+                      </th>
                       <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                         Description
                       </th>
@@ -92,9 +95,16 @@
                   <tbody class="bg-white divide-y divide-gray-200">
                     {% for transaction in object_list %}
                       <tr>
-                          <td class="px-6 py-4 text-left border-b border-gray-200 text-sm leading-5 text-gray-900">
-                            {{ transaction.transactee }}
-                          </td>
+                        <td class="px-6 py-4 text-left border-b border-gray-200 text-sm leading-5 text-gray-900">
+                          {{ transaction.transactee }}
+                        </td>
+                        <td class="px-6 py-4 text-center border-b border-gray-200 text-sm leading-5 text-gray-900">
+                          {% if transaction.transactee.grade_level %}
+                            {{ transaction.transactee.grade_level }}
+                          {% else %}
+                            Staff
+                          {% endif %}
+                        </td>
                         <td class="px-6 py-4 text-left border-b border-gray-200 text-sm leading-5 text-gray-900">
                           {{ transaction.description }}
                         </td>
