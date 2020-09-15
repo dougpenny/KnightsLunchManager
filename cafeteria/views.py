@@ -165,7 +165,7 @@ def todays_order(request):
 @login_required
 def admin_dashboard(request):
     context = {}
-    time = timezone.now()
+    time = timezone.localtime(timezone.now())
     context['time'] = time
     context['user'] = request.user
     order_count = {}
