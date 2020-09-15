@@ -12,6 +12,7 @@
   <nav x-data="{ open: false }" @keydown.window.escape="open = false" class="bg-gray-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
+        <a href="{% url 'index' %}">
         <div class="flex items-center">
           <div class="flex-shrink-0">
             {% load static %}
@@ -23,6 +24,7 @@
             </h1>
           </div>
         </div>
+        </a>
         <div class="hidden md:block">
           <div class="ml-4 flex items-center md:ml-6">
             <div>
@@ -81,7 +83,8 @@
       </div>
     </div>
   </nav>
-  <div class="p-8 bg-white lg:flex lg:items-center lg:justify-between">
+  <div class="p-8 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 lg:flex lg:items-center lg:justify-between">
     {% if user %}
       {% include "web/user/header.html" %}
     {% else %}
@@ -91,6 +94,7 @@
         </h2>
       </div>
     {% endif %}
+    </div>
   </div>
   {% block user-content %}
   {% endblock %}

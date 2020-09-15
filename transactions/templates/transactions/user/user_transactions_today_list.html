@@ -11,60 +11,61 @@
         </h3>
         <div class="mt-8 flex flex-col">
           {% include 'web/includes/messages.html' %}
-          {% if transaction %}
+          {% if object_list %}
             <div x-data="confirmAction()" class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
               <div class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
                 <table class="min-w-full divide-y divide-gray-200">
                   <thead>
                     <tr>
-                      <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                      <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                         Type
                       </th>
                       <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                         Description
                       </th>
-                      <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                      <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                         Amount
                       </th>
-                      <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                      <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                         Status
                       </th>
-                      <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                      <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                         Submitted
                       </th>
-                      {% if orders_open and not transaction.completed %}
+                      {% if orders_open %}
                       <th class="px-6 py-3 border-b border-gray-200 bg-gray-50">
                       </th>
                       {% endif %}
                     </tr>
                   </thead>
                   <tbody class="bg-white divide-y divide-gray-200">
+                    {% for transaction in object_list %}
                       <tr>
                         {% if transaction.transaction_type == 'DB' %}
-                          <td class="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200 text-sm leading-5 text-red-900">
+                          <td class="px-6 py-4 whitespace-no-wrap text-center border-b border-gray-200 text-sm leading-5 text-red-900">
                             Debit
                           </td>
                         {% else %}
-                          <td class="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200 text-sm leading-5 text-green-900">
+                          <td class="px-6 py-4 whitespace-no-wrap text-center border-b border-gray-200 text-sm leading-5 text-green-900">
                             Credit
                           </td>
                         {% endif %}
                         <td class="px-6 py-4 text-left border-b border-gray-200 text-sm leading-5 text-gray-900">
                           {{ transaction.description }}
                         </td>
-                        <td class="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200 text-sm leading-5 text-gray-900">
+                        <td class="px-6 py-4 whitespace-no-wrap text-center border-b border-gray-200 text-sm leading-5 text-gray-900">
                           ${{ transaction.amount }}
                         </td>
                         <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                            <span class="px-2 inline-flex text-center text-xs leading-5 font-semibold rounded-full 
                             {% if transaction.status == 'Complete' %}bg-green-100 text-green-800
                             {% elif transaction.status == 'Processing' %}bg-yellow-100 text-yellow-800
-                            {% elif transaction.status == 'Submitted' %}bg-red-100 text-red-800
+                            {% elif transaction.status == 'Submitted' %}bg-indigo-100 text-indigo-800
                             {% else %}bg-gray-100 text-gray-800{% endif %}">
                               {{ transaction.status }}
                             </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200 text-sm leading-5 text-gray-900">
+                        <td class="px-6 py-4 whitespace-no-wrap text-center border-b border-gray-200 text-sm leading-5 text-gray-900">
                           {{ transaction.submitted|date:'g:i a' }}
                         </td>
                         {% if orders_open and not transaction.completed %}
@@ -79,6 +80,7 @@
                         </td>
                         {% endif %}
                       </tr>
+                    {% endfor %}
                   </tbody>
                 </table>
               </div>

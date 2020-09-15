@@ -3,6 +3,7 @@ import logging
 import xlsxwriter
 
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import FileResponse, HttpResponse
@@ -73,7 +74,7 @@ class TransactionMixin:
 
 class BatchDepositView(DepositMixin, FormView):
     form_class = DepositFormSet
-    template_name = 'transactions/transaction_batch_deposit.html'
+    template_name = 'transactions/admin/transaction_batch_deposit.html'
     success_url = '/admin/transactions/deposits/batch'
 
     def form_valid(self, form):
@@ -92,7 +93,7 @@ class BatchDepositView(DepositMixin, FormView):
 
 class CreateDepositView(DepositMixin, FormView):
     form_class = TransactionDepositForm
-    template_name = 'transactions/transaction_single_deposit.html'
+    template_name = 'transactions/admin/transaction_single_deposit.html'
     success_url = '/admin/transactions/deposits/today'
 
     def form_valid(self, form):
@@ -108,7 +109,7 @@ class CreateDepositView(DepositMixin, FormView):
 
 class CreateOrderView(FormView):
     form_class = TransactionOrderForm
-    template_name = 'transactions/transaction_single_order.html'
+    template_name = 'transactions/admin/transaction_single_order.html'
     success_url = '/admin/transactions/'
 
     def get(self, request, *args, **kwargs):
@@ -201,7 +202,10 @@ class ExportChecksView(View):
             for deposit in deposits:
                 worksheet.write(row, col, deposit.completed.date(), date_format)
                 worksheet.write(row, col + 1, deposit.transactee.name())
-                worksheet.write(row, col + 2, deposit.transactee.grade_level if deposit.transactee.grade_level else 'Staff', center_format)
+                if deposit.transactee.role == Profile.STAFF:
+                    worksheet.write(row, col + 2, 'Staff', center_format)
+                else:
+                    worksheet.write(row, col + 2, deposit.transactee.grade_level, center_format)
                 if 'check #' in deposit.description.lower():
                     worksheet.write(row, col + 3, deposit.amount, currency_format)
                     worksheet.write(row, col + 4, int(deposit.description[7:]), center_format)
@@ -225,12 +229,12 @@ class ExportChecksView(View):
 class TransactionCreateView(CreateView):
     model = Transaction
     form_class = TransactionForm
-    template_name = 'transactions/transaction_create.html'
+    template_name = 'transactions/admin/transaction_create.html'
     queryset = Transaction.objects.all()
 
 
 class TransactionsDateArchiveView(TransactionMixin, DayArchiveView):
-    template_name = 'transactions/transactions_list.html'
+    template_name = 'transactions/admin/transactions_list.html'
 
 
 class TransactionDetailView(TransactionMixin, DetailView):
@@ -238,11 +242,11 @@ class TransactionDetailView(TransactionMixin, DetailView):
 
 
 class TransactionListView(TransactionMixin, ListView):
-    template_name = 'transactions/transactions_list.html'
+    template_name = 'transactions/admin/transactions_list.html'
 
 
 class TransactionsTodayArchiveView(TransactionMixin, TodayArchiveView):
-    template_name = 'transactions/transactions_list.html'
+    template_name = 'transactions/admin/transactions_list.html'
 
 
 class TransactionProcessView(View):
@@ -305,3 +309,36 @@ class TransactionProcessView(View):
         elements.remove('process')
         redirect_url = '/'.join(elements)
         return redirect(redirect_url)
+
+
+class UsersTodayArchiveView(LoginRequiredMixin, TodayArchiveView):
+    template_name = 'transactions/user/user_transactions_today_list.html'
+    allow_empty = True
+    allow_future = False
+    date_field = "submitted"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['today'] = timezone.now
+        context['orders_open'] = Transaction.accepting_orders()
+        return context
+
+    def get_queryset(self):
+        return Transaction.objects.filter(
+            transactee=self.request.user.profile,
+            transaction_type=Transaction.DEBIT
+        )
+
+
+class UsersTransactionsArchiveView(LoginRequiredMixin, ListView):
+    template_name = 'transactions/user/user_transactions_list.html'
+    allow_empty = True
+    allow_future = False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['today'] = timezone.now
+        return context
+
+    def get_queryset(self):
+        return Transaction.objects.filter(transactee=self.request.user.profile)

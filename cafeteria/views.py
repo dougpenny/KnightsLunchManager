@@ -50,18 +50,18 @@ def delete_order(request):
                 try:
                     transaction.delete()
                     messages.success(request, 'Your order was successfully deleted.')
-                    return redirect('index')
+                    return redirect('home')
                 except Exception as e:
                     logger.exception('An exception occured when trying to delete a transaction.')
                     messages.error(request, 'There was a problem deleting your order.')
-                    return redirect('today')
+                    return redirect('todays-order')
             else:
                 messages.error(request, 'No order was found to delete.')
-                return redirect('index')
+                return redirect('home')
         else:
             messages.warning(request, 'Sorry, your order is already being processed.')
-            return redirect('index')
-    return redirect('index')
+            return redirect('home')
+    return redirect('home')
 
 def index(request):
     context = {}
@@ -83,7 +83,7 @@ def index(request):
                         context['homeroom_transactions'].append({'student': student, 'transaction': transaction})
                     return render(request, 'web/user/index_homeroom_user.html', context=context)
         if context['transaction']:
-            return redirect('today')
+            return redirect('todays-order')
     else:
         context['user'] = None
     return render(request, 'web/user/index_user.html', context=context)
@@ -105,14 +105,14 @@ def submit_order(request):
                         transaction.save()
                         transaction.menu_items.add(menu_item, through_defaults={'quantity': 1 })
                         messages.success(request, 'Your order was successfully submitted.')
-                        return redirect('today')
+                        return redirect('todays-order')
                     except Exception as e:
                         logger.exception('An exception occured when trying to create a transaction.')
                         messages.error(request, 'There was a problem submitting your order.')
-                        return redirect('index')
+                        return redirect('home')
                 else:
                     messages.warning(request, 'You have already submitted an order today.')
-                    return redirect('today')
+                    return redirect('todays-order')
             elif request.POST.__contains__('orders'):
                 for order in request.POST.getlist('orders'):
                     order = ast.literal_eval(order)
@@ -139,28 +139,17 @@ def submit_order(request):
                         except Exception as e:
                             logger.exception('An exception occured when trying to create a transaction.')
                             messages.error(request, 'There was a problem submitting the order.')
-                            return redirect('index')
+                            return redirect('home')
                 messages.success(request, 'Your order was successfully submitted.')
-                return redirect('index')
+                return redirect('home')
             else:
                 messages.error(request, 'No items were found for the order.')
-                return redirect('index')
+                return redirect('home')
         else:
             messages.warning(request, 'Sorry, the cafeteria is no longer accepting orders today.')
-            return redirect('index')
+            return redirect('home')
     else:
-        return redirect('index')
-
-@login_required
-def todays_order(request):
-    context = {}
-    today = timezone.now()
-    context['today'] = today
-    context['orders_open'] = Transaction.accepting_orders()
-    context['user'] = request.user
-    context['balance'] = request.user.profile.current_balance
-    context['transaction'] = todays_transaction(request.user.profile)
-    return render(request, 'web/user/todays_order.html', context=context)
+        return redirect('home')
 
 @login_required
 def admin_dashboard(request):
