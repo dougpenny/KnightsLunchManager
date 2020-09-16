@@ -63,7 +63,7 @@ def delete_order(request):
             return redirect('home')
     return redirect('home')
 
-def index(request):
+def home(request):
     context = {}
     time = timezone.now()
     context['time'] = time
@@ -81,12 +81,12 @@ def index(request):
                     for student in request.user.profile.students.all():
                         transaction = todays_transaction(student)
                         context['homeroom_transactions'].append({'student': student, 'transaction': transaction})
-                    return render(request, 'web/user/index_homeroom_user.html', context=context)
+                    return render(request, 'web/user/homeroom_user.html', context=context)
         if context['transaction']:
             return redirect('todays-order')
     else:
         context['user'] = None
-    return render(request, 'web/user/index_user.html', context=context)
+    return render(request, 'web/user/user.html', context=context)
 
 @login_required
 def submit_order(request):
@@ -167,7 +167,7 @@ def admin_dashboard(request):
                 order_count[line_item.menu_item.name] = line_item.quantity
     context['order_count'] = order_count
     context['orders'] = orders
-    return render(request, 'web/admin/index_admin.html', context=context)
+    return render(request, 'web/admin/admin.html', context=context)
 
 def orders_for_homeroom(staff: Profile):
     if staff.students.all():

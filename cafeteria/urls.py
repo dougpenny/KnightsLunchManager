@@ -4,7 +4,7 @@ from cafeteria import views
 from transactions.views import UsersTodayArchiveView, UsersTransactionsArchiveView
 
 urlpatterns = [
-    path('', views.index, name='home'),
+    path('', views.home, name='home'),
     path('delete-order/', views.delete_order, name='delete'),
     path('submit-order/', views.submit_order, name='submit'),
     path('todays-order/', UsersTodayArchiveView.as_view(), name='todays-order'),
