@@ -17,7 +17,7 @@ class ProfileAdmin(admin.ModelAdmin):
     list_filter = ['role', 'status', 'school']
     inlines = [ProfileInline,]
     ordering = ['user__last_name']
-    readonly_fields = ['current_balance', 'grade_level', 'last_sync', 'lunch_id', 'phone', 'role', 'room', 'school', 'student_dcid', 'user_dcid', 'user_number']
+    readonly_fields = ['grade_level', 'last_sync', 'lunch_id', 'phone', 'role', 'room', 'school', 'student_dcid', 'user_dcid', 'user_number']
     search_fields = ['user__first_name', 'user__last_name', 'user_number', 'lunch_id']
 
     def has_add_permission(self, request):

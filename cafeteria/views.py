@@ -76,12 +76,13 @@ def home(request):
         context['transaction'] = todays_transaction(request.user.profile)
         if request.user.profile.role == Profile.STAFF:
             if request.user.profile.students.all():
-                if request.user.profile.grade_level <= int(os.getenv('HOMEROOM_CUTOFF')):
-                    context['homeroom_transactions'] = []
-                    for student in request.user.profile.students.all():
-                        transaction = todays_transaction(student)
-                        context['homeroom_transactions'].append({'student': student, 'transaction': transaction})
-                    return render(request, 'web/user/homeroom_user.html', context=context)
+                context['homeroom_teacher'] = True
+                # if request.user.profile.grade_level <= int(os.getenv('HOMEROOM_CUTOFF')):
+                #     context['homeroom_transactions'] = []
+                #     for student in request.user.profile.students.all():
+                #         transaction = todays_transaction(student)
+                #         context['homeroom_transactions'].append({'student': student, 'transaction': transaction})
+                #     return render(request, 'web/user/homeroom_user.html', context=context)
         if context['transaction']:
             return redirect('todays-order')
     else:

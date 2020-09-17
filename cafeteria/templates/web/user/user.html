@@ -1,25 +1,25 @@
 {% extends "web/user/base_user.html" %}
 
 {% block user-content %}
+{% include 'web/includes/messages.html' %}
   <div class="mt-4 p-8 bg-white">
-    <div class="max-w-screen-md mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto px-4 sm:px-6 lg:px-8">
       <div class="lg:text-center">
         <p class="text-base leading-6 text-indigo-700 font-semibold tracking-wide uppercase">
           {% now "l, F jS" %}
         </p>
+        {% if not orders_open %}
+        <div class="lg:text-center">
+          <h3 class="mt-8 mb-16 text-2xl leading-7 font-bold text-gray-900 sm:text-3xl lg:mx-auto">
+            Sorry, the cafeteria is no longer accepting orders today.
+          </h3>
+        </div>
+      {% else %}
         <h3 class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl sm:leading-10">
         Today's Lunch Options
         </h3>
       </div>
-      {% if not orders_open %}
-        <div class="lg:text-center">
-            <p class="mt-8 max-w-2xl text-xl leading-7 text-gray-500 lg:mx-auto">
-              Sorry, the cafeteria is no longer accepting orders today.
-            </p>
-          </div>
-          {% endif %}
-      <div class="mt-10" {% if user %}x-data="confirmAction()"{% endif %}>
-      {% include 'web/includes/messages.html' %}
+      <div class="mt-10 max-w-screen-md mx-auto" {% if user %}x-data="confirmAction()"{% endif %}>
       {% if menu %}
         <ul class="md:grid md:grid-cols-2 md:col-gap-8 md:row-gap-10">
           {% for item in menu %}
@@ -30,7 +30,7 @@
                   <h4 class="mt-4 text-lg leading-6 font-medium text-gray-900">
                   {{ item.name }}
                   </h4>
-                  <p class="mt-2 text-base leading-6 text-gray-500">
+                  <p class="mt-2 text-base leading-6 text-gray-600">
                     {{ item.description }}
                   </p>
                   <h6 class="mt-2 mb-4 text-lg leading-6 text-gray-900">
@@ -81,7 +81,7 @@
             </div>
           </div>
           <div class="lg:text-center">
-            <p class="mt-8 max-w-2xl text-xl leading-7 text-gray-500 lg:mx-auto">
+            <p class="mt-8 max-w-2xl text-xl leading-7 text-gray-600 lg:mx-auto">
               Simply tap your selection above to order lunch.
             </p>
           </div>
@@ -91,6 +91,7 @@
         <h4 class="mt-2 lg:text-center font-bold tracking-tight text-gray-900 sm:leading-10">
           There are no lunch items available today.
         </h4>
+      {% endif %}
       {% endif %}
     </div>
   </div>
