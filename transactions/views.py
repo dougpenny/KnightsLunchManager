@@ -193,7 +193,7 @@ class ExportChecksView(View):
             worksheet.merge_range(1, 0, 1, 5, 'CAFETERIA RECEIPT FORM', center_bold_title)
 
             date_bold_title = workbook.add_format({'align': 'center', 'bold': True, 'num_format': '[$-en-US]mmmm d, yyyy;@', 'font_size': 12})
-            worksheet.merge_range(2, 0, 2, 5, timezone.localtime(timezone.now()).date(), date_bold_title)
+            worksheet.merge_range(2, 0, 2, 5, day, date_bold_title)
             worksheet.set_row(2, 18)
 
             center_bold_header = workbook.add_format({'align': 'center', 'bold': True, 'bottom': 1, 'font_size': 12})
