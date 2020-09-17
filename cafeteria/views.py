@@ -77,12 +77,6 @@ def home(request):
         if request.user.profile.role == Profile.STAFF:
             if request.user.profile.students.all():
                 context['homeroom_teacher'] = True
-                # if request.user.profile.grade_level <= int(os.getenv('HOMEROOM_CUTOFF')):
-                #     context['homeroom_transactions'] = []
-                #     for student in request.user.profile.students.all():
-                #         transaction = todays_transaction(student)
-                #         context['homeroom_transactions'].append({'student': student, 'transaction': transaction})
-                #     return render(request, 'web/user/homeroom_user.html', context=context)
         if context['transaction']:
             return redirect('todays-order')
     else:
@@ -108,44 +102,12 @@ def submit_order(request):
                         messages.success(request, 'Your order was successfully submitted.')
                         return redirect('todays-order')
                     except Exception as e:
-                        logger.exception('An exception occured when trying to create a transaction.')
+                        logger.exception('An exception occured when trying to create a transaction: {}'.format(e))
                         messages.error(request, 'There was a problem submitting your order.')
                         return redirect('home')
                 else:
                     messages.warning(request, 'You have already submitted an order today.')
                     return redirect('todays-order')
-            elif request.POST.__contains__('orders'):
-                for order in request.POST.getlist('orders'):
-                    order = ast.literal_eval(order)
-                    if order['item'] == '':
-                        profile = Profile.objects.get(id=order['person'])
-                        transaction = todays_transaction(profile)
-                        if transaction:
-                            transaction.delete()
-                    else:
-                        try:
-                            menu_item = MenuItem.objects.get(id=order['item'])
-                            profile = Profile.objects.get(id=order['person'])
-                            transaction, created = Transaction.objects.update_or_create(
-                                submitted__date=timezone.now().date(),
-                                transaction_type=Transaction.DEBIT,
-                                transactee=profile,
-                                defaults = {
-                                    'amount': menu_item.cost,
-                                    'description': menu_item.name
-                                },
-                            )
-                            transaction.menu_items.clear()
-                            transaction.menu_items.add(menu_item, through_defaults={'quantity': 1 })
-                        except Exception as e:
-                            logger.exception('An exception occured when trying to create a transaction.')
-                            messages.error(request, 'There was a problem submitting the order.')
-                            return redirect('home')
-                messages.success(request, 'Your order was successfully submitted.')
-                return redirect('home')
-            else:
-                messages.error(request, 'No items were found for the order.')
-                return redirect('home')
         else:
             messages.warning(request, 'Sorry, the cafeteria is no longer accepting orders today.')
             return redirect('home')
@@ -171,21 +133,18 @@ def admin_dashboard(request):
     return render(request, 'web/admin/admin.html', context=context)
 
 def orders_for_homeroom(staff: Profile):
-    if staff.students.all():
-        orders = MenuLineItem.objects.filter(
-            Q(transaction__transactee__in=staff.students.all())
-            | Q(transaction__transactee=staff)
-        ).filter(transaction__submitted__date=timezone.now().date())
-        if orders.count() == 0:
-            return None
-        else:
-            homeroom_orders = {
-                'teacher': staff,
-                'orders': orders
-            }
-            return homeroom_orders
-    else:
+    orders = MenuLineItem.objects.filter(
+        Q(transaction__transactee__in=staff.students.all())
+        | Q(transaction__transactee=staff)
+    ).filter(transaction__submitted__date=timezone.now().date())
+    if orders.count() == 0:
         return None
+    else:
+        homeroom_orders = {
+            'teacher': staff,
+            'orders': orders
+        }
+        return homeroom_orders
 
 @login_required
 def homeroom_orders_report(request):
@@ -229,7 +188,10 @@ def homeroom_orders_report(request):
             teacher = orders['teacher']
             title = teacher.user.last_name + ' - ' + teacher.room
             data.append(platypus.Paragraph(title, title_style))
-            grade_level = 'Grade: ' + str(teacher.grade_level)
+            if not teacher.grade_level:
+                grade_level = 'Staff'
+            else:
+                grade_level = 'Grade: ' + str(teacher.grade_level)
             data.append(platypus.Paragraph(grade_level, grade_style))
             data.append(platypus.FrameBreak())
             order_groups = orders['orders'].values('menu_item__short_name').annotate(sum=Sum('quantity'))

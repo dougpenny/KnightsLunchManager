@@ -246,6 +246,27 @@ class ExportChecksView(View):
             return redirect(request.path_info)
 
 
+class HomeroomOrdersArchiveView(LoginRequiredMixin, TodayArchiveView):
+    template_name = 'transactions/user/homeroom_orders_today_list.html'
+    allow_empty = True
+    allow_future = False
+    date_field = "submitted"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['today'] = timezone.now
+        if self.request.user.profile.role == Profile.STAFF:
+            if self.request.user.profile.students.all():
+                context['homeroom_teacher'] = True
+        return context
+
+    def get_queryset(self):
+        return Transaction.objects.filter(
+            transactee__in=self.request.user.profile.students.all(),
+            transaction_type=Transaction.DEBIT
+        )
+
+
 class TransactionCreateView(CreateView):
     model = Transaction
     form_class = TransactionForm
@@ -332,7 +353,7 @@ class TransactionProcessView(View):
 
 
 class UsersTodayArchiveView(LoginRequiredMixin, TodayArchiveView):
-    template_name = 'transactions/user/user_transactions_today_list.html'
+    template_name = 'transactions/user/user_orders_today_list.html'
     allow_empty = True
     allow_future = False
     date_field = "submitted"
@@ -341,6 +362,9 @@ class UsersTodayArchiveView(LoginRequiredMixin, TodayArchiveView):
         context = super().get_context_data(**kwargs)
         context['today'] = timezone.now
         context['orders_open'] = Transaction.accepting_orders()
+        if self.request.user.profile.role == Profile.STAFF:
+            if self.request.user.profile.students.all():
+                context['homeroom_teacher'] = True
         return context
 
     def get_queryset(self):
@@ -358,6 +382,9 @@ class UsersTransactionsArchiveView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['today'] = timezone.now
+        if self.request.user.profile.role == Profile.STAFF:
+            if self.request.user.profile.students.all():
+                context['homeroom_teacher'] = True
         return context
 
     def get_queryset(self):
