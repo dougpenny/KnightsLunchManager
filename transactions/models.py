@@ -34,7 +34,7 @@ class Transaction(models.Model):
     transactee = models.ForeignKey('profiles.Profile', on_delete=models.CASCADE)
 
     class Meta:
-        ordering = ['-submitted']
+        ordering = ['transactee', '-submitted']
 
     def get_absolute_url(self):
         return reverse('transactions:transaction-detail', kwargs={'pk': self.pk})

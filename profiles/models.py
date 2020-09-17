@@ -32,6 +32,9 @@ class Profile(models.Model):
     user_number = models.IntegerField(blank=True, null=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
 
+    class Meta:
+        ordering = ['user__last_name', 'user__first_name']
+
     def __str__(self):
         return self.name()
 
