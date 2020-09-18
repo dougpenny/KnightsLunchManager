@@ -188,10 +188,10 @@ def homeroom_orders_report(request):
             teacher = orders['teacher']
             title = teacher.user.last_name + ' - ' + teacher.room
             data.append(platypus.Paragraph(title, title_style))
-            if teacher.grade_level < 0:
-                grade_level = 'Staff'
-            elif teacher.grade_level == 0:
+            if teacher.grade_level == 0:
                 grade_level = 'K5'
+            elif not teacher.grade_level:
+                grade_level = 'Staff'
             else:
                 grade_level = 'Grade: ' + str(teacher.grade_level)
             data.append(platypus.Paragraph(grade_level, grade_style))
