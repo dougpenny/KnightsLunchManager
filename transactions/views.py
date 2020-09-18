@@ -238,6 +238,14 @@ class ExportChecksView(View):
             worksheet.merge_range(row + 2, 3, row + 2, 5, '=D{}+F{}'.format(row + 2, row + 2), grade_total_format)
             worksheet.set_row(row + 2, 18, general_row_format)
 
+            right_aligned = workbook.add_format({'align': 'right', 'font_size':12})
+            worksheet.set_row(row + 5, 18, general_row_format)
+            worksheet.write(row + 5, 0, 'Received: ', right_aligned)
+            worksheet.write(row + 5, 4, 'Receipt #: ', right_aligned)
+            underline = workbook.add_format({'bottom': 1})
+            worksheet.write(row + 5, 1, '', underline)
+            worksheet.write(row + 5, 5, '', underline)
+
             workbook.close()
             output.seek(0)
             return FileResponse(output, as_attachment=True, filename=workbook_name)
