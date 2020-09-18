@@ -18,8 +18,12 @@ def update_balances(sender, instance, **kwargs):
         else:
             amount = instance.amount
         for completed_transaction in following_completed:
-            completed_transaction.beginning_balance = completed_transaction.beginning_balance + amount
-            completed_transaction.ending_balance = completed_transaction.ending_balance + amount
+            if not completed_transaction.completed == instance.completed:
+                completed_transaction.beginning_balance = completed_transaction.beginning_balance + amount
+                completed_transaction.ending_balance = completed_transaction.ending_balance + amount
+            elif completed_transaction.beginning_balance < instance.beginning_balance:
+                completed_transaction.beginning_balance = completed_transaction.beginning_balance + amount
+                completed_transaction.ending_balance = completed_transaction.ending_balance + amount
             completed_transaction.save()
         instance.transactee.current_balance = instance.transactee.current_balance + amount
         instance.transactee.save()
