@@ -232,9 +232,9 @@ class ExportChecksView(View):
             bold = workbook.add_format({'bold': True, 'font_size': 12})
             worksheet.write(row + 1, 2, 'Sub Total', bold)
             currency_bold_single_top = workbook.add_format({'bold': True, 'font_size': 12, 'num_format': '[$$-409]#,##0.00', 'top': 1})
-            worksheet.write(row + 1, 3, '=SUM(D2:D{})'.format(deposits.count() + 1), currency_bold_single_top)
+            worksheet.write(row + 1, 3, '=SUM(D6:D{})'.format(deposits.count() + 5), currency_bold_single_top)
             worksheet.write(row + 1, 4, '', currency_bold_single_top)
-            worksheet.write(row + 1, 5, '=SUM(F2:F{})'.format(deposits.count() + 1), currency_bold_single_top)
+            worksheet.write(row + 1, 5, '=SUM(F6:F{})'.format(deposits.count() + 5), currency_bold_single_top)
             worksheet.set_row(row + 1, 18, general_row_format)
 
             worksheet.write(row + 2, 2, 'Grand Total', bold)
