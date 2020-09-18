@@ -67,7 +67,7 @@ def home(request):
     context = {}
     time = timezone.now()
     context['time'] = time
-    menu = MenuItem.objects.filter(days_available__name=timezone.localtime(timezone.now()).date().strftime("%A"))
+    menu = MenuItem.objects.filter(days_available__name=timezone.localdate(timezone.now()).strftime("%A"))
     context['menu'] = menu
     context['orders_open'] = Transaction.accepting_orders()
     if request.user.is_authenticated:
@@ -136,7 +136,7 @@ def orders_for_homeroom(staff: Profile):
     orders = MenuLineItem.objects.filter(
         Q(transaction__transactee__in=staff.students.all())
         | Q(transaction__transactee=staff)
-    ).filter(transaction__submitted__date=timezone.localdate(timezone.now()).date())
+    ).filter(transaction__submitted__date=timezone.localdate(timezone.now())
     if orders.count() == 0:
         return None
     else:
