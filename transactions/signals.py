@@ -10,7 +10,7 @@ def update_balances(sender, instance, **kwargs):
     if instance.completed:
         following_completed = Transaction.objects.filter(
             transactee=instance.transactee,
-            completed__gt=instance.completed
+            completed__gte=instance.completed
         )
         amount = 0
         if instance.transaction_type == Transaction.CREDIT:
