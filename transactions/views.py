@@ -196,7 +196,7 @@ class ExportChecksView(View):
             worksheet.merge_range(2, 0, 2, 5, day, date_bold_title)
             worksheet.set_row(2, 18)
 
-            center_bold_header = workbook.add_format({'align': 'center', 'bold': True, 'bottom': 1, 'font_size': 12})
+            center_bold_header = workbook.add_format({'align': 'center', 'bold': True, 'bottom': 1, 'font_size': 12, 'left': 1, 'right': 1})
             worksheet.write(4, 0, 'Date', center_bold_header)
             worksheet.write(4, 1, 'Student', center_bold_header)
             worksheet.write(4, 2, 'Grade', center_bold_header)
@@ -207,13 +207,14 @@ class ExportChecksView(View):
 
             row = 5
             col = 0
-            basic_currency = workbook.add_format({'font_size': 12, 'num_format': '[$$-409]#,##0.00'})
-            basic_date = workbook.add_format({'align': 'left', 'font_size': 12, 'num_format': 'yyyy-m-d'})
-            center = workbook.add_format({'align': 'center', 'font_size': 12})
+            basic_currency = workbook.add_format({'font_size': 12, 'num_format': '[$$-409]#,##0.00', 'left': 1, 'right': 1})
+            basic_date = workbook.add_format({'align': 'center', 'font_size': 12, 'num_format': 'yyyy-m-d', 'left': 1, 'right': 1})
+            center = workbook.add_format({'align': 'center', 'font_size': 12, 'left': 1, 'right': 1})
+            side_border = workbook.add_format({'left': 1, 'right': 1})
             for deposit in deposits:
                 worksheet.set_row(row, 18, general_row_format)
                 worksheet.write(row, col, deposit.completed.date(), basic_date)
-                worksheet.write(row, col + 1, deposit.transactee.name())
+                worksheet.write(row, col + 1, deposit.transactee.name(), side_border)
                 if deposit.transactee.role == Profile.STAFF:
                     worksheet.write(row, col + 2, 'Staff', center)
                 else:
@@ -221,7 +222,10 @@ class ExportChecksView(View):
                 if 'check #' in deposit.description.lower():
                     worksheet.write(row, col + 3, deposit.amount, basic_currency)
                     worksheet.write(row, col + 4, int(deposit.description[7:]), center)
+                    worksheet.write(row, col + 5, '', basic_currency)
                 else:
+                    worksheet.write(row, col + 3, '', basic_currency)
+                    worksheet.write(row, col + 4, '', center)
                     worksheet.write(row, col + 5, deposit.amount, basic_currency)
                 row += 1
             
