@@ -34,6 +34,8 @@ class DepositMixin:
         description = ''
         if deposit['check_num'].lower() == 'lc':
             description = 'Previous lunch card balance'
+        elif deposit['check_num'].lower() == 'st':
+            description = 'Transfer to/from sibling'
         elif deposit['check_num'] == '':
             description = 'Cash'
         else:
