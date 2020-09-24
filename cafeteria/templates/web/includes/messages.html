@@ -1,7 +1,7 @@
 {% if messages %}
     {% for message in messages %}
         <div x-data="dismissMessage()" x-init="dismiss">
-            <div @click="hideItem()" x-show.transition.out.origin.right.500ms="isShowing()" class="mx-auto mt-6 z-10 absolute top-0 right-0 border-t-4 px-4 py-3 shadow-md
+            <div @click="hideItem()" x-show.transition.out.duration.1000ms.opacity="isShowing()" class="mx-auto mt-6 z-10 absolute top-0 right-0 border-t-4 px-4 py-3 shadow-md
             {% if message.tags == 'success' %}bg-green-100 border-green-500 text-green-900
             {% elif message.tags == 'warning' %}bg-orange-100 border-orange-500 text-orange-900
             {% elif message.tags == 'error' %}bg-red-100 border-red-500 text-red-900

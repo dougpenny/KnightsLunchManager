@@ -90,6 +90,10 @@ def submit_order(request):
             if request.POST.__contains__('itemID'):
                 if not todays_transaction(request.user.profile):
                     menu_item = MenuItem.objects.get(id=request.POST.get('itemID'))
+                    if menu_item not in MenuItem.objects.filter(days_available__name=timezone.localdate(timezone.now()).strftime("%A")):
+                        logger.warning('{} attempted to order a {}, which is not available today.'.format(request.user.profile.name, menu_item))
+                        messages.error(request, 'The {} is not available today. Please select from the available options.'.format(menu_item))
+                        return redirect('home')
                     try:
                         transaction = Transaction(
                             amount=menu_item.cost,

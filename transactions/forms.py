@@ -4,7 +4,6 @@ from transactions.models import Transaction, MenuLineItem
 
 
 class TransactionForm(forms.ModelForm):
-    #transactee = forms.CharField()
     amount = forms.DecimalField(
         widget=forms.NumberInput(attrs={'class': 'form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5'})
     )
@@ -15,7 +14,6 @@ class TransactionForm(forms.ModelForm):
     description = forms.CharField(
         widget=forms.Textarea(attrs={'class': 'form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5'})
     )
-    #menu_items = forms.CharField()
     submitted = forms.DateTimeField(
         widget=forms.DateTimeInput(attrs={'class': 'form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5'})
     )
