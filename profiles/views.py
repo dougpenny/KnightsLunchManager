@@ -1,3 +1,6 @@
+from functools import reduce
+import operator
+
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.views.generic import DetailView, ListView
@@ -32,6 +35,12 @@ class ProfileSearchResultsView(ListView):
 
     def get_queryset(self): # new
         query = self.request.GET.get('q')
-        return Profile.objects.filter(
-            Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query)
-        )
+        if query:
+            query_list = query.split()
+            result = Profile.objects.filter(
+                reduce(operator.or_, (Q(user__first_name__icontains=q) for q in query_list)) |
+                reduce(operator.or_, (Q(user__last_name__icontains=q) for q in query_list))
+            )
+            return result
+        else:
+            return Profile.objects.none()
