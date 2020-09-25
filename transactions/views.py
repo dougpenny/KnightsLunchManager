@@ -293,7 +293,7 @@ class TransactionsDateArchiveView(TransactionMixin, DayArchiveView):
 
 
 class TransactionDetailView(TransactionMixin, DetailView):
-    template_name = 'transactions/transaction_detail.html'
+    template_name = 'transactions/admin/transaction_detail.html'
 
 
 class TransactionListView(TransactionMixin, ListView):

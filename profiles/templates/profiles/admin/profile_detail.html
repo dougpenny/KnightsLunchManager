@@ -1,0 +1,108 @@
+{% extends "web/admin/base_admin.html" %}
+
+{% block head-scripts %}
+<script src="https://cdn.jsdelivr.net/combine/npm/vue@2,npm/@desislavsd/vue-select@0.5.0"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@desislavsd/vue-select@0.5.0/dist/vue-select.min.css">
+{% endblock %}
+
+{% block admin-content %}
+{% include 'web/includes/messages.html' %}
+{% load humanize %}
+<div class="mt-8 p-8 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 lg:flex lg:items-center lg:justify-between">
+    <div class="flex-1 min-w-0">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
+            {{ object.name }}
+        </h2>
+        <div class="mt-2 text-base text-gray-600 leading-tight sm:text-lg">
+            {% if object.role == 2 %}
+                {{ object.grade_level|ordinal }} Grade
+                <br/>Homeroom: <a class="text-indigo-700 hover:underline" href="{% url 'profile-detail' object.homeroom_teacher.pk %}">{{ object.homeroom_teacher }}</a>
+            {% else %}
+                Staff
+                <br/>Room: {{ object.room }}
+                <br/>Phone: {{ object.phone }}
+            {% endif %}
+        </div>
+        <div class="mt-6 text-lg leading-5 text-gray-700 sm:text-xl sm:mt-8 sm:mr-6">
+            Current balance:<span class="ml-1 font-extrabold {% if object.current_balance < 0 %}text-red-700{% else %}text-gray-900{% endif %}">${{ object.current_balance }}</span>
+        </div>
+    </div>
+  </div>
+</div>
+
+<div class="p-8">
+{% if transactions %}
+<h3 class="max-w-7xl mx-auto px-4 text-xl tracking-tight text-gray-900 sm:text-2xl sm:px-6 lg:px-8">
+    Transactions
+</h3>
+<div class="mt-2 mx-auto px-4 flex flex-col sm:px-6 lg:px-8">
+    <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <div class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead>
+            <tr>
+                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                Type
+                </th>
+                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                Description
+                </th>
+                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                Amount
+                </th>
+                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                Status
+                </th>
+                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                Submitted
+                </th>
+            </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+            {% for transaction in transactions %}
+                <tr>
+                <td class="px-6 py-4 whitespace-no-wrap text-center border-b border-gray-200">
+                {% if transaction.transaction_type == 'DB' %}
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                    Debit
+                    </span>
+                {% else %}
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                    Credit
+                    </span>
+                {% endif %}
+                </td>
+                <td class="px-6 py-4 text-left border-b border-gray-200 text-sm leading-5 text-gray-900">
+                    {{ transaction.description }}
+                </td>
+                <td class="px-6 py-4 whitespace-no-wrap text-center border-b border-gray-200 text-sm leading-5 text-gray-900">
+                    ${{ transaction.amount }}
+                </td>
+                <td class="px-6 py-4 whitespace-no-wrap text-center border-b border-gray-200">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                    {% if transaction.status == 'Complete' %}bg-green-100 text-green-800
+                    {% elif transaction.status == 'Processing' %}bg-yellow-100 text-yellow-800
+                    {% elif transaction.status == 'Submitted' %}bg-indigo-100 text-indigo-800
+                    {% else %}bg-gray-100 text-gray-800{% endif %}">
+                        {{ transaction.status }}
+                    </span>
+                </td>
+                <td class="px-6 py-4 whitespace-no-wrap text-center border-b border-gray-200 text-sm leading-5 text-gray-900">
+                    {{ transaction.submitted|date }} at {{ transaction.submitted|time }}
+                </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<h3 class="max-w-7xl mx-auto px-4 text-xl tracking-tight text-gray-900 sm:text-2xl sm:px-6 lg:px-8">
+    No transactions
+</h3>
+{% endif %}
+</div>
+
+{% endblock %}

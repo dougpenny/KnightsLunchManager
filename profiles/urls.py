@@ -1,8 +1,9 @@
 from django.urls import include, path
 
-from profiles import views
+from profiles.views import ProfileDetailView, ProfileListView, ProfileSearchResultsView
 
 urlpatterns = [
-    #path('profile-autocomplete/', views.ProfileAutocomplete.as_view(), name='profile-autocomplete'),
-    #path('<int:pk>/', views.DetailView.as_view(), name='detail'),
+    path('', ProfileListView.as_view(), name='profile-list'),
+    path('<int:pk>/', ProfileDetailView.as_view(), name='profile-detail'),
+    path('search/', ProfileSearchResultsView.as_view(), name='profile-search'),
 ]
