@@ -21,7 +21,7 @@ from profiles.models import Profile
 
 from transactions.models import Transaction, MenuLineItem
 from transactions.forms import TransactionForm, TransactionDepositForm
-from transactions.forms import TransactionOrderForm, MenuLineItemFormSet, DepositFormSet
+from transactions.forms import TransactionOrderForm, DepositFormSet
 
 
 logger = logging.getLogger(__file__)
@@ -52,6 +52,64 @@ class DepositMixin:
         transaction.save()
         profile.current_balance = new_balance
         profile.save()
+
+
+class OrderMixin:
+    def create_order(self, order: dict) -> None:
+        profile = User.objects.get(id=order['transactee']).profile
+        new_order = Transaction(
+            submitted=order['submitted'],
+            transactee=profile,
+            transaction_type=Transaction.DEBIT
+        )
+        new_order.save()
+        menu_item = MenuItem.objects.get(id=order['menu_item'])
+        menu_line_item = MenuLineItem.objects.create(menu_item=menu_item, transaction=new_order, quantity=1)
+        new_order.description = menu_item.name
+        new_order.amount = menu_item.cost
+        new_order.save()
+        self.process_order(new_order)
+
+    def process_order(self, order: Transaction):
+        try:
+            transactee = order.transactee
+            order.beginning_balance = transactee.current_balance
+            order.ending_balance = transactee.current_balance - order.amount
+            order.completed = timezone.now()
+            order.save()
+            transactee.current_balance = order.ending_balance
+            transactee.save()
+        except:
+            raise Exception
+
+    def process_daily_orders(self, day: date) -> (bool, str):
+        try:
+            orders = Transaction.objects.filter(
+                transaction_type=Transaction.DEBIT,
+                submitted__date=day,
+                completed__date=None,
+            )
+            if orders:
+                for order in orders:
+                    self.process_order(order)
+                return True, 'Successfully processed {} transactions for {}.'.format(orders.count(), day.strftime('%b %-d, %Y'))
+            else:
+                raise Exception
+        except:
+            logger.info('When processing transactions, no transactions found for: {}'.format(day))
+            return False, 'No transactions found on {} for processing.'.format(day.strftime('%b %-d, %Y'))
+
+    def process_single_order(self, id: int) -> (bool, str):
+        try:
+            order = Transaction.objects.get(id=id)
+            if not order.completed:
+                self.process_order(order)
+                return True, 'Successfully processed transaction #{}.'.format(id)
+            else:
+                raise Exception
+        except:
+            logger.info('When processing a transaction, no transaction found for id: {}'.format(id))
+            return False, 'Transaction #{} was either not found or does not need to be processed.'.format(id)
 
 
 class TransactionMixin:
@@ -109,58 +167,19 @@ class CreateDepositView(DepositMixin, FormView):
         return super().form_valid(form)
 
 
-class CreateOrderView(FormView):
+class CreateOrderView(OrderMixin, FormView):
     form_class = TransactionOrderForm
     template_name = 'transactions/admin/transaction_single_order.html'
-    success_url = '/admin/transactions/'
+    success_url = '/admin/transactions/orders/today/'
 
-    def get(self, request, *args, **kwargs):
-        self.object = None
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        menu_item_form = MenuLineItemFormSet()
-        return self.render_to_response(self.get_context_data(form=form, menu_item_form=menu_item_form))
-
-    def post(self, request, *args, **kwargs):
-        self.object = None
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        menu_item_form = MenuLineItemFormSet(self.request.POST)
-        if (form.is_valid() and menu_item_form.is_valid()):
-            return self.form_valid(form, menu_item_form)
-        else:
-            return self.form_invalid(form, menu_item_form)
-
-    def form_invalid(self, form, menu_item_form):
-        return self.render_to_response(self.get_context_data(form=form,menu_item_form=menu_item_form))
-
-    def form_valid(self, form, menu_item_form):
-        profile = User.objects.get(pk=form.cleaned_data['transactee']).profile
-        new_order = Transaction(
-            beginning_balance=profile.current_balance,
-            completed=timezone.now(),
-            submitted=timezone.now(),
-            transactee=profile,
-            transaction_type=Transaction.DEBIT
-        )
-        new_order.save()
-        description = ''
-        amount = 0
-        for item in menu_item_form.cleaned_data:
-            menu_item = item['menu_item']
-            quantity = item['quantity']
-            if description == '':
-                description = menu_item.name
-            else:
-                description = description + ', {}'.format(menu_item.name)
-            amount = amount + (menu_item.cost * quantity)
-            new_menu_line_item = MenuLineItem.objects.create(menu_item=menu_item, transaction=new_order, quantity=quantity)
-        new_order.amount = amount
-        new_order.description = description
-        new_order.ending_balance = new_order.beginning_balance - amount
-        new_order.save()
-        profile.current_balance = new_order.ending_balance
-        profile.save()
+    def form_valid(self, form):
+        try:
+            self.create_order(form.cleaned_data)
+            profile = Profile.objects.get(user__id=form.cleaned_data['transactee'])
+            messages.success(self.request, 'Successfully created an order for {}.'.format(profile.name()))
+        except Exception as e:
+            logger.error('An error occured creating an order: {}'.format(e))
+            messages.error(self.request, 'An error occured creating the order.')
         return super().form_valid(form)
 
 
@@ -281,6 +300,26 @@ class HomeroomOrdersArchiveView(LoginRequiredMixin, TodayArchiveView):
         )
 
 
+class OrderProcessView(OrderMixin, View):
+    def get(self, request, *args, **kwargs):
+        success = False
+        message = None
+        if ('year' in self.kwargs) and ('month' in self.kwargs) and ('day' in self.kwargs):
+            day = date(self.kwargs['year'], self.kwargs['month'], self.kwargs['day'])
+            success, message = self.process_daily_orders(day)
+        elif 'pk' in self.kwargs:
+            success, message = self.process_single_order(self.kwargs['pk'])
+        if success and message:
+            messages.success(request, message)
+        elif message:
+            messages.warning(request, message)
+        original_url = request.path_info
+        elements = original_url.split('/')
+        elements.remove('process')
+        redirect_url = '/'.join(elements)
+        return redirect(redirect_url)
+
+
 class TransactionCreateView(CreateView):
     model = Transaction
     form_class = TransactionForm
@@ -302,68 +341,6 @@ class TransactionListView(TransactionMixin, ListView):
 
 class TransactionsTodayArchiveView(TransactionMixin, TodayArchiveView):
     template_name = 'transactions/admin/transactions_list.html'
-
-
-class TransactionProcessView(View):
-    def process_transaction(self, order: Transaction):
-        try:
-            transactee = order.transactee
-            order.beginning_balance = transactee.current_balance
-            order.ending_balance = transactee.current_balance - order.amount
-            order.completed = timezone.now()
-            order.save()
-            transactee.current_balance = order.ending_balance
-            transactee.save()
-        except:
-            raise Exception
-
-    def process_transactions_for_day(self, day: date) -> (bool, str):
-        try:
-            orders = Transaction.objects.filter(
-                transaction_type=Transaction.DEBIT,
-                submitted__date=day,
-                completed__date=None,
-            )
-            if orders:
-                for order in orders:
-                    self.process_transaction(order)
-                return True, 'Successfully processed {} transactions for {}.'.format(orders.count(), day.strftime('%b %-d, %Y'))
-            else:
-                raise Exception
-        except:
-            logger.info('When processing transactions, no transactions found for: {}'.format(day))
-            return False, 'No transactions found on {} for processing.'.format(day.strftime('%b %-d, %Y'))
-
-    def process_single_transaction(self, id: int) -> (bool, str):
-        try:
-            print('Transaction lookup: {}'.format(id))
-            order = Transaction.objects.get(id=id)
-            if not order.completed:
-                self.process_transaction(order)
-                return True, 'Successfully processed transaction #{}.'.format(id)
-            else:
-                raise Exception
-        except:
-            logger.info('When processing a transaction, no transaction found for id: {}'.format(id))
-            return False, 'Transaction #{} was either not found or does not need to be processed.'.format(id)
-
-    def get(self, request, *args, **kwargs):
-        success = False
-        message = None
-        if ('year' in self.kwargs) and ('month' in self.kwargs) and ('day' in self.kwargs):
-            day = date(self.kwargs['year'], self.kwargs['month'], self.kwargs['day'])
-            success, message = self.process_transactions_for_day(day)
-        elif 'pk' in self.kwargs:
-            success, message = self.process_single_transaction(self.kwargs['pk'])
-        if success and message:
-            messages.success(request, message)
-        elif message:
-            messages.warning(request, message)
-        original_url = request.path_info
-        elements = original_url.split('/')
-        elements.remove('process')
-        redirect_url = '/'.join(elements)
-        return redirect(redirect_url)
 
 
 class UsersTodayArchiveView(LoginRequiredMixin, TodayArchiveView):

@@ -1,6 +1,6 @@
 from django.urls import path
 
-from transactions.views import BatchDepositView, ExportChecksView, TransactionsDateArchiveView, TransactionDetailView, TransactionListView, CreateDepositView, CreateOrderView, TransactionsTodayArchiveView, TransactionProcessView
+from transactions.views import BatchDepositView, ExportChecksView, TransactionsDateArchiveView, TransactionDetailView, TransactionListView, CreateDepositView, CreateOrderView, TransactionsTodayArchiveView, OrderProcessView
 
 
 urlpatterns = [
@@ -23,6 +23,6 @@ urlpatterns = [
     path('orders/<int:year>/<int:month>/<int:day>/', TransactionsDateArchiveView.as_view(filter='orders', month_format='%m'), name='transaction-date-orders'),
     path('orders/today/', TransactionsTodayArchiveView.as_view(filter='orders'), name='transaction-today-orders'),
     path('order/new/', CreateOrderView.as_view(), name='transaction-order-create'),
-    path('orders/process/<int:year>/<int:month>/<int:day>/', TransactionProcessView.as_view(), name='transaction-date-process'),
-    path('order/process/<int:pk>/', TransactionProcessView.as_view(), name='transaction-single-process'),
+    path('orders/process/<int:year>/<int:month>/<int:day>/', OrderProcessView.as_view(), name='transaction-date-process'),
+    path('order/process/<int:pk>/', OrderProcessView.as_view(), name='transaction-single-process'),
 ]

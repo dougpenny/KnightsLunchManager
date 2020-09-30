@@ -13,6 +13,8 @@ from profiles.models import Profile
 
 
 class ListMenuItem(generics.ListCreateAPIView):
+    search_fields = ['name']
+    filter_backends = [filters.SearchFilter]
     queryset = MenuItem.objects.all()
     serializer_class = MenuItemSerializer
 

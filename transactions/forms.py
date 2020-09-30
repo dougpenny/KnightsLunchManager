@@ -45,15 +45,9 @@ class TransactionOrderForm(forms.Form):
     transactee = forms.CharField(
         widget=forms.HiddenInput()
     )
-
-MenuLineItemFormSet = forms.inlineformset_factory(
-    Transaction,
-    MenuLineItem,
-    can_delete=True,
-    max_num=1,
-    fields=('menu_item', 'quantity'),
-    widgets={
-        'menu_item': forms.Select(attrs={'class': 'border border-gray-400 py-2 px-2 text-xs rounded-sm block w-full transition duration-150 ease-in-out'}),
-        'quantity': forms.NumberInput(attrs={'class': 'border border-gray-400 py-2 px-2 text-xs rounded-sm block w-full transition duration-150 ease-in-out'}),
-    }
-)
+    menu_item = forms.CharField(
+        widget=forms.HiddenInput()
+    )
+    submitted = forms.DateTimeField(
+        widget=forms.DateTimeInput(attrs={'class': 'border border-gray-400 py-2 px-2 text-xs rounded-sm block w-full transition duration-150 ease-in-out'})
+    )

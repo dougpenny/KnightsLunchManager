@@ -22,38 +22,32 @@
                         Student / Staff
                     </label>
                     <div class="mt-1">
-                        <v-select v-model="selected.user" name="user" id="user_selection" as="name:id:id" from="{{ request.scheme }}://{{ request.site }}/api/v1/users/basic/?search=%s"></v-select>
+                        <v-select v-model="selected.user" id="user_selection" as="name:id:id" from="{{ request.scheme }}://{{ request.site }}/api/v1/users/basic/?search=%s"></v-select>
                     </div>
                     {{ form.transactee }}
                 </div>
-                {{ menu_item_form.management_form }}
-                {% for item_form in menu_item_form %}
-                    {{ menu_item_form.non_field_errors }}
-                    <p>{{ item_form.id }}</p>
-                <div class="col-start-1 col-span-5 sm:col-span-4 px-2">
-                    <label for="city" class="block text-sm font-medium leading-5 text-gray-700">
+                <div class="col-start-1 col-span-3 sm:col-span-4 px-2">
+                    <label for="item" class="block text-sm font-medium leading-5 text-gray-700">
                         Menu Item
                     </label>
-                    <div class="mt-1 rounded-sm">
-                        {{ item_form.menu_item }}
+                    <div class="mt-1">
+                        <v-select v-model="selected.menu_item" id="menu_item_selection" as="name:id:id" from="{{ request.scheme }}://{{ request.site }}/api/v1/menu/?search=%s"></v-select>
                     </div>
+                    {{ form.menu_item }}
                 </div>
-
-                <div class="col-span-1 sm:col-span-1 px-2">
-                    <label for="state" class="block text-sm font-medium leading-5 text-gray-700">
-                        Quantity
+                <div class="col-span-2 px-2">
+                    <label for="submitted" class="block text-sm font-medium leading-5 text-gray-700">
+                        Submitted
                     </label>
                     <div class="mt-1 rounded-sm">
-                        {{ item_form.quantity }}
+                        {{ form.submitted }}
                     </div>
                 </div>
-                {% endfor %}
             </div>
-
         <div class="mt-8 border-t border-gray-200 pt-5">
             <div class="flex justify-end">
                 <span class="inline-flex rounded-md shadow-sm">
-                    <a href="{% url 'transaction-today-deposits' %}">
+                    <a href="{% url 'transaction-today-orders' %}">
                     <button type="button" class="py-2 px-4 border border-gray-300 rounded-md text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-50 active:text-gray-800 transition duration-150 ease-in-out">
                         Cancel
                     </button>
@@ -79,6 +73,7 @@ new Vue({
   data: {
     selected: {
         user: '',
+        menu_item: '',
     },
   },
   methods: {
@@ -87,6 +82,7 @@ new Vue({
     },
     handleSubmit() {
         document.getElementById("id_transactee").value = this.selected.user
+        document.getElementById("id_menu_item").value = this.selected.menu_item
     }
   }
 });

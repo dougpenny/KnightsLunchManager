@@ -12,7 +12,6 @@ class MenuItemSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-
     name = serializers.SerializerMethodField()
 
     def get_name(self, obj):
