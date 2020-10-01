@@ -1,8 +1,12 @@
 {% extends "web/admin/base_admin.html" %}
 
 {% block head-scripts %}
-<script src="https://cdn.jsdelivr.net/combine/npm/vue@2,npm/@desislavsd/vue-select@0.5.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon@1/build/global/luxon.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@desislavsd/vue-select@0.5.0/dist/vue-select.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-datetime@1.0.0-beta.14/dist/vue-datetime.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@desislavsd/vue-select@0.5.0/dist/vue-select.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vue-datetime@1.0.0-beta.14/dist/vue-datetime.min.css">
 {% endblock %}
 
 {% block admin-content %}
@@ -31,17 +35,18 @@
                         Menu Item
                     </label>
                     <div class="mt-1">
-                        <v-select v-model="selected.menu_item" id="menu_item_selection" as="name:id:id" from="{{ request.scheme }}://{{ request.site }}/api/v1/menu/?search=%s"></v-select>
+                        <v-select v-model="selected.menu_item" v-on:change="menuSelection" id="menu_item_selection" as="name::id" from="{{ request.scheme }}://{{ request.site }}/api/v1/menu/?search=%s"></v-select>
                     </div>
                     {{ form.menu_item }}
                 </div>
                 <div class="col-span-2 px-2">
-                    <label for="submitted" class="block text-sm font-medium leading-5 text-gray-700">
+                    <label for="submit-time" class="block text-sm font-medium leading-5 text-gray-700">
                         Submitted
                     </label>
                     <div class="mt-1 rounded-sm">
-                        {{ form.submitted }}
+                        <v-datetime v-model="selected.submitted" ref="submitTime" type="datetime" input-id="submit-time" input-class="border border-gray-400 py-2 px-2 text-xs rounded-sm block w-full transition duration-150 ease-in-out" minute-step=5></v-datetime>
                     </div>
+                    {{ form.submitted }}
                 </div>
             </div>
         <div class="mt-8 border-t border-gray-200 pt-5">
@@ -69,20 +74,31 @@
 <script>
 new Vue({
   el: "#app",
-  components: { vSelect: VueSelect.vSelect },
+  components: { vSelect: VueSelect.vSelect, 'v-datetime': VueDatetime.Datetime },
   data: {
     selected: {
         user: '',
         menu_item: '',
+        submitted: '',
     },
   },
   methods: {
-    setSelected(value) {
-        this.selected = value
+    menuSelection(value) {
+        var now = luxon.DateTime.local()
+        var selected_item = this.selected.menu_item.name.toLowerCase()
+        if (selected_item.includes('forgot to order')) {
+            this.$refs.submitTime.datetime = luxon.DateTime.local(now.year, now.month, now.day, 9, 30)
+            this.selected.submitted = luxon.DateTime.local(now.year, now.month, now.day, 9, 30)
+        }
+        else {
+            this.$refs.submitTime.datetime = luxon.DateTime.local(now.year, now.month, now.day, 8)
+            this.selected.submitted = luxon.DateTime.local(now.year, now.month, now.day, 8)
+        }
     },
     handleSubmit() {
         document.getElementById("id_transactee").value = this.selected.user
-        document.getElementById("id_menu_item").value = this.selected.menu_item
+        document.getElementById("id_menu_item").value = this.selected.menu_item.id
+        document.getElementById("id_submitted").value = this.selected.submitted
     }
   }
 });
