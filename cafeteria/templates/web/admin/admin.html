@@ -20,8 +20,8 @@
         </div>
 
         <div class="mt-8">
-          <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="pb-5 border-b border-gray-200 space-y-3 sm:flex sm:items-center sm:justify-between sm:space-x-4 sm:space-y-0">
+          <div class="max-w-6xl pb-8 border-b border-gray-300 mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="pb-5 space-y-3 sm:flex sm:items-center sm:justify-between sm:space-x-4 sm:space-y-0">
               <h2 class="text-lg leading-6 font-medium text-cool-gray-900">
                 Today's Orders
               </h2>
@@ -58,6 +58,72 @@
                   </div>
                 </div>
               {% endfor %}
+            </div>
+          </div>
+        </div>
+        
+        <div class="mt-14">
+          <div class="max-w-6xl pb-8 mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-2" x-max="1">
+
+              <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="bg-red-100 border-b border-gray-200 px-4 py-5 sm:px-6">
+                  <div class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+                    <div class="ml-4 mt-2">
+                      <h3 class="text-lg leading-6 font-medium text-red-700">
+                        Top Debtors
+                      </h3>
+                    </div>
+                    <div class="ml-4 mt-2 flex-shrink-0">
+                      <a href="{% url 'profile-debt-list' %}">
+                        <span class="inline-flex rounded-md shadow-sm">
+                          <button type="button" class="relative inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-red-600 hover:bg-red-500 focus:outline-none focus:shadow-outline-red focus:border-red-700 active:bg-red-700">
+                            View all
+                          </button>
+                        </span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <table class="min-w-full divide-y divide-gray-200">
+                    <tbody class="bg-white divide-y divide-gray-200">
+                    {% for profile in debtors%}
+                      <tr>
+                        <td class="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200">
+                          <a class="text-indigo-700 hover:underline" href="{% url 'profile-detail' profile.pk %}">{{ profile.name }}</a>
+                        </td>
+                        <td class="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200 text-sm leading-5 {% if profile.current_balance < 0 %}text-red-600{% else %}text-gray-900{% endif %}">
+                            ${{ profile.current_balance }}
+                        </td>
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <!--
+              <div class="relative">
+                <dl class="rounded-lg bg-white shadow sm:grid sm:grid-cols-2">
+                  <div class="flex flex-col border-b border-gray-100 p-6 text-center sm:border-0 sm:border-r">
+                    <dt class="order-2 mt-2 text-lg leading-6 font-medium text-gray-500" id="item-1">
+                      Balance
+                    </dt>
+                    <dd class="order-1 text-5xl leading-none font-extrabold text-green-600" aria-describedby="item-1">
+                      $31,987
+                    </dd>
+                  </div>
+                  <div class="flex flex-col border-t border-b border-gray-100 p-6 text-center sm:border-0 sm:border-l sm:border-r">
+                    <dt class="order-2 mt-2 text-lg leading-6 font-medium text-gray-500">
+                      Owed
+                    </dt>
+                    <dd class="order-1 text-5xl leading-none font-extrabold text-red-600">
+                      $-5,983
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+              -->
             </div>
           </div>
         </div>

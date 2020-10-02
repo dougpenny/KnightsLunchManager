@@ -1,6 +1,7 @@
 from functools import reduce
 import operator
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.views.generic import DetailView, ListView
@@ -9,7 +10,23 @@ from profiles.models import Profile
 from transactions.models import Transaction
 
 
-class ProfileDetailView(DetailView):
+class ProfileMixin:
+    filter = None
+    allow_empty = True
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter'] = self.filter
+        return context
+
+    def get_queryset(self):
+        if self.filter == 'debt':
+            return Profile.objects.filter(current_balance__lt=0).order_by('current_balance', 'user__last_name')
+        else:
+            return Profile.objects.all()
+
+
+class ProfileDetailView(LoginRequiredMixin, DetailView):
     model = Profile
     template_name = 'profiles/admin/profile_detail.html'
 
@@ -21,12 +38,12 @@ class ProfileDetailView(DetailView):
         return context
 
 
-class ProfileListView(ListView):
+class ProfileListView(LoginRequiredMixin, ProfileMixin, ListView):
     model = Profile
     template_name = 'profiles/admin/profiles_list.html'
 
 
-class ProfileSearchResultsView(ListView):
+class ProfileSearchResultsView(LoginRequiredMixin, ListView):
     model = Profile
     template_name = 'profiles/admin/profiles_list.html'
 

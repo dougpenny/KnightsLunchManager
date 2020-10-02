@@ -134,6 +134,7 @@ def admin_dashboard(request):
                 order_count[line_item.menu_item.name] = line_item.quantity
     context['order_count'] = order_count
     context['orders'] = orders
+    context['debtors'] = Profile.objects.filter(current_balance__lt=0).order_by('current_balance', 'user__last_name')[:10]
     return render(request, 'web/admin/admin.html', context=context)
 
 def orders_for_homeroom(staff: Profile):
