@@ -20,7 +20,7 @@ from menu.models import MenuItem
 from profiles.models import Profile
 
 from transactions.models import Transaction, MenuLineItem
-from transactions.forms import TransactionForm, TransactionDepositForm
+from transactions.forms import TransactionDepositForm
 from transactions.forms import TransactionOrderForm, DepositFormSet
 
 
@@ -132,7 +132,7 @@ class TransactionMixin:
             return Transaction.objects.all()
 
 
-class BatchDepositView(DepositMixin, FormView):
+class BatchDepositView(LoginRequiredMixin, DepositMixin, FormView):
     form_class = DepositFormSet
     template_name = 'transactions/admin/transaction_batch_deposit.html'
     success_url = '/admin/transactions/deposits/batch'
@@ -151,7 +151,7 @@ class BatchDepositView(DepositMixin, FormView):
         return super().form_valid(form)
 
 
-class CreateDepositView(DepositMixin, FormView):
+class CreateDepositView(LoginRequiredMixin, DepositMixin, FormView):
     form_class = TransactionDepositForm
     template_name = 'transactions/admin/transaction_single_deposit.html'
     profile_id = None
@@ -166,7 +166,7 @@ class CreateDepositView(DepositMixin, FormView):
             logger.error('An error occured processing the deposit: {}'.format(e))
             messages.error(self.request, 'An error occured creating the deposit transaction.')
         return super().form_valid(form)
-    
+
     def get_success_url(self):
         if self.profile_id is not None:
             return reverse_lazy('profile-detail', args=[self.profile_id])
@@ -174,7 +174,7 @@ class CreateDepositView(DepositMixin, FormView):
             return reverse_lazy('transaction-today-deposits')
 
 
-class CreateOrderView(OrderMixin, FormView):
+class CreateOrderView(LoginRequiredMixin, OrderMixin, FormView):
     form_class = TransactionOrderForm
     template_name = 'transactions/admin/transaction_single_order.html'
     profile_id = None
@@ -189,7 +189,7 @@ class CreateOrderView(OrderMixin, FormView):
             logger.error('An error occured creating an order: {}'.format(e))
             messages.error(self.request, 'An error occured creating the order.')
         return super().form_valid(form)
-    
+        
     def get_success_url(self):
         if self.profile_id is not None:
             return reverse_lazy('profile-detail', args=[self.profile_id])
@@ -197,7 +197,7 @@ class CreateOrderView(OrderMixin, FormView):
             return reverse_lazy('transaction-today-orders')
 
 
-class ExportChecksView(View):
+class ExportChecksView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         deposits = Transaction.objects.filter(
                 Q(description__icontains='Check #')
@@ -314,7 +314,7 @@ class HomeroomOrdersArchiveView(LoginRequiredMixin, TodayArchiveView):
         )
 
 
-class OrderProcessView(OrderMixin, View):
+class OrderProcessView(LoginRequiredMixin, OrderMixin, View):
     def get(self, request, *args, **kwargs):
         success = False
         message = None
@@ -334,26 +334,19 @@ class OrderProcessView(OrderMixin, View):
         return redirect(redirect_url)
 
 
-class TransactionCreateView(CreateView):
-    model = Transaction
-    form_class = TransactionForm
-    template_name = 'transactions/admin/transaction_create.html'
-    queryset = Transaction.objects.all()
-
-
-class TransactionsDateArchiveView(TransactionMixin, DayArchiveView):
+class TransactionsDateArchiveView(LoginRequiredMixin, TransactionMixin, DayArchiveView):
     template_name = 'transactions/admin/transactions_list.html'
 
 
-class TransactionDetailView(TransactionMixin, DetailView):
+class TransactionDetailView(LoginRequiredMixin, TransactionMixin, DetailView):
     template_name = 'transactions/admin/transaction_detail.html'
 
 
-class TransactionListView(TransactionMixin, ListView):
+class TransactionListView(LoginRequiredMixin, TransactionMixin, ListView):
     template_name = 'transactions/admin/transactions_list.html'
 
 
-class TransactionsTodayArchiveView(TransactionMixin, TodayArchiveView):
+class TransactionsTodayArchiveView(LoginRequiredMixin, TransactionMixin, TodayArchiveView):
     template_name = 'transactions/admin/transactions_list.html'
 
 

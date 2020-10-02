@@ -1,6 +1,9 @@
 from django.urls import path
 
-from transactions.views import BatchDepositView, ExportChecksView, TransactionsDateArchiveView, TransactionDetailView, TransactionListView, CreateDepositView, CreateOrderView, TransactionsTodayArchiveView, OrderProcessView
+from transactions.views import BatchDepositView, CreateDepositView
+from transactions.views import CreateOrderView, ExportChecksView
+from transactions.views import OrderProcessView, TransactionsDateArchiveView, TransactionDetailView
+from transactions.views import TransactionListView, TransactionsTodayArchiveView
 
 
 urlpatterns = [
