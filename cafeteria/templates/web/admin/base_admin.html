@@ -12,7 +12,7 @@
 {% include 'web/admin/mobile_menu.html' %}
 {% include 'web/admin/menu.html' %}
    
-    <div x-init="$el.focus()" class="flex-1 overflow-auto focus:outline-none" tabindex="0">
+    <div x-init="$el.focus()" class="flex-1 overflow-y-auto overflow-x-hidden focus:outline-none" tabindex="0">
       <div class="relative z-10 flex-shrink-0 flex h-16 bg-white border-b border-gray-200 lg:border-none">
         <button @click.stop="sidebarOpen = true" class="px-4 border-r border-cool-gray-200 text-cool-gray-400 focus:outline-none focus:bg-cool-gray-100 focus:text-cool-gray-600 lg:hidden" aria-label="Open sidebar">
           <svg class="h-6 w-6 transition ease-in-out duration-150" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -36,7 +36,7 @@
           </div>
         </div>
       </div>
-      <main class="flex-1 relative pb-8 z-0 overflow-y-auto">
+      <main class="flex-1 relative pb-8 z-0 overflow-y-visible">
       {% include 'web/includes/messages.html' %}
 {% block admin-content %}
 {% endblock %}

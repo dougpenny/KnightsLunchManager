@@ -1,12 +1,8 @@
 {% extends "web/admin/base_admin.html" %}
 
 {% block head-scripts %}
-<script src="https://cdn.jsdelivr.net/npm/luxon@1/build/global/luxon.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@desislavsd/vue-select@0.5.0/dist/vue-select.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/vue-datetime@1.0.0-beta.14/dist/vue-datetime.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@desislavsd/vue-select@0.5.0/dist/vue-select.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vue-datetime@1.0.0-beta.14/dist/vue-datetime.min.css">
+<script src="https://cdn.jsdelivr.net/combine/npm/luxon@1,npm/vue@2,npm/@desislavsd/vue-select@0.5.0,npm/vue-datetime@1.0.0-beta.14"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/@desislavsd/vue-select@0.5.0/dist/vue-select.min.css,npm/vue-datetime@1.0.0-beta.14/dist/vue-datetime.min.css">
 {% endblock %}
 
 {% block admin-content %}
@@ -87,13 +83,13 @@ new Vue({
         var now = luxon.DateTime.local()
         var selected_item = this.selected.menu_item.name.toLowerCase()
         if (selected_item.includes('forgot to order')) {
-            this.$refs.submitTime.datetime = luxon.DateTime.local(now.year, now.month, now.day, 9, 30)
-            this.selected.submitted = luxon.DateTime.local(now.year, now.month, now.day, 9, 30)
+            var submitted = luxon.DateTime.local(now.year, now.month, now.day, 9, 30)
         }
         else {
-            this.$refs.submitTime.datetime = luxon.DateTime.local(now.year, now.month, now.day, 8)
-            this.selected.submitted = luxon.DateTime.local(now.year, now.month, now.day, 8)
+            var submitted = luxon.DateTime.local(now.year, now.month, now.day, 8)
         }
+        this.$refs.submitTime.datetime = submitted
+        this.selected.submitted = submitted
     },
     handleSubmit() {
         document.getElementById("id_transactee").value = this.selected.user

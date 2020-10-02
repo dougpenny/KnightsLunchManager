@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import FileResponse, HttpResponse
 from django.shortcuts import redirect
-from django.urls import reverse
+from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import View
 from django.views.generic import CreateView, ListView, DetailView, FormView
@@ -154,33 +154,47 @@ class BatchDepositView(DepositMixin, FormView):
 class CreateDepositView(DepositMixin, FormView):
     form_class = TransactionDepositForm
     template_name = 'transactions/admin/transaction_single_deposit.html'
-    success_url = '/admin/transactions/deposits/today'
+    profile_id = None
 
     def form_valid(self, form):
         try:
             self.create_deposit(form.cleaned_data)
             profile = Profile.objects.get(user__id=form.cleaned_data['transactee'])
+            self.profile_id = profile.pk
             messages.success(self.request, 'Successfully processed deposit for {}.'.format(profile.name()))
         except Exception as e:
             logger.error('An error occured processing the deposit: {}'.format(e))
             messages.error(self.request, 'An error occured creating the deposit transaction.')
         return super().form_valid(form)
+    
+    def get_success_url(self):
+        if self.profile_id is not None:
+            return reverse_lazy('profile-detail', args=[self.profile_id])
+        else:
+            return reverse_lazy('transaction-today-deposits')
 
 
 class CreateOrderView(OrderMixin, FormView):
     form_class = TransactionOrderForm
     template_name = 'transactions/admin/transaction_single_order.html'
-    success_url = '/admin/transactions/orders/today/'
+    profile_id = None
 
     def form_valid(self, form):
         try:
             self.create_order(form.cleaned_data)
             profile = Profile.objects.get(user__id=form.cleaned_data['transactee'])
+            self.profile_id = profile.pk
             messages.success(self.request, 'Successfully created an order for {}.'.format(profile.name()))
         except Exception as e:
             logger.error('An error occured creating an order: {}'.format(e))
             messages.error(self.request, 'An error occured creating the order.')
         return super().form_valid(form)
+    
+    def get_success_url(self):
+        if self.profile_id is not None:
+            return reverse_lazy('profile-detail', args=[self.profile_id])
+        else:
+            return reverse_lazy('transaction-today-orders')
 
 
 class ExportChecksView(View):
