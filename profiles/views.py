@@ -15,7 +15,9 @@ class ProfileDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['transactions'] = Transaction.objects.filter(transactee=kwargs['object']).order_by('-submitted')
+        profile = kwargs['object']
+        context['transactions'] = Transaction.objects.filter(transactee=profile).order_by('-submitted')        
+        context['students'] = profile.students.all()
         return context
 
 

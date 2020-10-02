@@ -105,4 +105,48 @@
 {% endif %}
 </div>
 
+<div class="p-8">
+{% if students %}
+<h3 class="max-w-7xl mx-auto px-4 text-xl tracking-tight text-gray-900 sm:text-2xl sm:px-6 lg:px-8">
+    Homeroom Students
+</h3>
+<div class="mt-2 mx-auto px-4 flex flex-col sm:px-6 lg:px-8">
+    <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <div class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead>
+            <tr>
+                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                Name
+                </th>
+                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                Grade
+                </th>
+                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                Current Balance
+                </th>
+            </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+            {% for student in students %}
+                <tr>
+                <td class="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200">
+                  <a class="text-indigo-700 hover:underline" href="{% url 'profile-detail' student.pk %}">{{ student.name }}</a>
+                </td>
+                <td class="px-6 py-4 text-left border-b border-gray-200 text-sm leading-5 text-gray-900">
+                    {{ student.grade_level }}
+                </td>
+                <td class="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200 text-sm leading-5 {% if profile.current_balance < 0 %}text-red-600{% else %}text-gray-900{% endif %}">
+                    ${{ student.current_balance }}
+                </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+</div>
+
 {% endblock %}

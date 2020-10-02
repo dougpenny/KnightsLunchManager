@@ -1,5 +1,6 @@
 {% extends "web/user/base_user.html" %}
 {% block user-content %}
+{% include 'web/includes/messages.html' %}
   <div class="mt-4 p-8 bg-white">
     <div class="max-w-screen-lg mx-auto mb-24 px-4 sm:px-6 lg:px-8">
       <a href="{% url 'home' %}" class="inline-flex items-center text-indigo-700">
@@ -20,7 +21,6 @@
           Homeroom Orders for Today
         </h3>
         <div class="mt-8 flex flex-col">
-          {% include 'web/includes/messages.html' %}
           {% if object_list %}
             <div x-data="confirmAction()" class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
               <div class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
