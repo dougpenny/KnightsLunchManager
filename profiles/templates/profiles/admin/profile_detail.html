@@ -136,7 +136,7 @@
                 <td class="px-6 py-4 text-left border-b border-gray-200 text-sm leading-5 text-gray-900">
                     {{ student.grade_level }}
                 </td>
-                <td class="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200 text-sm leading-5 {% if profile.current_balance < 0 %}text-red-600{% else %}text-gray-900{% endif %}">
+                <td class="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200 text-sm leading-5 {% if student.current_balance < 0 %}text-red-600{% else %}text-gray-900{% endif %}">
                     ${{ student.current_balance }}
                 </td>
                 </tr>
