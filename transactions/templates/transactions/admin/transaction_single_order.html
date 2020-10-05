@@ -40,7 +40,7 @@
                         Submitted
                     </label>
                     <div class="mt-1 rounded-sm">
-                        <v-datetime v-model="selected.submitted" ref="submitTime" type="datetime" input-id="submit-time" input-class="border border-gray-400 py-2 px-2 text-xs rounded-sm block w-full transition duration-150 ease-in-out" minute-step=5></v-datetime>
+                        <v-datetime v-model="selected.submitted" ref="submitTime" type="datetime" minute-step="5" use12-hour="true" week-start="7" input-id="submit-time" input-class="border border-gray-400 py-2 px-2 text-xs rounded-sm block w-full transition duration-150 ease-in-out"></v-datetime>
                     </div>
                     {{ form.submitted }}
                 </div>
