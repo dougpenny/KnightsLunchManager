@@ -7,9 +7,9 @@
 
 {% block admin-content %}
 <h3 class="ml-8 mt-12 text-2xl leading-6 font-medium text-gray-700">
-    {% if filter == "deposits" %}
+    {% if view.filter == "deposits" %}
         Deposit Details
-    {% elif filter == "orders" %}
+    {% elif view.filter == "orders" %}
         Order Details
     {% else %}
         Transaction Details

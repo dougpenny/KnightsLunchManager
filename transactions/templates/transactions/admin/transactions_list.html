@@ -2,9 +2,9 @@
 
 {% block admin-content %}
 <h3 class="ml-8 mt-12 text-2xl leading-6 font-medium text-gray-700">
-  {% if filter == "deposits" %}
+  {% if view.filter == "deposits" %}
     Deposits
-  {% elif filter == "orders" %}
+  {% elif view.filter == "orders" %}
     Orders
   {% else %}
     Transactions
@@ -15,9 +15,9 @@
 <span class="relative z-0 inline-flex shadow-sm rounded-md">
 
 {% if previous_day %}
-  {% if filter == "deposits" %}
+  {% if view.filter == "deposits" %}
     <a href="{% url 'transaction-date-deposits' previous_day.year previous_day.month previous_day.day %}">
-  {% elif filter == "orders" %}
+  {% elif view.filter == "orders" %}
     <a href="{% url 'transaction-date-orders' previous_day.year previous_day.month previous_day.day %}">
   {% else %}
     <a href="{% url 'transaction-date-list' previous_day.year previous_day.month previous_day.day %}">
@@ -37,7 +37,7 @@
   {% else %}
   <span class="-ml-px relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700">
   {% endif %}
-    {% if today.date == day %}
+    {% if view.today.date == day %}
       Today
     {% else %}
       {{ day|date:'l, M jS' }}
@@ -45,9 +45,9 @@
   </span>
 {% endif %}
 {% if next_day %}
-  {% if filter == "deposits" %}
+  {% if view.filter == "deposits" %}
     <a href="{% url 'transaction-date-deposits' next_day.year next_day.month next_day.day %}">
-  {% elif filter == "orders" %}
+  {% elif view.filter == "orders" %}
     <a href="{% url 'transaction-date-orders' next_day.year next_day.month next_day.day %}">
   {% else %}
     <a href="{% url 'transaction-date-list' next_day.year next_day.month next_day.day %}">
@@ -70,7 +70,32 @@
                   <thead>
                     <tr>
                       <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                        Name
+                        <a href="?order_by=transactee&sort={{ view.sort_order }}">
+                          <span class="inline-flex items-center">
+                            <span>Name</span>
+                            {% if 'transactee' in view.sorting %}
+                              {% if view.sort_order == 'ASC' %}
+                              <svg xmlns="http://www.w3.org/2000/svg" class="pl-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <line x1="4" y1="6" x2="11" y2="6" />
+                                <line x1="4" y1="12" x2="11" y2="12" />
+                                <line x1="4" y1="18" x2="13" y2="18" />
+                                <polyline points="15 9 18 6 21 9" />
+                                <line x1="18" y1="6" x2="18" y2="18" />
+                              </svg>
+                              {% else %}
+                              <svg xmlns="http://www.w3.org/2000/svg" class="pl-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <line x1="4" y1="6" x2="13" y2="6" />
+                                <line x1="4" y1="12" x2="11" y2="12" />
+                                <line x1="4" y1="18" x2="11" y2="18" />
+                                <polyline points="15 15 18 18 21 15" />
+                                <line x1="18" y1="6" x2="18" y2="18" />
+                              </svg>
+                              {% endif %}
+                            {% endif %}
+                          <span>
+                        </a>
                       </th>
                       <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                         Grade
@@ -85,7 +110,32 @@
                         Status
                       </th>
                       <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                        Submitted
+                        <a href="?order_by=submitted&sort={{ view.sort_order }}">
+                          <span class="inline-flex items-center">
+                            <span>Submitted</span>
+                            {% if 'submitted' in view.sorting %}
+                              {% if view.sort_order == 'ASC' %}
+                              <svg xmlns="http://www.w3.org/2000/svg" class="pl-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <line x1="4" y1="6" x2="11" y2="6" />
+                                <line x1="4" y1="12" x2="11" y2="12" />
+                                <line x1="4" y1="18" x2="13" y2="18" />
+                                <polyline points="15 9 18 6 21 9" />
+                                <line x1="18" y1="6" x2="18" y2="18" />
+                              </svg>
+                              {% else %}
+                              <svg xmlns="http://www.w3.org/2000/svg" class="pl-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <line x1="4" y1="6" x2="13" y2="6" />
+                                <line x1="4" y1="12" x2="11" y2="12" />
+                                <line x1="4" y1="18" x2="11" y2="18" />
+                                <polyline points="15 15 18 18 21 15" />
+                                <line x1="18" y1="6" x2="18" y2="18" />
+                              </svg>
+                              {% endif %}
+                            {% endif %}
+                          <span>
+                        </a>
                       </th>
                       <th class="px-6 py-3 border-b border-gray-200 bg-gray-50">
                       &nbsp;
@@ -125,7 +175,7 @@
                         </td>
                         <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
                             <div class="mx-auto flex-shrink-0 flex items-center justify-center h-20 w-20 sm:mx-0 sm:h-10 sm:w-10">
-                            <!--
+                            
                             <button @click="open({{ transaction.id }}, '{{ transaction.transactee.name|addslashes }}')">
                               <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-600" viewBox="-8 -8 40 40" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z"/>
@@ -136,7 +186,7 @@
                                 <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
                               </svg>
                             </button>
-
+                            <!--
                             <a href="{% url 'transaction-deposit-detail' transaction.pk %}">
                             <button>
                               <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-600 mx-4" viewBox="-8 -8 40 40" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -156,7 +206,7 @@
                 </table>
               </div>
 
-              <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center" style="background-color: rgba(0,0,0,.75);" x-show.transition.opacity.duration.300ms="isOpen()">
+              <div class="absolute top-0 left-0 w-full h-screen flex items-center justify-center" style="background-color: rgba(0,0,0,.75);" x-show.transition.opacity.duration.300ms="isOpen()">
               <div class="text-left bg-white h-auto p-4 md:max-w-xl md:p-6 lg:p-8 shadow-xl rounded-lg mx-2 md:mx-0 sm:max-w-lg sm:w-full" @click.away="cancel()">
                 <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                   <div class="sm:flex sm:items-start">
@@ -198,7 +248,7 @@
             <div class="mx-8 mt-12 flex items-center justify-between">
             <span class="inline-flex">
 </span>
-{% if filter == "deposits" %}
+{% if view.filter == "deposits" %}
     <div class="mt-8 flex flex-shrink-0 sm:mt-0">
       <div class="inline-flex rounded-md shadow">
         <a href="{% if day %}{% url 'transaction-date-export-checks' day.year day.month day.day %}{% else %}{% url 'transaction-export-checks' %}{% endif %}">
@@ -215,7 +265,7 @@
         </a>
       </div>
     </div>
-  {% elif filter == "orders" and day %}
+  {% elif view.filter == "orders" and day %}
     <div class="mt-8 flex flex-shrink-0 sm:mt-0">
       <div class="inline-flex rounded-md shadow">
         <a href="{% url 'transaction-date-process' day.year day.month day.day %}">
@@ -236,12 +286,12 @@
 
           {% else %}
           <h3 class="w-full text-center mt-14 text-lg font-medium text-gray-700 sm:text-3xl">
-          {% if filter == "deposits" %}
-              There are no deposits for {% if today.date == day %}today{% else %}{{ day|date:'l, M jS' }}{% endif %}.
-          {% elif filter == "orders" %}
-              There are no orders for {% if today.date == day %}today{% else %}{{ day|date:'l, M jS' }}{% endif %}.
+          {% if view.filter == "deposits" %}
+              There are no deposits for {% if view.today.date == day %}today{% else %}{{ day|date:'l, M jS' }}{% endif %}.
+          {% elif view.filter == "orders" %}
+              There are no orders for {% if view.today.date == day %}today{% else %}{{ day|date:'l, M jS' }}{% endif %}.
           {% else %}
-              There are no transactions for {% if today.date == day %}today{% else %}{{ day|date:'l, M jS' }}{% endif %}.
+              There are no transactions for {% if view.today.date == day %}today{% else %}{{ day|date:'l, M jS' }}{% endif %}.
           {% endif %}
           </h3>
           {% endif %}

@@ -1,5 +1,6 @@
 import io
 import logging
+import operator
 import xlsxwriter
 
 from django.contrib import messages
@@ -114,22 +115,29 @@ class OrderMixin:
 
 class TransactionMixin:
     filter = None
+    sort_order = 'ASC'
+    sorting= 'submitted'
+    today = timezone.now
+
     allow_empty = True
     date_field = "submitted"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['filter'] = self.filter
-        context['today'] = timezone.now
-        return context
-
     def get_queryset(self):
+        queryset = None
         if self.filter == 'deposits':
-            return Transaction.objects.filter(transaction_type=Transaction.CREDIT)
+            queryset = Transaction.objects.filter(transaction_type=Transaction.CREDIT)
         elif self.filter == 'orders':
-            return Transaction.objects.filter(transaction_type=Transaction.DEBIT)
+            queryset = Transaction.objects.filter(transaction_type=Transaction.DEBIT)
         else:
-            return Transaction.objects.all()
+            queryset = Transaction.objects.all()
+        self.sort_order = self.request.GET.get('sort') or 'ASC'
+        self.sorting = self.request.GET.get('order_by') or 'submitted'
+        if self.sort_order == 'DES':
+            self.sorting = '-{}'.format(self.sorting)
+            self.sort_order = 'ASC'
+        else:
+            self.sort_order = 'DES'
+        return queryset.order_by(self.sorting)
 
 
 class BatchDepositView(LoginRequiredMixin, DepositMixin, FormView):
