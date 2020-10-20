@@ -50,6 +50,8 @@ class DepositMixin:
             transaction_type=Transaction.CREDIT,
             transactee=profile,
         )
+        if deposit['submitted']:
+            transaction.submitted = deposit['submitted']
         transaction.save()
         profile.current_balance = new_balance
         profile.save()
