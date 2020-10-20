@@ -33,7 +33,7 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         profile = kwargs['object']
-        context['transactions'] = Transaction.objects.filter(transactee=profile).order_by('-submitted')        
+        context['transactions'] = Transaction.objects.filter(transactee=profile).order_by('-submitted')
         context['students'] = profile.students.all()
         return context
 

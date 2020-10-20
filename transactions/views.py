@@ -115,10 +115,8 @@ class OrderMixin:
 
 class TransactionMixin:
     filter = None
-    sort_order = 'ASC'
-    sorting= 'submitted'
+    ascending = True
     today = timezone.now
-
     allow_empty = True
     date_field = "submitted"
 
@@ -130,14 +128,15 @@ class TransactionMixin:
             queryset = Transaction.objects.filter(transaction_type=Transaction.DEBIT)
         else:
             queryset = Transaction.objects.all()
-        self.sort_order = self.request.GET.get('sort') or 'ASC'
-        self.sorting = self.request.GET.get('order_by') or 'submitted'
-        if self.sort_order == 'DES':
-            self.sorting = '-{}'.format(self.sorting)
-            self.sort_order = 'ASC'
-        else:
-            self.sort_order = 'DES'
-        return queryset.order_by(self.sorting)
+        sort_order = self.request.GET.get('sort') or 'ASC'
+        self.ascending = sort_order == 'ASC'
+        sorting = self.request.GET.get('order_by') or 'submitted'
+        if sorting == 'grade':
+            sorting = 'transactee__grade_level'
+        if not self.ascending:
+            sorting = '-' + sorting
+        self.ascending = not self.ascending
+        return queryset.order_by(sorting)
 
 
 class BatchDepositView(LoginRequiredMixin, DepositMixin, FormView):
@@ -385,13 +384,14 @@ class UsersTransactionsArchiveView(LoginRequiredMixin, ListView):
     allow_empty = True
     allow_future = False
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['today'] = timezone.now
-        if self.request.user.profile.role == Profile.STAFF:
-            if self.request.user.profile.students.all():
-                context['homeroom_teacher'] = True
-        return context
+    ascending = True
 
     def get_queryset(self):
-        return Transaction.objects.filter(transactee=self.request.user.profile)
+        queryset = Transaction.objects.filter(transactee=self.request.user.profile)
+        sort_order = self.request.GET.get('sort') or 'ASC'
+        self.ascending = sort_order == 'ASC'
+        sorting = self.request.GET.get('order_by') or 'submitted'
+        if not self.ascending:
+            sorting = '-' + sorting
+        self.ascending = not self.ascending
+        return queryset.order_by(sorting)
