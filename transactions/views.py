@@ -206,6 +206,18 @@ class CreateOrderView(LoginRequiredMixin, OrderMixin, FormView):
             return reverse_lazy('transaction-today-orders')
 
 
+class DeleteTransactionView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        transaction = Transaction.objects.get(id=request.POST.get('itemID'))
+        try:
+            transaction.delete()
+            messages.success(self.request, 'The transaction was successfully deleted.')
+        except Exception as e:
+            logger.exception('An error occured when deleting a transaction: {}'.format(e))
+            messages.error(self.request, 'There was a problem deleting the transaction')
+        return redirect(request.POST.get('path'))
+
+
 class ExportChecksView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         deposits = Transaction.objects.filter(

@@ -1,7 +1,7 @@
 from django.urls import path
 
 from transactions.views import BatchDepositView, CreateDepositView
-from transactions.views import CreateOrderView, ExportChecksView
+from transactions.views import CreateOrderView, DeleteTransactionView, ExportChecksView
 from transactions.views import OrderProcessView, TransactionsDateArchiveView, TransactionDetailView
 from transactions.views import TransactionListView, TransactionsTodayArchiveView
 
@@ -11,6 +11,8 @@ urlpatterns = [
     path('<int:pk>/', TransactionDetailView.as_view(), name='transaction-detail'),
     path('<int:year>/<int:month>/<int:day>/', TransactionsDateArchiveView.as_view(month_format='%m'), name='transaction-date-list'),
     path('today/', TransactionsTodayArchiveView.as_view(), name='transaction-today-list'),
+
+    path('delete/', DeleteTransactionView.as_view(), name='admin-delete'),
 
     path('deposits/', TransactionListView.as_view(filter='deposits'), name='transaction-deposits'),
     path('deposit/<int:pk>/', TransactionDetailView.as_view(filter='deposits'), name='transaction-deposit-detail'),
