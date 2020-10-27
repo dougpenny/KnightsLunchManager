@@ -5,4 +5,4 @@ class TransactionsConfig(AppConfig):
     name = 'transactions'
 
     def ready(self):
-        import transactions.signals # noqa
+        import transactions.signals  # noqa

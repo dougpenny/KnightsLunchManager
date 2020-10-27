@@ -1,89 +1,127 @@
-{% extends "web/user/base_user.html" %}
-{% block user-content %}
-{% include 'web/includes/messages.html' %}
-  <div class="mt-4 p-8 bg-white">
-    <div class="max-w-screen-lg mx-auto mb-24 px-4 sm:px-6 lg:px-8">
-      <a href="{% url 'home' %}" class="inline-flex items-center text-indigo-700">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <path stroke="none" d="M0 0h24v24H0z"/>
-          <polyline points="15 6 9 12 15 18" />
-        </svg>
-        <p class="text-base leading-6 font-semibold tracking-wide uppercase">
-          Back
-        </p>
-      </a>
-      
-      <div class="lg:text-center">
-        <p class="text-base leading-6 text-indigo-700 font-semibold tracking-wide uppercase">
-          {{ today|date:"l, F jS" }}
-        </p>
-        <h3 class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl sm:leading-10">
-          Homeroom Orders for Today
-        </h3>
-        <div class="mt-8 flex flex-col">
-          {% if object_list %}
-            <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-              <div class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
-                <table class="min-w-full divide-y divide-gray-200">
-                  <thead>
-                    <tr>
-                      <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                        Name
-                      </th>
-                      <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                        Description
-                      </th>
-                      <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                        Amount
-                      </th>
-                      <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                        Submitted
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody class="bg-white divide-y divide-gray-200">
-                    {% for transaction in object_list %}
-                      <tr>
-                        <td class="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200">
-                          {{ transaction.transactee }}
-                        </td>
-                        <td class="px-6 py-4 text-left border-b border-gray-200 text-sm leading-5 text-gray-900">
-                          {{ transaction.description }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-no-wrap text-center border-b border-gray-200 text-sm leading-5 text-gray-900">
-                          ${{ transaction.amount }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-no-wrap text-center border-b border-gray-200">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                            {% if transaction.status == 'Complete' %}bg-green-100 text-green-800
-                            {% elif transaction.status == 'Processing' %}bg-yellow-100 text-yellow-800
-                            {% elif transaction.status == 'Submitted' %}bg-indigo-100 text-indigo-800
-                            {% else %}bg-gray-100 text-gray-800{% endif %}">
-                              {{ transaction.status }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-no-wrap text-center border-b border-gray-200 text-sm leading-5 text-gray-900">
-                          {{ transaction.submitted|date }} at {{ transaction.submitted|time }}
-                        </td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          {% else %}
-            <h3 class="mt-2 text-l leading-8 font-extrabold tracking-tight text-gray-900 sm:text-xl sm:leading-10">
-              No orders have been submitted by your students today.
-            </h3>
-          {% endif %}
-            <p class="mt-8 text-base text-gray-600 text-sm">
-            Refresh the page to check for new orders.
-            </p>
+{% extends "web/user/base_user.html" %} {% block user-content %} {% include
+'web/includes/messages.html' %}
+<div class="mt-4 p-8 bg-white">
+  <div class="max-w-screen-lg mx-auto mb-24 px-4 sm:px-6 lg:px-8">
+    <a href="{% url 'home' %}" class="inline-flex items-center text-indigo-700">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        stroke-width="2"
+        stroke="currentColor"
+        fill="none"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path stroke="none" d="M0 0h24v24H0z" />
+        <polyline points="15 6 9 12 15 18" />
+      </svg>
+      <p class="text-base leading-6 font-semibold tracking-wide uppercase">
+        Back
+      </p>
+    </a>
+
+    <div class="lg:text-center">
+      <p
+        class="text-base leading-6 text-indigo-700 font-semibold tracking-wide uppercase"
+      >
+        {{ today|date:"l, F jS" }}
+      </p>
+      <h3
+        class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl sm:leading-10"
+      >
+        Homeroom Orders for Today
+      </h3>
+      <div class="mt-8 flex flex-col">
+        {% if object_list %}
+        <div
+          class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8"
+        >
+          <div
+            class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200"
+          >
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th
+                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Name
+                  </th>
+                  <th
+                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Description
+                  </th>
+                  <th
+                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Amount
+                  </th>
+                  <th
+                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Status
+                  </th>
+                  <th
+                    class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Submitted
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                {% for transaction in object_list %}
+                <tr>
+                  <td
+                    class="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200"
+                  >
+                    {{ transaction.transactee }}
+                  </td>
+                  <td
+                    class="px-6 py-4 text-left border-b border-gray-200 text-sm leading-5 text-gray-900"
+                  >
+                    {{ transaction.description }}
+                  </td>
+                  <td
+                    class="px-6 py-4 whitespace-no-wrap text-center border-b border-gray-200 text-sm leading-5 text-gray-900"
+                  >
+                    ${{ transaction.amount }}
+                  </td>
+                  <td
+                    class="px-6 py-4 whitespace-no-wrap text-center border-b border-gray-200"
+                  >
+                    <span
+                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {% if transaction.status == 'Complete' %}bg-green-100 text-green-800 {% elif transaction.status == 'Processing' %}bg-yellow-100 text-yellow-800 {% elif transaction.status == 'Submitted' %}bg-indigo-100 text-indigo-800 {% else %}bg-gray-100 text-gray-800{% endif %}"
+                    >
+                      {{ transaction.status }}
+                    </span>
+                  </td>
+                  <td
+                    class="px-6 py-4 whitespace-no-wrap text-center border-b border-gray-200 text-sm leading-5 text-gray-900"
+                  >
+                    {{ transaction.submitted|date }} at {{
+                    transaction.submitted|time }}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
         </div>
+        {% else %}
+        <h3
+          class="mt-2 text-l leading-8 font-extrabold tracking-tight text-gray-900 sm:text-xl sm:leading-10"
+        >
+          No orders have been submitted by your students today.
+        </h3>
+        {% endif %}
+        <p class="mt-8 text-base text-gray-600 text-sm">
+          Refresh the page to check for new orders.
+        </p>
       </div>
     </div>
   </div>
+</div>
 {% endblock %}

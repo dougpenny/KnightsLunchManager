@@ -2,7 +2,6 @@ from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 
 from transactions.models import Transaction
-#from profiles.models import Profile
 
 
 @receiver(pre_delete, sender=Transaction)

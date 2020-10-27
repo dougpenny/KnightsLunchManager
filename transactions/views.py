@@ -67,7 +67,8 @@ class OrderMixin:
         )
         new_order.save()
         menu_item = MenuItem.objects.get(id=order['menu_item'])
-        menu_line_item = MenuLineItem.objects.create(menu_item=menu_item, transaction=new_order, quantity=1)
+        menu_line_item = MenuLineItem.objects.create(
+            menu_item=menu_item, transaction=new_order, quantity=1)
         new_order.description = menu_item.name
         new_order.amount = menu_item.cost
         new_order.save()
@@ -99,7 +100,8 @@ class OrderMixin:
             else:
                 raise Exception
         except:
-            logger.info('When processing transactions, no transactions found for: {}'.format(day))
+            logger.info(
+                'When processing transactions, no transactions found for: {}'.format(day))
             return False, 'No transactions found on {} for processing.'.format(day.strftime('%b %-d, %Y'))
 
     def process_single_order(self, id: int) -> (bool, str):
@@ -111,7 +113,8 @@ class OrderMixin:
             else:
                 raise Exception
         except:
-            logger.info('When processing a transaction, no transaction found for id: {}'.format(id))
+            logger.info(
+                'When processing a transaction, no transaction found for id: {}'.format(id))
             return False, 'Transaction #{} was either not found or does not need to be processed.'.format(id)
 
 
@@ -125,9 +128,11 @@ class TransactionMixin:
     def get_queryset(self):
         queryset = None
         if self.filter == 'deposits':
-            queryset = Transaction.objects.filter(transaction_type=Transaction.CREDIT)
+            queryset = Transaction.objects.filter(
+                transaction_type=Transaction.CREDIT)
         elif self.filter == 'orders':
-            queryset = Transaction.objects.filter(transaction_type=Transaction.DEBIT)
+            queryset = Transaction.objects.filter(
+                transaction_type=Transaction.DEBIT)
         else:
             queryset = Transaction.objects.all()
         sort_order = self.request.GET.get('sort') or 'ASC'
@@ -153,10 +158,13 @@ class BatchDepositView(LoginRequiredMixin, DepositMixin, FormView):
                 if deposit:
                     self.create_deposit(deposit)
                     count = count + 1
-            messages.success(self.request, 'Successfully processed {} deposits.'.format(count))
+            messages.success(
+                self.request, 'Successfully processed {} deposits.'.format(count))
         except Exception as e:
-            logger.error('An error occured processing a batch deposit: {}'.format(e))
-            messages.error(self.request, 'An error occured creating the deposit transactions.')
+            logger.error(
+                'An error occured processing a batch deposit: {}'.format(e))
+            messages.error(
+                self.request, 'An error occured creating the deposit transactions.')
         return super().form_valid(form)
 
 
@@ -168,12 +176,16 @@ class CreateDepositView(LoginRequiredMixin, DepositMixin, FormView):
     def form_valid(self, form):
         try:
             self.create_deposit(form.cleaned_data)
-            profile = Profile.objects.get(user__id=form.cleaned_data['transactee'])
+            profile = Profile.objects.get(
+                user__id=form.cleaned_data['transactee'])
             self.profile_id = profile.pk
-            messages.success(self.request, 'Successfully processed deposit for {}.'.format(profile.name()))
+            messages.success(
+                self.request, 'Successfully processed deposit for {}.'.format(profile.name()))
         except Exception as e:
-            logger.error('An error occured processing the deposit: {}'.format(e))
-            messages.error(self.request, 'An error occured creating the deposit transaction.')
+            logger.error(
+                'An error occured processing the deposit: {}'.format(e))
+            messages.error(
+                self.request, 'An error occured creating the deposit transaction.')
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -191,14 +203,17 @@ class CreateOrderView(LoginRequiredMixin, OrderMixin, FormView):
     def form_valid(self, form):
         try:
             self.create_order(form.cleaned_data)
-            profile = Profile.objects.get(user__id=form.cleaned_data['transactee'])
+            profile = Profile.objects.get(
+                user__id=form.cleaned_data['transactee'])
             self.profile_id = profile.pk
-            messages.success(self.request, 'Successfully created an order for {}.'.format(profile.name()))
+            messages.success(
+                self.request, 'Successfully created an order for {}.'.format(profile.name()))
         except Exception as e:
             logger.error('An error occured creating an order: {}'.format(e))
-            messages.error(self.request, 'An error occured creating the order.')
+            messages.error(
+                self.request, 'An error occured creating the order.')
         return super().form_valid(form)
-        
+
     def get_success_url(self):
         if self.profile_id is not None:
             return reverse_lazy('profile-detail', args=[self.profile_id])
@@ -211,25 +226,30 @@ class DeleteTransactionView(LoginRequiredMixin, View):
         transaction = Transaction.objects.get(id=request.POST.get('itemID'))
         try:
             transaction.delete()
-            messages.success(self.request, 'The transaction was successfully deleted.')
+            messages.success(
+                self.request, 'The transaction was successfully deleted.')
         except Exception as e:
-            logger.exception('An error occured when deleting a transaction: {}'.format(e))
-            messages.error(self.request, 'There was a problem deleting the transaction')
+            logger.exception(
+                'An error occured when deleting a transaction: {}'.format(e))
+            messages.error(
+                self.request, 'There was a problem deleting the transaction')
         return redirect(request.POST.get('path'))
 
 
 class ExportChecksView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         deposits = Transaction.objects.filter(
-                Q(description__icontains='Check #')
-                | Q(description__icontains='Cash')
-            )
+            Q(description__icontains='Check #')
+            | Q(description__icontains='Cash')
+        )
         deposits = deposits.filter(transaction_type=Transaction.CREDIT)
         workbook_name = 'check-reconciliation.xlsx'
         if ('year' in self.kwargs) and ('month' in self.kwargs) and ('day' in self.kwargs):
-            day = date(self.kwargs['year'], self.kwargs['month'], self.kwargs['day'])
+            day = date(self.kwargs['year'],
+                       self.kwargs['month'], self.kwargs['day'])
             deposits = deposits.filter(completed__date=day)
-            workbook_name = 'check-reconciliation_{}-{}-{}.xlsx'.format(self.kwargs['year'], self.kwargs['month'], self.kwargs['day'])
+            workbook_name = 'check-reconciliation_{}-{}-{}.xlsx'.format(
+                self.kwargs['year'], self.kwargs['month'], self.kwargs['day'])
         if deposits:
             output = io.BytesIO()
             workbook = xlsxwriter.Workbook(output)
@@ -244,15 +264,20 @@ class ExportChecksView(LoginRequiredMixin, View):
             worksheet.set_column('F:F', 12)
 
             general_row_format = workbook.add_format({'font_size': 12})
-            center_bold_title = workbook.add_format({'align': 'center', 'bold': True, 'font_size': 14})
-            worksheet.merge_range(0, 0, 0, 5, 'NORTH RALEIGH CHRISTIAN ACADEMY', center_bold_title)
-            worksheet.merge_range(1, 0, 1, 5, 'CAFETERIA RECEIPT FORM', center_bold_title)
+            center_bold_title = workbook.add_format(
+                {'align': 'center', 'bold': True, 'font_size': 14})
+            worksheet.merge_range(
+                0, 0, 0, 5, 'NORTH RALEIGH CHRISTIAN ACADEMY', center_bold_title)
+            worksheet.merge_range(
+                1, 0, 1, 5, 'CAFETERIA RECEIPT FORM', center_bold_title)
 
-            date_bold_title = workbook.add_format({'align': 'center', 'bold': True, 'num_format': '[$-en-US]mmmm d, yyyy;@', 'font_size': 12})
+            date_bold_title = workbook.add_format(
+                {'align': 'center', 'bold': True, 'num_format': '[$-en-US]mmmm d, yyyy;@', 'font_size': 12})
             worksheet.merge_range(2, 0, 2, 5, day, date_bold_title)
             worksheet.set_row(2, 18)
 
-            center_bold_header = workbook.add_format({'align': 'center', 'bold': True, 'bottom': 1, 'font_size': 12, 'left': 1, 'right': 1})
+            center_bold_header = workbook.add_format(
+                {'align': 'center', 'bold': True, 'bottom': 1, 'font_size': 12, 'left': 1, 'right': 1})
             worksheet.write(4, 0, 'Date', center_bold_header)
             worksheet.write(4, 1, 'Student', center_bold_header)
             worksheet.write(4, 2, 'Grade', center_bold_header)
@@ -263,42 +288,56 @@ class ExportChecksView(LoginRequiredMixin, View):
 
             row = 5
             col = 0
-            basic_currency = workbook.add_format({'font_size': 12, 'num_format': '[$$-409]#,##0.00', 'left': 1, 'right': 1})
-            basic_date = workbook.add_format({'align': 'center', 'font_size': 12, 'num_format': 'yyyy-m-d', 'left': 1, 'right': 1})
-            center = workbook.add_format({'align': 'center', 'font_size': 12, 'left': 1, 'right': 1})
+            basic_currency = workbook.add_format(
+                {'font_size': 12, 'num_format': '[$$-409]#,##0.00', 'left': 1, 'right': 1})
+            basic_date = workbook.add_format(
+                {'align': 'center', 'font_size': 12, 'num_format': 'yyyy-m-d', 'left': 1, 'right': 1})
+            center = workbook.add_format(
+                {'align': 'center', 'font_size': 12, 'left': 1, 'right': 1})
             side_border = workbook.add_format({'left': 1, 'right': 1})
             for deposit in deposits:
                 worksheet.set_row(row, 18, general_row_format)
                 worksheet.write(row, col, deposit.completed.date(), basic_date)
-                worksheet.write(row, col + 1, deposit.transactee.name(), side_border)
+                worksheet.write(
+                    row, col + 1, deposit.transactee.name(), side_border)
                 if deposit.transactee.role == Profile.STAFF:
                     worksheet.write(row, col + 2, 'Staff', center)
                 else:
-                    worksheet.write(row, col + 2, deposit.transactee.grade_level, center)
+                    worksheet.write(
+                        row, col + 2, deposit.transactee.grade_level, center)
                 if 'check #' in deposit.description.lower():
-                    worksheet.write(row, col + 3, deposit.amount, basic_currency)
-                    worksheet.write(row, col + 4, int(deposit.description[7:]), center)
+                    worksheet.write(
+                        row, col + 3, deposit.amount, basic_currency)
+                    worksheet.write(
+                        row, col + 4, int(deposit.description[7:]), center)
                     worksheet.write(row, col + 5, '', basic_currency)
                 else:
                     worksheet.write(row, col + 3, '', basic_currency)
                     worksheet.write(row, col + 4, '', center)
-                    worksheet.write(row, col + 5, deposit.amount, basic_currency)
+                    worksheet.write(
+                        row, col + 5, deposit.amount, basic_currency)
                 row += 1
-            
+
             bold = workbook.add_format({'bold': True, 'font_size': 12})
             worksheet.write(row + 1, 2, 'Sub Total', bold)
-            currency_bold_single_top = workbook.add_format({'bold': True, 'font_size': 12, 'num_format': '[$$-409]#,##0.00', 'top': 1})
-            worksheet.write(row + 1, 3, '=SUM(D6:D{})'.format(deposits.count() + 5), currency_bold_single_top)
+            currency_bold_single_top = workbook.add_format(
+                {'bold': True, 'font_size': 12, 'num_format': '[$$-409]#,##0.00', 'top': 1})
+            worksheet.write(
+                row + 1, 3, '=SUM(D6:D{})'.format(deposits.count() + 5), currency_bold_single_top)
             worksheet.write(row + 1, 4, '', currency_bold_single_top)
-            worksheet.write(row + 1, 5, '=SUM(F6:F{})'.format(deposits.count() + 5), currency_bold_single_top)
+            worksheet.write(
+                row + 1, 5, '=SUM(F6:F{})'.format(deposits.count() + 5), currency_bold_single_top)
             worksheet.set_row(row + 1, 18, general_row_format)
 
             worksheet.write(row + 2, 2, 'Grand Total', bold)
-            grade_total_format = workbook.add_format({'align': 'center','bold': True, 'font_size': 12, 'num_format': '[$$-409]#,##0.00', 'top': 6})
-            worksheet.merge_range(row + 2, 3, row + 2, 5, '=D{}+F{}'.format(row + 2, row + 2), grade_total_format)
+            grade_total_format = workbook.add_format(
+                {'align': 'center', 'bold': True, 'font_size': 12, 'num_format': '[$$-409]#,##0.00', 'top': 6})
+            worksheet.merge_range(
+                row + 2, 3, row + 2, 5, '=D{}+F{}'.format(row + 2, row + 2), grade_total_format)
             worksheet.set_row(row + 2, 18, general_row_format)
 
-            right_aligned = workbook.add_format({'align': 'right', 'font_size':12})
+            right_aligned = workbook.add_format(
+                {'align': 'right', 'font_size': 12})
             worksheet.set_row(row + 5, 18, general_row_format)
             worksheet.write(row + 5, 0, 'Received: ', right_aligned)
             worksheet.write(row + 5, 4, 'Receipt #: ', right_aligned)
@@ -340,7 +379,8 @@ class OrderProcessView(LoginRequiredMixin, OrderMixin, View):
         success = False
         message = None
         if ('year' in self.kwargs) and ('month' in self.kwargs) and ('day' in self.kwargs):
-            day = date(self.kwargs['year'], self.kwargs['month'], self.kwargs['day'])
+            day = date(self.kwargs['year'],
+                       self.kwargs['month'], self.kwargs['day'])
             success, message = self.process_daily_orders(day)
         elif 'pk' in self.kwargs:
             success, message = self.process_single_order(self.kwargs['pk'])
@@ -401,7 +441,8 @@ class UsersTransactionsArchiveView(LoginRequiredMixin, ListView):
     ascending = True
 
     def get_queryset(self):
-        queryset = Transaction.objects.filter(transactee=self.request.user.profile)
+        queryset = Transaction.objects.filter(
+            transactee=self.request.user.profile)
         sort_order = self.request.GET.get('sort') or 'ASC'
         self.ascending = sort_order == 'ASC'
         sorting = self.request.GET.get('order_by') or 'submitted'
