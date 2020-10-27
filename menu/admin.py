@@ -9,7 +9,8 @@ from menu.models import MenuItem
 @admin.register(MenuItem)
 class MenuItemAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None, {'fields': ['name', 'short_name', 'description', 'cost', 'category', 'sequence']}),
+        (None, {'fields': ['name', 'short_name',
+                           'description', 'cost', 'category', 'sequence']}),
         ('Availability', {'fields': ['days_available', 'schools_available']})
     ]
     formfield_overrides = {

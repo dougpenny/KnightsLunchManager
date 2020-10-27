@@ -27,5 +27,6 @@ class DetailMenuItem(generics.RetrieveUpdateDestroyAPIView):
 class UserSearch(generics.ListCreateAPIView):
     search_fields = ['first_name', 'last_name']
     filter_backends = [filters.SearchFilter]
-    queryset = User.objects.filter(Q(profile__role=Profile.STUDENT) | Q(profile__role=Profile.STAFF))
+    queryset = User.objects.filter(
+        Q(profile__role=Profile.STUDENT) | Q(profile__role=Profile.STAFF))
     serializer_class = UserSerializer

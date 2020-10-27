@@ -1,51 +1,73 @@
-{% extends "web/admin/base_admin.html" %}
-
-{% block admin-content %}
+{% extends "web/admin/base_admin.html" %} {% block admin-content %}
 <div class="p-8">
-{% if object_list %}
-<h3 class="max-w-7xl mx-auto px-4 text-xl tracking-tight text-gray-900 sm:text-2xl sm:px-6 lg:px-8">
-    {% if search %}Matching {% endif %}Students {% if search %}or{% else %}and{% endif %} Staff{% if filter == 'debt' %} in Debt{% endif %}
-</h3>
-<div class="mt-2 mx-auto px-4 flex flex-col sm:px-6 lg:px-8">
+  {% if object_list %}
+  <h3
+    class="max-w-7xl mx-auto px-4 text-xl tracking-tight text-gray-900 sm:text-2xl sm:px-6 lg:px-8"
+  >
+    {% if search %}Matching {% endif %}Students {% if search %}or{% else %}and{%
+    endif %} Staff{% if filter == 'debt' %} in Debt{% endif %}
+  </h3>
+  <div class="mt-2 mx-auto px-4 flex flex-col sm:px-6 lg:px-8">
     <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-        <div class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead>
-                <tr>
-                    <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                    Name
-                    </th>
-                    <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                    Grade
-                    </th>
-                    <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                    Current Balance
-                    </th>
-                </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                {% for profile in object_list %}
-                    <tr>
-                    <td class="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200">
-                    <a class="text-indigo-700 hover:underline" href="{% url 'profile-detail' profile.pk %}">{{ profile.name }}</a>
-                    </td>
-                    <td class="px-6 py-4 text-left border-b border-gray-200 text-sm leading-5 text-gray-900">
-                        {% if profile.role == 2 %}{{ profile.grade_level }}{% else %}Staff{% endif %}
-                    </td>
-                    <td class="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200 text-sm leading-5 {% if profile.current_balance < 0 %}text-red-600{% else %}text-gray-900{% endif %}">
-                        ${{ profile.current_balance }}
-                    </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
+      <div
+        class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200"
+      >
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead>
+            <tr>
+              <th
+                class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Name
+              </th>
+              <th
+                class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Grade
+              </th>
+              <th
+                class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Current Balance
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            {% for profile in object_list %}
+            <tr>
+              <td
+                class="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200"
+              >
+                <a
+                  class="text-indigo-700 hover:underline"
+                  href="{% url 'profile-detail' profile.pk %}"
+                  >{{ profile.name }}</a
+                >
+              </td>
+              <td
+                class="px-6 py-4 text-left border-b border-gray-200 text-sm leading-5 text-gray-900"
+              >
+                {% if profile.role == 2 %}{{ profile.grade_level }}{% else
+                %}Staff{% endif %}
+              </td>
+              <td
+                class="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200 text-sm leading-5 {% if profile.current_balance < 0 %}text-red-600{% else %}text-gray-900{% endif %}"
+              >
+                ${{ profile.current_balance }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
-</div>
-{% else %}
-<h3 class="max-w-7xl mx-auto px-4 text-xl tracking-tight text-gray-900 sm:text-2xl sm:px-6 lg:px-8">
+  </div>
+  {% else %}
+  <h3
+    class="max-w-7xl mx-auto px-4 text-xl tracking-tight text-gray-900 sm:text-2xl sm:px-6 lg:px-8"
+  >
     No students or staff found.
-</h3>
-{% endif %}
+  </h3>
+  {% endif %}
 </div>
 {% endblock %}

@@ -29,6 +29,7 @@ from transactions.models import Transaction
 
 logger = logging.getLogger(__file__)
 
+
 def todays_transaction(profile: Profile) -> Transaction:
     try:
         transactions = Transaction.objects.filter(
@@ -40,6 +41,7 @@ def todays_transaction(profile: Profile) -> Transaction:
     except:
         return None
 
+
 @login_required
 def delete_order(request):
     if request.method == 'POST':
@@ -49,25 +51,31 @@ def delete_order(request):
                 transaction = Transaction.objects.get(id=transaction_id)
                 try:
                     transaction.delete()
-                    messages.success(request, 'Your order was successfully deleted.')
+                    messages.success(
+                        request, 'Your order was successfully deleted.')
                     return redirect('home')
                 except Exception as e:
-                    logger.exception('An exception occured when trying to delete a transaction.')
-                    messages.error(request, 'There was a problem deleting your order.')
+                    logger.exception(
+                        'An exception occured when trying to delete a transaction.')
+                    messages.error(
+                        request, 'There was a problem deleting your order.')
                     return redirect('todays-order')
             else:
                 messages.error(request, 'No order was found to delete.')
                 return redirect('home')
         else:
-            messages.warning(request, 'Sorry, your order is already being processed.')
+            messages.warning(
+                request, 'Sorry, your order is already being processed.')
             return redirect('home')
     return redirect('home')
+
 
 def home(request):
     context = {}
     time = timezone.now()
     context['time'] = time
-    menu = MenuItem.objects.filter(days_available__name=timezone.localdate(timezone.now()).strftime("%A"))
+    menu = MenuItem.objects.filter(
+        days_available__name=timezone.localdate(timezone.now()).strftime("%A"))
     context['menu'] = menu
     context['orders_open'] = Transaction.accepting_orders()
     if request.user.is_authenticated:
@@ -83,40 +91,51 @@ def home(request):
         context['user'] = None
     return render(request, 'web/user/user.html', context=context)
 
+
 @login_required
 def submit_order(request):
     if request.method == 'POST':
         if Transaction.accepting_orders():
             if request.POST.__contains__('itemID'):
                 if not todays_transaction(request.user.profile):
-                    menu_item = MenuItem.objects.get(id=request.POST.get('itemID'))
+                    menu_item = MenuItem.objects.get(
+                        id=request.POST.get('itemID'))
                     if menu_item not in MenuItem.objects.filter(days_available__name=timezone.localdate(timezone.now()).strftime("%A")):
-                        logger.warning('{} attempted to order a {}, which is not available today.'.format(request.user.profile.name, menu_item))
-                        messages.error(request, 'The {} is not available today. Please select from the available options.'.format(menu_item))
+                        logger.warning('{} attempted to order a {}, which is not available today.'.format(
+                            request.user.profile.name, menu_item))
+                        messages.error(
+                            request, 'The {} is not available today. Please select from the available options.'.format(menu_item))
                         return redirect('home')
                     try:
                         transaction = Transaction(
                             amount=menu_item.cost,
                             description=menu_item.name,
-                            transaction_type = Transaction.DEBIT,
+                            transaction_type=Transaction.DEBIT,
                             transactee=request.user.profile
                         )
                         transaction.save()
-                        transaction.menu_items.add(menu_item, through_defaults={'quantity': 1 })
-                        messages.success(request, 'Your order was successfully submitted.')
+                        transaction.menu_items.add(
+                            menu_item, through_defaults={'quantity': 1})
+                        messages.success(
+                            request, 'Your order was successfully submitted.')
                         return redirect('todays-order')
                     except Exception as e:
-                        logger.exception('An exception occured when trying to create a transaction: {}'.format(e))
-                        messages.error(request, 'There was a problem submitting your order.')
+                        logger.exception(
+                            'An exception occured when trying to create a transaction: {}'.format(e))
+                        messages.error(
+                            request, 'There was a problem submitting your order.')
                         return redirect('home')
                 else:
-                    messages.warning(request, 'You have already submitted an order today.')
+                    messages.warning(
+                        request, 'You have already submitted an order today.')
                     return redirect('todays-order')
         else:
-            messages.warning(request, 'Sorry, the cafeteria is no longer accepting orders today.')
+            messages.warning(
+                request, 'Sorry, the cafeteria is no longer accepting orders today.')
             return redirect('home')
     else:
         return redirect('home')
+
 
 @login_required
 def admin_dashboard(request):
@@ -129,13 +148,16 @@ def admin_dashboard(request):
     for order in orders:
         for line_item in order.line_item.all():
             if line_item.menu_item.name in order_count:
-                order_count[line_item.menu_item.name] = order_count[line_item.menu_item.name] + line_item.quantity
+                order_count[line_item.menu_item.name] = order_count[line_item.menu_item.name] + \
+                    line_item.quantity
             else:
                 order_count[line_item.menu_item.name] = line_item.quantity
     context['order_count'] = order_count
     context['orders'] = orders
-    context['debtors'] = Profile.objects.filter(current_balance__lt=0).order_by('current_balance', 'user__last_name')[:10]
+    context['debtors'] = Profile.objects.filter(current_balance__lt=0).order_by(
+        'current_balance', 'user__last_name')[:10]
     return render(request, 'web/admin/admin.html', context=context)
+
 
 def orders_for_homeroom(staff: Profile):
     orders = MenuLineItem.objects.filter(
@@ -150,6 +172,7 @@ def orders_for_homeroom(staff: Profile):
             'orders': orders
         }
         return homeroom_orders
+
 
 @login_required
 def homeroom_orders_report(request):
@@ -179,12 +202,15 @@ def homeroom_orders_report(request):
         frames = []
         frame_width = document.width / 2.0
         title_frame_height = 1.5 * inch
-        title_frame_bottom = document.height + document.bottomMargin - title_frame_height
-        title_frame = platypus.Frame(document.leftMargin, title_frame_bottom, document.width, title_frame_height)
+        title_frame_bottom = document.height + \
+            document.bottomMargin - title_frame_height
+        title_frame = platypus.Frame(
+            document.leftMargin, title_frame_bottom, document.width, title_frame_height)
         frames.append(title_frame)
         for frame in range(2):
             left_margin = document.leftMargin + (frame * frame_width)
-            column = platypus.Frame(left_margin, document.bottomMargin, frame_width, title_frame_bottom - (2 * inch), leftPadding=20, rightPadding=20, showBoundary=1)
+            column = platypus.Frame(left_margin, document.bottomMargin, frame_width,
+                                    title_frame_bottom - (2 * inch), leftPadding=20, rightPadding=20, showBoundary=1)
             frames.append(column)
         template = platypus.PageTemplate(frames=frames)
         document.addPageTemplates(template)
@@ -201,10 +227,13 @@ def homeroom_orders_report(request):
                 grade_level = 'Grade: ' + str(teacher.grade_level)
             data.append(platypus.Paragraph(grade_level, grade_style))
             data.append(platypus.FrameBreak())
-            order_groups = orders['orders'].values('menu_item__short_name').annotate(sum=Sum('quantity'))
+            order_groups = orders['orders'].values(
+                'menu_item__short_name').annotate(sum=Sum('quantity'))
             for group in order_groups:
-                data.append(platypus.Paragraph(group['menu_item__short_name'], group_title_style))
-                data.append(platypus.Paragraph(str(group['sum']), group_count_style))
+                data.append(platypus.Paragraph(
+                    group['menu_item__short_name'], group_title_style))
+                data.append(platypus.Paragraph(
+                    str(group['sum']), group_count_style))
                 for student in orders['orders'].filter(menu_item__short_name=group['menu_item__short_name']):
                     name = student.transaction.transactee.name()
                     data.append(platypus.Paragraph(name, normal_style))

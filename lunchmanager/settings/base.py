@@ -29,7 +29,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    
+
     'django_auth_adfs',
     'rest_framework',
 
@@ -132,5 +132,3 @@ STATIC_URL = '/static/'
 
 MEDIA_ROOT = BASE_DIR / 'resources/'
 MEDIA_URL = '/resources/'
-
-

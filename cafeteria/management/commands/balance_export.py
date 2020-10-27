@@ -21,5 +21,6 @@ class Command(BaseCommand):
         with open(filename, 'w') as csvfile:
             csvwriter = csv.writer(csvfile)
             for student in students:
-                csvwriter.writerow([student.user_number, student.current_balance])
+                csvwriter.writerow(
+                    [student.user_number, student.current_balance])
         logger.info('Finished exporting lunch balances.')

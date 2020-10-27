@@ -8,10 +8,7 @@
       "description": "Includes a Chick-fil-A sandwich, Ruffle's potato chips, Famous Amos cookies, and a bottle of water.",
       "name": "Chick-fil-A Sandwich Box",
       "sequence": 1,
-      "days_available": [
-        1,
-        4
-      ],
+      "days_available": [1, 4],
       "schools_available": []
     }
   },
@@ -24,10 +21,7 @@
       "description": "Includes a 6-count of Chick-fil-A nuggets, Ruffle's potato chips, Famous Amos cookies, and a bottle of water.",
       "name": "Chick-fil-A Nuggets Box",
       "sequence": 2,
-      "days_available": [
-        1,
-        4
-      ],
+      "days_available": [1, 4],
       "schools_available": []
     }
   },
@@ -40,10 +34,7 @@
       "description": "Includes a Jersey Mike's turkey sub, Lay's potato chips, Vanilla Cream cookies (K-2nd) or Oreo cookies (3rd-12th), and a bottle of water.",
       "name": "Jersey Mike's Turkey Sub Box",
       "sequence": 1,
-      "days_available": [
-        2,
-        5
-      ],
+      "days_available": [2, 5],
       "schools_available": []
     }
   },
@@ -56,10 +47,7 @@
       "description": "Includes a Jersey Mike's ham sub, Lay's potato chips, Vanilla Cream cookies (K-2nd) or Oreo cookies (3rd-12th), and a bottle of water.",
       "name": "Jersey Mike's Ham Sub Box",
       "sequence": 2,
-      "days_available": [
-        2,
-        5
-      ],
+      "days_available": [2, 5],
       "schools_available": []
     }
   },
@@ -72,9 +60,7 @@
       "description": "Includes a Moe's chicken burrito with no beans, tortilla chips, Famous Amos cookies, and a bottle of water.",
       "name": "Moe's Chicken Burrito Box",
       "sequence": 1,
-      "days_available": [
-        3
-      ],
+      "days_available": [3],
       "schools_available": []
     }
   },
@@ -87,9 +73,7 @@
       "description": "Includes a Moe's chicken quesadilla, tortilla chips, Famous Amos cookies, and a bottle of water.",
       "name": "Moe's Chicken Quesadilla Box",
       "sequence": 2,
-      "days_available": [
-        3
-      ],
+      "days_available": [3],
       "schools_available": []
     }
   }

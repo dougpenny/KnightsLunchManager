@@ -19,7 +19,8 @@ class Powerschool:
         # move these to a .env file
         self.base_url = os.getenv('POWERSCHOOL_URL')
         self.client_id = os.getenv('POWERSCHOOL_CLIENT_ID').encode('UTF-8')
-        self.client_secret = os.getenv('POWERSCHOOL_CLIENT_SECRET').encode('UTF-8')
+        self.client_secret = os.getenv(
+            'POWERSCHOOL_CLIENT_SECRET').encode('UTF-8')
         try:
             self.metadata = self.metadata()
         except requests.exceptions.SSLError as e:
@@ -27,7 +28,8 @@ class Powerschool:
         except requests.exceptions.ConnectionError as e:
             sys.stderr.write('A connection error occured: %s\n' % e)
         except Exception as e:
-            sys.stderr.write('An unknown error occured trying to connect to PowerSchool.\nError: %s\n' % e)
+            sys.stderr.write(
+                'An unknown error occured trying to connect to PowerSchool.\nError: %s\n' % e)
 
     def access_token(self):
         """ Retrieve an access token """
@@ -35,7 +37,8 @@ class Powerschool:
             if(self.access_token_response['expiration_datetime'] > datetime.datetime.now()):
                 return "Bearer " + self.access_token_response['access_token']
         token_url = self.base_url + "oauth/access_token"
-        credentials = base64.b64encode(self.client_id + b":" + self.client_secret)
+        credentials = base64.b64encode(
+            self.client_id + b":" + self.client_secret)
         auth_string = 'Basic {0}'.format(str(credentials, encoding='utf8'))
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
@@ -44,7 +47,8 @@ class Powerschool:
         data = "grant_type=client_credentials"
         r = requests.post(token_url, data, headers=headers, verify=False)
         response = r.json()
-        response['expiration_datetime'] = datetime.datetime.now() + datetime.timedelta(seconds=int(response['expires_in']))
+        response['expiration_datetime'] = datetime.datetime.now(
+        ) + datetime.timedelta(seconds=int(response['expires_in']))
         self.access_token_response = response
         return "Bearer " + response['access_token']
 
@@ -79,8 +83,10 @@ class Powerschool:
             'Content-Type': 'application/json',
             'Authorization': self.access_token()
         }
-        resource_endpoint = self.base_url + "ws/v1/student/{}".format(student_dcid)
-        student_response = requests.get(resource_endpoint, headers=headers, verify=False)
+        resource_endpoint = self.base_url + \
+            "ws/v1/student/{}".format(student_dcid)
+        student_response = requests.get(
+            resource_endpoint, headers=headers, verify=False)
         return student_response.json()['student']
 
     def teacherWithDCID(self, teacher_dcid):
@@ -90,8 +96,10 @@ class Powerschool:
             'Content-Type': 'application/json',
             'Authorization': self.access_token()
         }
-        resource_endpoint = self.base_url + "ws/v1/staff/{}".format(teacher_dcid)
-        teacher_response = requests.get(resource_endpoint, headers=headers, verify=False)
+        resource_endpoint = self.base_url + \
+            "ws/v1/staff/{}".format(teacher_dcid)
+        teacher_response = requests.get(
+            resource_endpoint, headers=headers, verify=False)
         return teacher_response.json()
 
     # Paging endpoints
@@ -119,8 +127,10 @@ class Powerschool:
         while len(data) < resource_count:
             params['page'] = str(page_number)
             try:
-                requested_resource_response = requests.get(resource_url, headers=headers, params=params, verify=False)
-                requested_resources = requested_resource_response.json()[key_1][key_2]
+                requested_resource_response = requests.get(
+                    resource_url, headers=headers, params=params, verify=False)
+                requested_resources = requested_resource_response.json()[
+                    key_1][key_2]
                 data.extend(requested_resources)
             except:
                 return []
@@ -136,7 +146,8 @@ class Powerschool:
             'Authorization': self.access_token()
         }
         try:
-            data = requests.get(resource_count_url, headers=headers, verify=False)
+            data = requests.get(resource_count_url,
+                                headers=headers, verify=False)
             resource_count = data.json()["resource"]["count"]
             return resource_count
         except:
@@ -176,7 +187,8 @@ class Powerschool:
         resource_url = self.base_url + resource_endpoint
         data = json.dumps(params) if params else '{}'
         try:
-            response = requests.post(resource_url, data=data, headers=headers, verify=False)
+            response = requests.post(
+                resource_url, data=data, headers=headers, verify=False)
             return response.json()['record']
         except:
             return []

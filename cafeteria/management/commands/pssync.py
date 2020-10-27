@@ -39,19 +39,18 @@ class Command(BaseCommand):
         elif options['resource'] == 'students':
             self.sync_students_using_client(client)
 
-
     def sync_schools_using_client(self, client):
         logger.info('Synchronizing schools...')
         schools = client.schools()
         for item in schools:
-            school, created = School.objects.update_or_create(id=item['id'], 
-                defaults={
-                    'name': item['name'],
-                    'school_number': item['school_number']
-                }
+            school, created = School.objects.update_or_create(id=item['id'],
+                                                              defaults={
+                'name': item['name'],
+                'school_number': item['school_number']
+            }
             )
         logger.info('All schools successfully synchronized...')
-            
+
     def sync_staff_using_client(self, client):
         logger.info('Synchronizing staff...')
         active_staff = client.active_staff()
@@ -67,15 +66,15 @@ class Command(BaseCommand):
                 room = 'n/a'
             # look for an existing profile and create a new one if not found
             staff, created = Profile.objects.update_or_create(user_dcid=member['dcid'],
-                defaults={
-                    'last_sync': timezone.now(),
-                    'lunch_id': member['lunch_id'],
-                    'phone': phone,
-                    'role': Profile.STAFF,
-                    'room': room,
-                    'status': True,
-                    'user_number': member['teachernumber'],
-                }
+                                                              defaults={
+                'last_sync': timezone.now(),
+                'lunch_id': member['lunch_id'],
+                'phone': phone,
+                'role': Profile.STAFF,
+                'room': room,
+                'status': True,
+                'user_number': member['teachernumber'],
+            }
             )
             try:
                 email_address = member['teacherloginid'] + '@nrcaknights.com'
@@ -87,10 +86,10 @@ class Command(BaseCommand):
             # if a new profile is created, create the corresponding user
             if created:
                 user, created = User.objects.get_or_create(
-                    first_name = member['first_name'],
-                    last_name = member['last_name'],
-                    email = email_address,
-                    username = email_address,
+                    first_name=member['first_name'],
+                    last_name=member['last_name'],
+                    email=email_address,
+                    username=email_address,
                 )
                 staff.user = user
                 staff.save()
@@ -106,15 +105,16 @@ class Command(BaseCommand):
                     user.save()
                 else:
                     user, created = User.objects.get_or_create(
-                        first_name = member['first_name'],
-                        last_name = member['last_name'],
-                        email = email_address,
-                        username = email_address,
+                        first_name=member['first_name'],
+                        last_name=member['last_name'],
+                        email=email_address,
+                        username=email_address,
                     )
                     staff.user = user
                     staff.save()
             # if the staff member has a homeroom, update their roster
-            homeroom_roster = client.homeroom_roster_for_teacher(staff.user_dcid)
+            homeroom_roster = client.homeroom_roster_for_teacher(
+                staff.user_dcid)
             if homeroom_roster:
                 try:
                     staff.grade_level = int(homeroom_roster[0]['grade_level'])
@@ -123,43 +123,48 @@ class Command(BaseCommand):
                 staff.students.clear()
                 for student in homeroom_roster:
                     try:
-                        student = Profile.objects.get(student_dcid=int(student['dcid']))
+                        student = Profile.objects.get(
+                            student_dcid=int(student['dcid']))
                         staff.students.add(student)
                     except:
                         pass
                 staff.save()
-        logger.info('Retrieved {} staff, created {} new staff members'.format(len(active_staff), newly_created))
+        logger.info('Retrieved {} staff, created {} new staff members'.format(
+            len(active_staff), newly_created))
 
     def sync_students_using_client(self, client):
         logger.info('Synchronizing students...')
         for school in School.objects.filter(active__exact=True):
-            logger.info('Sycning students from {} (id {})...'.format(school, school.id))
-            active_students = client.studentsForSchool(school.id, 'lunch,school_enrollment')
+            logger.info('Sycning students from {} (id {})...'.format(
+                school, school.id))
+            active_students = client.studentsForSchool(
+                school.id, 'lunch,school_enrollment')
             newly_created = 0
             for member in active_students:
                 # look for an existing student and create a new one if not found
                 student, created = Profile.objects.update_or_create(student_dcid=member['id'],
-                    defaults={
-                        'grade_level': member['school_enrollment']['grade_level'],
-                        'last_sync': timezone.now(),
-                        'lunch_id': member['lunch']['lunch_id'],
-                        'role': Profile.STUDENT,
-                        'school': School.objects.get(id=member['school_enrollment']['school_id']),
-                        'status': True,
-                        'user_number': member['local_id'],
-                    }
+                                                                    defaults={
+                    'grade_level': member['school_enrollment']['grade_level'],
+                    'last_sync': timezone.now(),
+                    'lunch_id': member['lunch']['lunch_id'],
+                    'role': Profile.STUDENT,
+                    'school': School.objects.get(id=member['school_enrollment']['school_id']),
+                    'status': True,
+                    'user_number': member['local_id'],
+                }
                 )
                 try:
-                    email_address = member['student_username'] + '@nrcaknights.com'
+                    email_address = member['student_username'] + \
+                        '@nrcaknights.com'
                 except:
                     email_address = str(member['id']) + '@nrcaknights.com'
                 # if a new student is created, create the corresponding user
                 if created:
                     user, created = User.objects.get_or_create(
-                        first_name = member['name']['first_name'],
-                        last_name = member['name']['last_name'],
-                        email = email_address,
-                        username = email_address,
+                        first_name=member['name']['first_name'],
+                        last_name=member['name']['last_name'],
+                        email=email_address,
+                        username=email_address,
                     )
                     student.user = user
                     student.save()
@@ -175,11 +180,12 @@ class Command(BaseCommand):
                         user.save()
                     else:
                         user, created = User.objects.get_or_create(
-                            first_name = member['name']['first_name'],
-                            last_name = member['name']['last_name'],
-                            email = email_address,
-                            username = email_address,
+                            first_name=member['name']['first_name'],
+                            last_name=member['name']['last_name'],
+                            email=email_address,
+                            username=email_address,
                         )
                         student.user = user
                         student.save()
-            logger.info('Retreived {} students, created {} new students'.format(len(active_students), newly_created))
+            logger.info('Retreived {} students, created {} new students'.format(
+                len(active_students), newly_created))

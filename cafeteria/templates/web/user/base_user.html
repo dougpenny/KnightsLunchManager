@@ -1,101 +1,191 @@
-{% extends "web/base.html" %}
-
-{% block head-scripts %}
-  {% if user %}
-    {% load static %}
-    <script src="{% static 'cafeteria/js/order_processing.js' %}"></script>
-  {% endif %}
-{% endblock %}
-
-{% block main-content %}
+{% extends "web/base.html" %} {% block head-scripts %} {% if user %} {% load
+static %}
+<script src="{% static 'cafeteria/js/order_processing.js' %}"></script>
+{% endif %} {% endblock %} {% block main-content %}
 <body class="antialiased font-sans bg-gray-200">
-  <nav x-data="{ open: false }" @keydown.window.escape="open = false" class="bg-gray-800">
+  <nav
+    x-data="{ open: false }"
+    @keydown.window.escape="open = false"
+    class="bg-gray-800"
+  >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         <a href="{% url 'home' %}">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            {% load static %}
-            <img class="h-8 w-8" src="{% static 'cafeteria/img/knights_head.png' %}" alt="NRCA Knights">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              {% load static %}
+              <img
+                class="h-8 w-8"
+                src="{% static 'cafeteria/img/knights_head.png' %}"
+                alt="NRCA Knights"
+              />
+            </div>
+            <div class="ml-6 flex items-baseline">
+              <h1 class="text-3xl font-bold leading-tight text-gray-100">
+                NRCA Cafeteria
+              </h1>
+            </div>
           </div>
-          <div class="ml-6 flex items-baseline">
-            <h1 class="text-3xl font-bold leading-tight text-gray-100">
-            NRCA Cafeteria
-            </h1>
-          </div>
-        </div>
         </a>
         <div class="hidden md:block">
           <div class="ml-4 flex items-center md:ml-6">
             <div>
               {% if user %}
-                <a href="{% url 'django_auth_adfs:logout' %}" class="inline-flex items-center block px-4 py-2 text-sm text-gray-400 hover:text-white focus:text-white" title="Sign out">
-                  <p class="mr-3">Sign out</p>
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z"/>
-                    <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
-                    <path d="M7 12h14l-3 -3m0 6l3 -3" />
-                  </svg>
-                </a>
+              <a
+                href="{% url 'django_auth_adfs:logout' %}"
+                class="inline-flex items-center block px-4 py-2 text-sm text-gray-400 hover:text-white focus:text-white"
+                title="Sign out"
+              >
+                <p class="mr-3">Sign out</p>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-8 h-8"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" />
+                  <path
+                    d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2"
+                  />
+                  <path d="M7 12h14l-3 -3m0 6l3 -3" />
+                </svg>
+              </a>
               {% else %}
-                <a href="{% url 'django_auth_adfs:login' %}" class="inline-flex items-center block px-4 py-2 text-sm text-gray-400 hover:text-white focus:text-white" title="Sign in">
-                  <p class="mr-3">Sign in</p>
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z"/>
-                    <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
-                    <path d="M20 12h-13l3 -3m0 6l-3 -3" />
-                  </svg>
-                </a>
+              <a
+                href="{% url 'django_auth_adfs:login' %}"
+                class="inline-flex items-center block px-4 py-2 text-sm text-gray-400 hover:text-white focus:text-white"
+                title="Sign in"
+              >
+                <p class="mr-3">Sign in</p>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-8 h-8"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" />
+                  <path
+                    d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2"
+                  />
+                  <path d="M20 12h-13l3 -3m0 6l-3 -3" />
+                </svg>
+              </a>
               {% endif %}
             </div>
           </div>
         </div>
         <div class="-mr-2 flex md:hidden">
           <!-- Mobile menu button -->
-          <button @click="open = !open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:bg-gray-700 focus:text-white" x-bind:aria-label="open ? 'Close main menu' : 'Main menu'" x-bind:aria-expanded="open">
-          <svg x-state:on="Menu open" x-state:off="Menu closed" :class="{ 'hidden': open, 'block': !open }" class="block h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-          </svg>
-          <svg x-state:on="Menu open" x-state:off="Menu closed" :class="{ 'hidden': !open, 'block': open }" class="hidden h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
+          <button
+            @click="open = !open"
+            class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:bg-gray-700 focus:text-white"
+            x-bind:aria-label="open ? 'Close main menu' : 'Main menu'"
+            x-bind:aria-expanded="open"
+          >
+            <svg
+              x-state:on="Menu open"
+              x-state:off="Menu closed"
+              :class="{ 'hidden': open, 'block': !open }"
+              class="block h-6 w-6"
+              stroke="currentColor"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+            <svg
+              x-state:on="Menu open"
+              x-state:off="Menu closed"
+              :class="{ 'hidden': !open, 'block': open }"
+              class="hidden h-6 w-6"
+              stroke="currentColor"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
           </button>
         </div>
       </div>
     </div>
-    <div x-description="Mobile menu, toggle classes based on menu state." x-state:on="Open" x-state:off="closed" :class="{ 'block': open, 'hidden': !open }" class="hidden md:hidden">
+    <div
+      x-description="Mobile menu, toggle classes based on menu state."
+      x-state:on="Open"
+      x-state:off="closed"
+      :class="{ 'block': open, 'hidden': !open }"
+      class="hidden md:hidden"
+    >
       <div class="pt-4 pb-3 border-t border-gray-700">
         {% if user %}
-          <div class="flex items-center px-5">
-            <div class="ml-3">
-              <div class="text-base font-medium leading-none text-white">{{ user.first_name }} {{ user.last_name }}</div>
-              <div class="mt-1 text-sm font-medium leading-none text-gray-400">{{ user.email }}</div>
+        <div class="flex items-center px-5">
+          <div class="ml-3">
+            <div class="text-base font-medium leading-none text-white">
+              {{ user.first_name }} {{ user.last_name }}
+            </div>
+            <div class="mt-1 text-sm font-medium leading-none text-gray-400">
+              {{ user.email }}
             </div>
           </div>
+        </div>
         {% endif %}
         <div class="mt-3 px-2">
           {% if user %}
-            <a href="{% url 'django_auth_adfs:logout' %}" class="mt-1 block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700">Sign out</a>
+          <a
+            href="{% url 'django_auth_adfs:logout' %}"
+            class="mt-1 block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
+            >Sign out</a
+          >
           {% else %}
-            <a href="{% url 'django_auth_adfs:login' %}" class="mt-1 block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700">Sign in</a>
+          <a
+            href="{% url 'django_auth_adfs:login' %}"
+            class="mt-1 block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700"
+            >Sign in</a
+          >
           {% endif %}
         </div>
       </div>
     </div>
   </nav>
   <div class="p-8 bg-white">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 lg:flex lg:items-center lg:justify-between">
-    {% if user %}
-      {% include "web/user/header.html" %}
-    {% else %}
+    <div
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 lg:flex lg:items-center lg:justify-between"
+    >
+      {% if user %} {% include "web/user/header.html" %} {% else %}
       <div class="flex-1 min-w-0">
-        <h2 class="text-2xl font-medium leading-7 text-gray-800 sm:text-3xl sm:leading-9 sm:truncate">
-        Please <a class="text-indigo-600" href="{% url 'django_auth_adfs:login' %}">sign in</a> to access the lunch order system.
+        <h2
+          class="text-2xl font-medium leading-7 text-gray-800 sm:text-3xl sm:leading-9 sm:truncate"
+        >
+          Please
+          <a class="text-indigo-600" href="{% url 'django_auth_adfs:login' %}"
+            >sign in</a
+          >
+          to access the lunch order system.
         </h2>
       </div>
-    {% endif %}
+      {% endif %}
     </div>
   </div>
-  {% block user-content %}
-  {% endblock %}
-{% endblock %}
+  {% block user-content %} {% endblock %} {% endblock %}
+</body>

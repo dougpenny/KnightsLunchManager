@@ -4,7 +4,8 @@ from django.db import models
 
 
 class School(models.Model):
-    active = models.BooleanField(default=False, help_text='Should this school be included when syncing students?')
+    active = models.BooleanField(
+        default=False, help_text='Should this school be included when syncing students?')
     display_name = models.CharField(blank=True, max_length=100)
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
