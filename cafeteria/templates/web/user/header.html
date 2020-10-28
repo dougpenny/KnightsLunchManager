@@ -1,77 +1,44 @@
 <div class="flex-1 min-w-0">
   {% include "web/includes/greeting.html" %}
   <div class="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap">
-    <div
-      class="mt-2 flex items-center text-l leading-5 text-gray-700 sm:text-xl sm:mt-4 sm:mr-6"
-    >
-      <svg
-        class="flex-shrink-0 mr-1.5 h-5 w-5 text-green-500 sm:h-6 sm:w-6"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-      >
+    <div class="mt-2 flex items-center text-l leading-5 text-gray-700 sm:text-xl sm:mt-4 sm:mr-6">
+      <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-green-500 sm:h-6 sm:w-6" viewBox="0 0 20 20" fill="currentColor">
         <path
-          d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"
-        />
-        <path
-          fill-rule="evenodd"
+          d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+        <path fill-rule="evenodd"
           d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
-          clip-rule="evenodd"
-        />
+          clip-rule="evenodd" />
       </svg>
       Current balance:<span
-        class="ml-1 font-extrabold {% if user.profile.current_balance < 0 %}text-red-700{% else %}text-gray-900{% endif %}"
-        >${{ user.profile.current_balance }}</span
-      >
+        class="ml-1 font-extrabold {% if user.profile.current_balance < 0 %}text-red-700{% else %}text-gray-900{% endif %}">${{ user.profile.current_balance }}</span>
     </div>
   </div>
 </div>
 <div class="mt-5 flex lg:mt-0 lg:ml-4">
   {% if homeroom_teacher %}
-  <span class="sm:block ml-3 shadow-sm rounded-md">
-    <a href="{% url 'homeroom-orders' %}">
-      <button
-        class="inline-flex items-center justify-center pl-4 pr-5 py-2 border border-transparent text-base leading-6 rounded-md text-white bg-green-600 hover:bg-green-500 focus:outline-none focus:shadow-outline transition duration-150 ease-in-out"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="mr-4"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          stroke-width="2"
-          stroke="currentColor"
-          fill="none"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path stroke="none" d="M0 0h24v24H0z" />
-          <circle cx="9" cy="7" r="4" />
-          <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
-          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-          <path d="M21 21v-2a4 4 0 0 0 -3 -3.85" />
-        </svg>
-        <span>Homeroom Orders</span>
-      </button>
-    </a>
-  </span>
+    <span class="sm:block ml-3 shadow-sm rounded-md">
+      <a href="{% url 'homeroom-orders' %}">
+        <button
+          class="inline-flex items-center justify-center pl-4 pr-5 py-2 border border-transparent text-base leading-6 rounded-md text-white bg-green-600 hover:bg-green-500 focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+          <svg xmlns="http://www.w3.org/2000/svg" class="mr-4" width="24" height="24" viewBox="0 0 24 24" stroke-width="2"
+            stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            <path d="M21 21v-2a4 4 0 0 0 -3 -3.85" />
+          </svg>
+          <span>Homeroom Orders</span>
+        </button>
+      </a>
+    </span>
   {% endif %}
   <span class="sm:block ml-3 shadow-sm rounded-md">
     <a href="{% url 'user-transactions' %}">
       <button
-        class="inline-flex items-center justify-center pl-4 pr-5 py-2 border border-transparent text-base leading-6 rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:shadow-outline transition duration-150 ease-in-out"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="mr-4"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          stroke-width="2"
-          stroke="currentColor"
-          fill="none"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+        class="inline-flex items-center justify-center pl-4 pr-5 py-2 border border-transparent text-base leading-6 rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+        <svg xmlns="http://www.w3.org/2000/svg" class="mr-4" width="24" height="24" viewBox="0 0 24 24" stroke-width="2"
+          stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <path stroke="none" d="M0 0h24v24H0z" />
           <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
           <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />

@@ -1,6 +1,4 @@
-<h2
-  class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate"
->
+<h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate">
   {% now "H" as current_hour %}
-  {% if current_hour < "12" %} Good morning, {% elif current_hour < "18" %} Good afternoon, {% else %} Good evening, {% endif %}{{ user.first_name }} 
+  {% if current_hour < "12" %} Good morning, {% elif current_hour < "18" %} Good afternoon, {% else %} Good evening, {% endif %}{{ user.first_name }}
 </h2>
