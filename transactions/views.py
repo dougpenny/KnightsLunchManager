@@ -440,6 +440,13 @@ class UsersTransactionsArchiveView(LoginRequiredMixin, ListView):
 
     ascending = True
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.profile.role == Profile.STAFF:
+            if self.request.user.profile.students.all():
+                context['homeroom_teacher'] = True
+        return context
+
     def get_queryset(self):
         queryset = Transaction.objects.filter(
             transactee=self.request.user.profile)
