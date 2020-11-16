@@ -23,6 +23,7 @@ from profiles.models import Profile
 from transactions.models import Transaction, MenuLineItem
 from transactions.forms import TransactionDepositForm
 from transactions.forms import TransactionOrderForm, DepositFormSet
+from transactions import utils
 
 
 logger = logging.getLogger(__file__)
@@ -41,18 +42,22 @@ class DepositMixin:
             description = 'Cash'
         else:
             description = 'Check #' + deposit['check_num']
+        transaction_type = Transaction.CREDIT
+        if deposit['amount'] < 0:
+            transaction_type = Transaction.DEBIT
         transaction = Transaction(
             amount=deposit['amount'],
             beginning_balance=profile.current_balance,
             completed=timezone.now(),
             description=description,
             ending_balance=new_balance,
-            transaction_type=Transaction.CREDIT,
+            transaction_type=transaction_type,
             transactee=profile,
         )
         if deposit['submitted']:
             transaction.submitted = deposit['submitted']
         transaction.save()
+        count = utils.export_transactions([transaction])
         profile.current_balance = new_balance
         profile.save()
 
@@ -81,6 +86,7 @@ class OrderMixin:
             order.ending_balance = transactee.current_balance - order.amount
             order.completed = timezone.now()
             order.save()
+            count = utils.export_transactions([order])
             transactee.current_balance = order.ending_balance
             transactee.save()
         except:
@@ -250,6 +256,8 @@ class ExportChecksView(LoginRequiredMixin, View):
             deposits = deposits.filter(completed__date=day)
             workbook_name = 'check-reconciliation_{}-{}-{}.xlsx'.format(
                 self.kwargs['year'], self.kwargs['month'], self.kwargs['day'])
+        else:
+            day = 'All Deposits'
         if deposits:
             output = io.BytesIO()
             workbook = xlsxwriter.Workbook(output)

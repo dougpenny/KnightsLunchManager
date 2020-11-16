@@ -22,7 +22,11 @@ class Powerschool:
         self.client_secret = os.getenv(
             'POWERSCHOOL_CLIENT_SECRET').encode('UTF-8')
         try:
-            self.metadata = self.metadata()
+            self.headers = {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': self.access_token()
+            }
         except requests.exceptions.SSLError as e:
             sys.stderr.write('An ssl related error occured: %s\n' % e)
         except requests.exceptions.ConnectionError as e:
@@ -51,17 +55,6 @@ class Powerschool:
         ) + datetime.timedelta(seconds=int(response['expires_in']))
         self.access_token_response = response
         return "Bearer " + response['access_token']
-
-    def metadata(self):
-        """ Retrieve metadata """
-        headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': self.access_token()
-        }
-        meta_url = self.base_url + "ws/v1/metadata"
-        meta_response = requests.get(meta_url, headers=headers, verify=False)
-        return meta_response.json()["metadata"]
 
     # Non-paging endpoints
     def staffInDistrict(self):
@@ -200,3 +193,22 @@ class Powerschool:
     def homeroom_roster_for_teacher(self, teacher_dcid):
         resource_endpoint = "ws/schema/query/com.nrcaknights.knightslunch.students.homeroom_roster"
         return self.powerquery_resource(resource_endpoint, {'teacher_dcid': teacher_dcid})
+
+    # POST endpoints for sending data to PowerSchool
+    def new_lunch_transaction(self, transaction_info):
+        transaction_data = { "tables": { "U_LUNCH_TRANSACTIONS": transaction_info }}
+        try:
+            response = requests.post(
+                self.base_url + "ws/schema/table/U_LUNCH_TRANSACTIONS/",
+                data=json.dumps(transaction_data),
+                headers=self.headers,
+                verify=False
+            )
+            response = response.json()
+            if response['insert_count'] == 1 and response['result'][0]['status'] == 'SUCCESS':
+                return response['result'][0]['success_message']['id']
+            else:
+                return None
+        except Exception as e:
+            print("An exception occured: {}".format(e))
+            return None

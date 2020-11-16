@@ -34,6 +34,7 @@ class Transaction(models.Model):
         'menu.MenuItem', blank=True, related_name='transactions', through=MenuLineItem)
     ending_balance = models.DecimalField(
         decimal_places=2, max_digits=6, null=True)
+    ps_transaction_id = models.IntegerField(blank=True, default=None, null=True)
     submitted = models.DateTimeField(default=timezone.now)
     transaction_type = models.CharField(
         choices=TYPE_CHOICES, default=DEBIT, max_length=2)

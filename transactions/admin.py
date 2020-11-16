@@ -11,11 +11,12 @@ class LineItemInline(admin.TabularInline):
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
     fields = ['transactee', 'transaction_type', 'description', 'amount',
-              'beginning_balance', 'ending_balance', 'submitted', 'completed']
+              'beginning_balance', 'ending_balance', 'submitted',
+              'completed', 'ps_transaction_id']
     inlines = [LineItemInline, ]
     list_display = ('transactee', 'transaction_type',
                     'amount', 'submitted', 'status')
     ordering = ['submitted']
-    readonly_fields = ['beginning_balance', 'ending_balance', 'submitted']
+    readonly_fields = ['beginning_balance', 'ending_balance', 'ps_transaction_id', 'submitted']
     search_fields = ['transactee__user__first_name',
                      'transactee__user__last_name']
