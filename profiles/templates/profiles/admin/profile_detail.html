@@ -12,8 +12,12 @@
         {% if object.role == 2 %}
           {{ object.grade_level|ordinal }} Grade
           <br />Homeroom:
-          <a class="text-indigo-700 hover:underline"
-            href="{% url 'profile-detail' object.homeroom_teacher.pk %}">{{ object.homeroom_teacher }}</a>
+          {% if object.homeroom_teacher %}
+            <a class="text-indigo-700 hover:underline"
+              href="{% url 'profile-detail' object.homeroom_teacher.pk %}">{{ object.homeroom_teacher }}</a>
+          {% else %}
+            None
+          {% endif %}
         {% else %}
           Staff<br />Room: {{ object.room }}<br />Phone: {{ object.phone }}
         {% endif %}
