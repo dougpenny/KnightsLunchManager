@@ -57,7 +57,6 @@ class DepositMixin:
         if deposit['submitted']:
             transaction.submitted = deposit['submitted']
         transaction.save()
-        count = utils.export_transactions([transaction])
         profile.current_balance = new_balance
         profile.save()
 
@@ -86,7 +85,6 @@ class OrderMixin:
             order.ending_balance = transactee.current_balance - order.amount
             order.completed = timezone.now()
             order.save()
-            count = utils.export_transactions([order])
             transactee.current_balance = order.ending_balance
             transactee.save()
         except:
