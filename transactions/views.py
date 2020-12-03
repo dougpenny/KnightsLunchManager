@@ -315,7 +315,7 @@ class ExportChecksView(LoginRequiredMixin, View):
                     worksheet.write(
                         row, col + 3, deposit.amount, basic_currency)
                     worksheet.write(
-                        row, col + 4, int(deposit.description[7:]), center)
+                        row, col + 4, deposit.description[7:], center)
                     worksheet.write(row, col + 5, '', basic_currency)
                 else:
                     worksheet.write(row, col + 3, '', basic_currency)
