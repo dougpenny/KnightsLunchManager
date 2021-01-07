@@ -18,5 +18,5 @@ class TransactionAdmin(admin.ModelAdmin):
                     'amount', 'submitted', 'status')
     ordering = ['submitted']
     readonly_fields = ['beginning_balance', 'ending_balance', 'ps_transaction_id', 'submitted']
-    search_fields = ['transactee__user__first_name',
+    search_fields = ['description', 'transactee__user__first_name',
                      'transactee__user__last_name']
