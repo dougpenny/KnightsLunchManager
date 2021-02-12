@@ -20,7 +20,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 
-from lunchmanager.powerschool.powerschool import Powerschool
+from powerschool.powerschool import Powerschool
 from menu.models import MenuItem
 from profiles.models import Profile
 from transactions.models import MenuLineItem
@@ -89,7 +89,7 @@ def home(request):
             return redirect('todays-order')
     else:
         context['user'] = None
-    return render(request, 'web/user/user.html', context=context)
+    return render(request, 'user/user.html', context=context)
 
 
 @login_required
@@ -156,7 +156,7 @@ def admin_dashboard(request):
     context['orders'] = orders
     context['debtors'] = Profile.objects.filter(current_balance__lt=0).order_by(
         'current_balance', 'user__last_name')[:10]
-    return render(request, 'web/admin/admin.html', context=context)
+    return render(request, 'admin/admin.html', context=context)
 
 
 def orders_for_homeroom(staff: Profile):

@@ -1,4 +1,4 @@
-{% extends "web/admin/base_admin.html" %}
+{% extends "admin/base_admin.html" %}
 {% block head-scripts %}
 <script
   src="https://cdn.jsdelivr.net/combine/npm/luxon@1,npm/vue@2,npm/@desislavsd/vue-select@0.5.0,npm/vue-datetime@1.0.0-beta.14">
@@ -8,35 +8,45 @@
 {% endblock %}
 {% block admin-content %}
 <div class="mx-8 mt-12">
-  <h2 class="text-2xl leading-6 font-medium text-gray-900">New Order</h2>
+  <h2 class="text-2xl leading-6 font-medium text-gray-900">New Deposit</h2>
 </div>
 <div id="app">
   <form @submit="handleSubmit" action="" method="post">
     {% csrf_token %}
     <div class="mx-8 mt-4 p-6 bg-white shadow rounded-lg">
-      <div class="grid grid-cols-8 row-gap-6 col-gap-4 -mx-2 pb-4 mb-4">
-        <div class="col-start-1 col-span-7 sm:col-span-5 px-2">
+      <div class="flex row-gap-6 col-gap-4 -mx-2 pb-4 mb-4">
+        {{ form.errors }}
+        <div class="w-3/5 sm:w-3/5 px-2">
           <label for="user" class="block text-sm font-medium leading-5 text-gray-700">
             Student / Staff
           </label>
           <div class="mt-1">
-            <v-select v-model="selected.user" id="user_selection" as="name:id:id"
+            <v-select v-model="selected.user" name="user" id="user_selection" as="name:id:id"
               from="{{ request.scheme }}://{{ request.site }}/api/v1/users/basic/?search=%s"></v-select>
           </div>
           {{ form.transactee }}
         </div>
-        <div class="col-start-1 col-span-3 sm:col-span-4 px-2">
-          <label for="item" class="block text-sm font-medium leading-5 text-gray-700">
-            Menu Item
+
+        <div class="w-1/5 sm:w-1/5 px-2">
+          <label for="check_num" class="block text-sm font-medium leading-5 text-gray-700">
+            Check #
           </label>
-          <div class="mt-1">
-            <v-select v-model="selected.menu_item" v-on:change="menuSelection" id="menu_item_selection" as="name::id"
-              from="{{ request.scheme }}://{{ request.site }}/api/v1/menu/?search=%s"></v-select>
-          </div>
-          {{ form.menu_item }}
+          <div class="mt-1 rounded-sm">{{ form.check_num }}</div>
+          <p class="block text-xs font-thin text-gray-500">
+            <i><strong>lc</strong></i> - lunch card<br /><i><strong>st</strong></i>
+            - sibling transfer
+          </p>
         </div>
-        <div class="col-span-2 px-2">
-          <label for="submit-time" class="block text-sm font-medium leading-5 text-gray-700">
+
+        <div class="w-1/5 sm:w-1/5 px-2">
+          <label for="amount" class="block text-sm font-medium leading-5 text-gray-700">
+            Amount
+          </label>
+          <div class="mt-1 rounded-sm">{{ form.amount }}</div>
+        </div>
+
+        <div class="w-1/5 sm:w-1/5 px-2">
+          <label for="amount" class="block text-sm font-medium leading-5 text-gray-700">
             Submitted
           </label>
           <div class="mt-1 rounded-sm">
@@ -48,10 +58,11 @@
           {{ form.submitted }}
         </div>
       </div>
+
       <div class="mt-8 border-t border-gray-200 pt-5">
         <div class="flex justify-end">
           <span class="inline-flex rounded-md shadow-sm">
-            <a href="{% url 'transaction-today-orders' %}">
+            <a href="{% url 'transaction-today-deposits' %}">
               <button type="button"
                 class="py-2 px-4 border border-gray-300 rounded-md text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-50 active:text-gray-800 transition duration-150 ease-in-out">
                 Cancel
@@ -81,33 +92,18 @@
     data: {
       selected: {
         user: "",
-        menu_item: "",
         submitted: "",
       },
     },
+    mounted: function () {
+      this.$refs.submitTime.datetime = luxon.DateTime.local();
+    },
     methods: {
-      menuSelection(value) {
-        var now = luxon.DateTime.local();
-        var selected_item = this.selected.menu_item.name.toLowerCase();
-        if (selected_item.includes("forgot to order")) {
-          var submitted = luxon.DateTime.local(
-            now.year,
-            now.month,
-            now.day,
-            9,
-            30
-          );
-        } else {
-          var submitted = luxon.DateTime.local(now.year, now.month, now.day, 8);
-        }
-        this.$refs.submitTime.datetime = submitted;
-        this.selected.submitted = submitted;
+      setSelected(value) {
+        this.selected = value;
       },
       handleSubmit() {
         document.getElementById("id_transactee").value = this.selected.user;
-        document.getElementById(
-          "id_menu_item"
-        ).value = this.selected.menu_item.id;
         document.getElementById("id_submitted").value = this.selected.submitted;
       },
     },

@@ -152,7 +152,7 @@ class TransactionMixin:
 
 class BatchDepositView(LoginRequiredMixin, DepositMixin, FormView):
     form_class = DepositFormSet
-    template_name = 'transactions/admin/transaction_batch_deposit.html'
+    template_name = 'admin/transaction_batch_deposit.html'
     success_url = '/admin/transactions/deposits/batch'
 
     def form_valid(self, form):
@@ -174,7 +174,7 @@ class BatchDepositView(LoginRequiredMixin, DepositMixin, FormView):
 
 class CreateDepositView(LoginRequiredMixin, DepositMixin, FormView):
     form_class = TransactionDepositForm
-    template_name = 'transactions/admin/transaction_single_deposit.html'
+    template_name = 'admin/transaction_single_deposit.html'
     profile_id = None
 
     def form_valid(self, form):
@@ -201,7 +201,7 @@ class CreateDepositView(LoginRequiredMixin, DepositMixin, FormView):
 
 class CreateOrderView(LoginRequiredMixin, OrderMixin, FormView):
     form_class = TransactionOrderForm
-    template_name = 'transactions/admin/transaction_single_order.html'
+    template_name = 'admin/transaction_single_order.html'
     profile_id = None
 
     def form_valid(self, form):
@@ -360,7 +360,7 @@ class ExportChecksView(LoginRequiredMixin, View):
 
 
 class HomeroomOrdersArchiveView(LoginRequiredMixin, TodayArchiveView):
-    template_name = 'transactions/user/homeroom_orders_today_list.html'
+    template_name = 'user/homeroom_orders_today_list.html'
     allow_empty = True
     allow_future = False
     date_field = "submitted"
@@ -402,23 +402,23 @@ class OrderProcessView(LoginRequiredMixin, OrderMixin, View):
 
 
 class TransactionsDateArchiveView(LoginRequiredMixin, TransactionMixin, DayArchiveView):
-    template_name = 'transactions/admin/transactions_list.html'
+    template_name = 'admin/transactions_list.html'
 
 
 class TransactionDetailView(LoginRequiredMixin, TransactionMixin, DetailView):
-    template_name = 'transactions/admin/transaction_detail.html'
+    template_name = 'admin/transaction_detail.html'
 
 
 class TransactionListView(LoginRequiredMixin, TransactionMixin, ListView):
-    template_name = 'transactions/admin/transactions_list.html'
+    template_name = 'admin/transactions_list.html'
 
 
 class TransactionsTodayArchiveView(LoginRequiredMixin, TransactionMixin, TodayArchiveView):
-    template_name = 'transactions/admin/transactions_list.html'
+    template_name = 'admin/transactions_list.html'
 
 
 class UsersTodayArchiveView(LoginRequiredMixin, TodayArchiveView):
-    template_name = 'transactions/user/user_orders_today_list.html'
+    template_name = 'user/user_orders_today_list.html'
     allow_empty = True
     allow_future = False
     date_field = "submitted"
@@ -440,7 +440,7 @@ class UsersTodayArchiveView(LoginRequiredMixin, TodayArchiveView):
 
 
 class UsersTransactionsArchiveView(LoginRequiredMixin, ListView):
-    template_name = 'transactions/user/user_transactions_list.html'
+    template_name = 'user/user_transactions_list.html'
     allow_empty = True
     allow_future = False
 

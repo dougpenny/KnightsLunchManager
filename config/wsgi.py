@@ -16,9 +16,9 @@ load_dotenv(find_dotenv())
 
 if os.getenv('PRODUCTION', False) == 'True':
     os.environ.setdefault('DJANGO_SETTINGS_MODULE',
-                          'lunchmanager.settings.production')
+                          'config.settings.production')
 else:
     os.environ.setdefault('DJANGO_SETTINGS_MODULE',
-                          'lunchmanager.settings.local')
+                          'config.settings.local')
 
 application = get_wsgi_application()

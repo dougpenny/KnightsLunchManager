@@ -14,7 +14,7 @@ import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
+BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 SITE_ID = 1
@@ -27,7 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    # 'django.contrib.staticfiles',
     'django.contrib.sites',
 
     'django_auth_adfs',
@@ -51,13 +51,18 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'lunchmanager.urls'
+ROOT_URLCONF = 'config.urls'
+
+# Templates Directory
+TEMPLATE_DIR = BASE_DIR / 'templates/'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'DIRS': [
+            TEMPLATE_DIR,
+        ],
+        'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -69,7 +74,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'lunchmanager.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 # Password validation
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-password-validators
@@ -127,8 +132,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/dev/howto/static-files/
 
-STATIC_ROOT = BASE_DIR / 'static/'
+# STATIC_ROOT = BASE_DIR / 'static/'
 STATIC_URL = '/static/'
 
-MEDIA_ROOT = BASE_DIR / 'resources/'
+# MEDIA_ROOT = BASE_DIR / 'resources/'
 MEDIA_URL = '/resources/'

@@ -50,7 +50,7 @@ class ProfileMixin:
 
 class ProfileDetailView(LoginRequiredMixin, DetailView):
     model = Profile
-    template_name = 'profiles/admin/profile_detail.html'
+    template_name = 'admin/profile_detail.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -63,12 +63,12 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
 
 class ProfileListView(LoginRequiredMixin, ProfileMixin, ListView):
     model = Profile
-    template_name = 'profiles/admin/profiles_list.html'
+    template_name = 'admin/profiles_list.html'
 
 
 class ProfileSearchResultsView(LoginRequiredMixin, ProfileMixin, ListView):
     model = Profile
-    template_name = 'profiles/admin/profiles_list.html'
+    template_name = 'admin/profiles_list.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

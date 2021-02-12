@@ -1,4 +1,4 @@
-from lunchmanager.powerschool.powerschool import Powerschool
+from powerschool.powerschool import Powerschool
 from transactions.models import Transaction
 
 

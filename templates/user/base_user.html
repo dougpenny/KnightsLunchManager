@@ -1,4 +1,4 @@
-{% extends "web/base.html" %}
+{% extends "base.html" %}
 {% block head-scripts %}
 {% if user %}
   {% load static %}
@@ -8,7 +8,7 @@
 
 {% block main-content %}
 <body class="antialiased font-sans bg-gray-200">
-  {% include 'web/includes/messages.html' %}
+  {% include 'includes/messages.html' %}
   <nav x-data="{ open: false }" @keydown.window.escape="open = false" class="bg-gray-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
@@ -101,7 +101,7 @@
   <div class="p-8 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 lg:flex lg:items-center lg:justify-between">
       {% if user %}
-        {% include "web/user/header.html" %}
+        {% include "user/header.html" %}
       {% else %}
         <div class="flex-1 min-w-0">
           <h2 class="text-2xl font-medium leading-7 text-gray-800 sm:text-3xl sm:leading-9 sm:truncate">

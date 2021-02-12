@@ -7,7 +7,7 @@ import logging
 import requests
 
 from cafeteria.models import School
-from lunchmanager.powerschool.powerschool import Powerschool
+from powerschool.powerschool import Powerschool
 from profiles.models import Profile
 
 
