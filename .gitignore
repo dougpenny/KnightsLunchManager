@@ -88,3 +88,6 @@ venv.bak/
 
 # pytype static type analyzer
 .pytype/
+
+# npm files
+node_modules/

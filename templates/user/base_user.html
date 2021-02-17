@@ -2,7 +2,7 @@
 {% block head-scripts %}
 {% if user %}
   {% load static %}
-  <script src="{% static 'cafeteria/js/order_processing.js' %}"></script>
+  <script src="{% static 'js/modal_interaction.js' %}"></script>
 {% endif %}
 {% endblock %}
 
@@ -16,7 +16,7 @@
           <div class="flex items-center">
             <div class="flex-shrink-0">
               {% load static %}
-              <img class="h-8 w-8" src="{% static 'cafeteria/img/knights_head.png' %}" alt="NRCA Knights" />
+              <img class="h-8 w-8" src="{% static 'img/knights_head.png' %}" alt="NRCA Knights" />
             </div>
             <div class="ml-6 flex items-baseline">
               <h1 class="text-3xl font-bold leading-tight text-gray-100">
