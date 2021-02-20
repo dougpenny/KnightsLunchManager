@@ -30,7 +30,7 @@
             <div>
               {% if user %}
                 <a href="{% url 'django_auth_adfs:logout' %}"
-                  class="inline-flex items-center block px-4 py-2 text-sm text-gray-400 hover:text-white focus:text-white"
+                  class="inline-flex items-center block px-4 py-2 text-sm text-gray-200 hover:text-white focus:text-white"
                   title="Sign out">
                   <p class="mr-3">Sign out</p>
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" width="24" height="24" viewBox="0 0 24 24"
@@ -42,7 +42,7 @@
                 </a>
               {% else %}
                 <a href="{% url 'django_auth_adfs:login' %}"
-                  class="inline-flex items-center block px-4 py-2 text-sm text-gray-400 hover:text-white focus:text-white"
+                  class="inline-flex items-center block px-4 py-2 text-sm text-gray-200 hover:text-white focus:text-white"
                   title="Sign in">
                   <p class="mr-3">Sign in</p>
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" width="24" height="24" viewBox="0 0 24 24"

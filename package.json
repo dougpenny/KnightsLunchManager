@@ -1,0 +1,29 @@
+{
+  "name": "lunchmanager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "rimraf /static/css && postcss resources/css/*.css -d static/css --env production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NRCA/KnightsLunchManager.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NRCA/KnightsLunchManager/issues"
+  },
+  "homepage": "https://github.com/NRCA/KnightsLunchManager#readme",
+  "devDependencies": {
+    "autoprefixer": "^10.2.4",
+    "postcss": "^8.2.6",
+    "postcss-cli": "^8.3.1",
+    "rimraf": "^3.0.2",
+    "tailwindcss": "^2.0.3"
+  },
+  "dependencies": {
+    "@tailwindcss/forms": "^0.2.1"
+  }
+}

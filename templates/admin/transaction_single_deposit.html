@@ -14,7 +14,7 @@
   <form @submit="handleSubmit" action="" method="post">
     {% csrf_token %}
     <div class="mx-8 mt-4 p-6 bg-white shadow rounded-lg">
-      <div class="flex row-gap-6 col-gap-4 -mx-2 pb-4 mb-4">
+      <div class="flex gap-y-6 gap-x-4 -mx-2 pb-4 mb-4">
         {{ form.errors }}
         <div class="w-3/5 sm:w-3/5 px-2">
           <label for="user" class="block text-sm font-medium leading-5 text-gray-700">
@@ -32,7 +32,7 @@
             Check #
           </label>
           <div class="mt-1 rounded-sm">{{ form.check_num }}</div>
-          <p class="block text-xs font-thin text-gray-500">
+          <p class="block text-xs font-extralight text-gray-500">
             <i><strong>lc</strong></i> - lunch card<br /><i><strong>st</strong></i>
             - sibling transfer
           </p>
@@ -64,14 +64,14 @@
           <span class="inline-flex rounded-md shadow-sm">
             <a href="{% url 'transaction-today-deposits' %}">
               <button type="button"
-                class="py-2 px-4 border border-gray-300 rounded-md text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-50 active:text-gray-800 transition duration-150 ease-in-out">
+                class="py-2 px-4 border border-gray-300 rounded-md text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:border-blue-300 active:bg-gray-50 active:text-gray-800 transition duration-150 ease-in-out">
                 Cancel
               </button>
             </a>
           </span>
           <span class="ml-3 inline-flex rounded-md shadow-sm">
             <button type="submit"
-              class="inline-flex justify-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition duration-150 ease-in-out">
+              class="inline-flex justify-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 active:bg-indigo-700 transition duration-150 ease-in-out">
               Save
             </button>
           </span>

@@ -106,7 +106,7 @@
             <tbody class="bg-white divide-y divide-gray-200">
               {% for profile in object_list %}
                 <tr>
-                  <td class="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200">
+                  <td class="px-6 py-4 whitespace-nowrap text-left border-b border-gray-200">
                     <a class="text-indigo-700 hover:underline" href="{% url 'profile-detail' profile.pk %}">{{ profile.name }}</a>
                   </td>
                   <td class="px-6 py-4 text-left border-b border-gray-200 text-sm leading-5 text-gray-900">
@@ -116,7 +116,7 @@
                       Staff
                     {% endif %}
                   </td>
-                  <td class="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200 text-sm leading-5 {% if profile.current_balance < 0 %}text-red-600{% else %}text-gray-900{% endif %}">
+                  <td class="px-6 py-4 whitespace-nowrap text-left border-b border-gray-200 text-sm leading-5 {% if profile.current_balance < 0 %}text-red-600{% else %}text-gray-900{% endif %}">
                     ${{ profile.current_balance }}
                   </td>
                 </tr>
