@@ -165,17 +165,17 @@ def admin_dashboard(request):
 def admin_settings(request, section='general'):
     SchoolsFormSet = modelformset_factory(School, form=SchoolsModelForm, extra=0)
     if request.method == 'POST':
-        print(request.POST)
-        formset = SchoolsFormSet(request.POST)
-        if formset.is_valid():
-            formset.save()
-            messages.success(request, 'The school settings were successfully updated.')
+        if 'school-settings' in request.POST:
+            schools_form = SchoolsFormSet(request.POST, prefix='schools')
+            if schools_form.is_valid():
+                schools_form.save()
+                messages.success(request, 'The school settings were successfully updated.')
         return redirect('settings')
     else:
         context = {}
         context['section'] = section
         context['schools_count'] = School.objects.count()
-        context['formset'] = SchoolsFormSet()
+        context['formset'] = SchoolsFormSet(prefix='schools')
     return render(request, 'admin/settings.html', context=context)
 
 
