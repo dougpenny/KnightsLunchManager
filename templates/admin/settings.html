@@ -38,142 +38,137 @@
 
               <div x-show="tab === 'general'" class="mt-10 divide-y divide-gray-200">
                 <div class="space-y-1">
-                  <h3 class="text-lg leading-6 font-medium text-gray-900">
-                    Profile
-                  </h3>
-                  <p class="max-w-2xl text-sm text-gray-500">
-                    This information will be displayed publicly so be careful what you share.
-                  </p>
-                </div>
-                <div class="mt-6">
-                  <dl class="divide-y divide-gray-200">
-                    <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
-                      <dt class="text-sm font-medium text-gray-500">
-                        Name
-                      </dt>
-                      <dd class="mt-1 flex text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        <span class="flex-grow">Chelsea Hagon</span>
-                        <span class="ml-4 flex-shrink-0">
-                          <button type="button" class="bg-white rounded-md font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
-                            Update
-                          </button>
-                        </span>
-                      </dd>
+                  <form class="space-y-8 divide-y divide-gray-200">
+                    <div>
+                      <div>
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">
+                          Operating Hours
+                        </h3>
+                      </div>
+                      <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-8 sm:grid-cols-6">
+                        <div class="sm:col-span-2">
+                          <label for="open-time" class="block text-sm font-medium text-gray-700">
+                            Orders Open
+                          </label>
+                          <div class="mt-1">
+                            <input id="open-time" name="open-time" type="time" autocomplete="open-time" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                          </div>
+                          <p class="mt-2 text-xs text-gray-500" id="open-time-description">Anytime after the close time is assumed to be the previous day.</p>
+                        </div>
+                        <div class="sm:col-span-2">
+                          <label for="close-time" class="block text-sm font-medium text-gray-700">
+                            Orders Close
+                          </label>
+                          <div class="mt-1">
+                            <input id="close-time" name="close-time" type="time" autocomplete="close-time" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:pt-5">
-                      <dt class="text-sm font-medium text-gray-500">
-                        Photo
-                      </dt>
-                      <dd class="mt-1 flex text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        <span class="flex-grow">
-                          <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&ixqx=Y2HhaTWSzp&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
-                        </span>
-                        <span class="ml-4 flex-shrink-0 flex items-start space-x-4">
-                          <button type="button" class="bg-white rounded-md font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
-                            Update
-                          </button>
-                          <span class="text-gray-300" aria-hidden="true">|</span>
-                          <button type="button" class="bg-white rounded-md font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
-                            Remove
-                          </button>
-                        </span>
-                      </dd>
+                    <div class="pt-8">
+                      <div>
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">
+                          Current Balance Export
+                        </h3>
+                      </div>
+                      <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-8 sm:grid-cols-6">
+                        <div class="sm:col-span-3">
+                          <label for="balance-export-path" class="block text-sm font-medium text-gray-700">
+                            Export Path
+                          </label>
+                          <div class="mt-1">
+                            <input id="balance-export-path" name="balance-export-path" type="text" autocomplete="export-path" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:pt-5">
-                      <dt class="text-sm font-medium text-gray-500">
-                        Email
-                      </dt>
-                      <dd class="mt-1 flex text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        <span class="flex-grow">chelsea.hagon@example.com</span>
-                        <span class="ml-4 flex-shrink-0">
-                          <button type="button" class="bg-white rounded-md font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
-                            Update
-                          </button>
-                        </span>
-                      </dd>
+
+                    <div class="pt-5">
+                      <div class="flex justify-end">
+                        <button type="button" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                          Cancel
+                        </button>
+                        <button type="submit" name="general-settings" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                          Save
+                        </button>
+                      </div>
                     </div>
-                    <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:border-b sm:border-gray-200">
-                      <dt class="text-sm font-medium text-gray-500">
-                        Job title
-                      </dt>
-                      <dd class="mt-1 flex text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        <span class="flex-grow">Human Resources Manager</span>
-                        <span class="ml-4 flex-shrink-0">
-                          <button type="button" class="bg-white rounded-md font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
-                            Update
-                          </button>
-                        </span>
-                      </dd>
-                    </div>
-                  </dl>
+                  </form>
                 </div>
               </div>
 
               <div x-show="tab === 'schools'" class="mt-10 divide-y divide-gray-200">
                 <div class="space-y-1">
                   <div>
-                    <div>
-                      <p class="mt-1 text-sm text-gray-500">
-                        Below you can select the schools you would like to include when syncing data with PowerSchool, as well as assign a friendly name.
-                      </p>
-                    </div>
-
                     {% if schools_count > 0 %}
-                    <form action="{% url 'settings' %}" method="post" class="space-y-8 divide-y divide-gray-200">
-                    {% csrf_token %}
-                    {{ formset.management_form }}
-                      <div class="mt-8 flex flex-col">
-                        <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                          <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                            <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                              <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                  <tr>
-                                    <th scope="col" class="w-auto px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                      Active
-                                    </th>
-                                    <th scope="col" class="w-auto px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                      School
-                                    </th>
-                                    <th scope="col" class="w-full px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                      Friendly Name
-                                    </th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {% for form in formset %}
-                                  {{ form.id }}
-                                  {{ form.errors }}
-                                  <tr {% if forloop.counter|divisibleby:2 %} class="bg-gray-50" {% else %} class="bg-white" {% endif %}>
-                                    <td class="px-2 py-4 text-center whitespace-nowrap">
-                                      {{ form.active }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                      {{ form.name }}{{ form.name.value }}
-                                    </td>
-                                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                      {{ form.display_name }}
-                                    </td>
-                                  </tr>
-                                  {% endfor %}
-                                </tbody>
-                              </table>
+                      <div>
+                        <p class="mt-1 text-sm text-gray-500">
+                          Below you can select the schools you would like to include when syncing data with PowerSchool, as well as assign each one a friendly name.
+                        </p>
+                      </div>
+
+                      <form action="{% url 'settings' %}" method="post" class="space-y-8 divide-y divide-gray-200">
+                      {% csrf_token %}
+                      {{ formset.management_form }}
+                        <div class="mt-8 flex flex-col">
+                          <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                            <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                              <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                  <thead class="bg-gray-50">
+                                    <tr>
+                                      <th scope="col" class="w-auto px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Active
+                                      </th>
+                                      <th scope="col" class="w-auto px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        School
+                                      </th>
+                                      <th scope="col" class="w-full px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Friendly Name
+                                      </th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {% for form in formset %}
+                                    {{ form.id }}
+                                    {{ form.errors }}
+                                    <tr {% if forloop.counter|divisibleby:2 %} class="bg-gray-50" {% else %} class="bg-white" {% endif %}>
+                                      <td class="px-2 py-4 text-center whitespace-nowrap">
+                                        {{ form.active }}
+                                      </td>
+                                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ form.name }}{{ form.name.value }}
+                                      </td>
+                                      <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ form.display_name }}
+                                      </td>
+                                    </tr>
+                                    {% endfor %}
+                                  </tbody>
+                                </table>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
 
-                      <div class="pt-5">
-                        <div class="flex justify-end">
-                          <button type="button" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Cancel
-                          </button>
-                          <button type="submit" name="school-settings" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            Save
-                          </button>
+                        <div class="pt-5">
+                          <div class="flex justify-end">
+                            <button type="button" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                              Cancel
+                            </button>
+                            <button type="submit" name="school-settings" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                              Save
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    </form>
+                      </form>
+                    {% else %}
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                      Initial sync required
+                    </h3>
+                    <p class="mt-1 text-sm text-gray-500">
+                      You will first need to install the required PowerSchool plugin and perform an initial sync of the schools in your district.
+                    </p>
                     {% endif %}
 
                   </div>
@@ -252,7 +247,7 @@
                         <button type="button" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                           Cancel
                         </button>
-                        <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <button type="submit" name="integration-settings" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                           Save
                         </button>
                       </div>
