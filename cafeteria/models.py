@@ -11,6 +11,10 @@ class School(models.Model):
     name = models.CharField(max_length=100)
     school_number = models.IntegerField()
 
+    class Meta:
+        ordering = ['name']
+
+
     def __str__(self):
         if self.display_name != '':
             return self.display_name

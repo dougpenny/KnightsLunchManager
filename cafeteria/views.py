@@ -10,6 +10,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q, Sum
+from django.forms import modelformset_factory
 from django.http import FileResponse, HttpRequest
 from django.shortcuts import redirect, render
 from django.utils import timezone
@@ -20,7 +21,8 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 
-from powerschool.powerschool import Powerschool
+from cafeteria.forms import SchoolsModelForm
+from cafeteria.models import School
 from menu.models import MenuItem
 from profiles.models import Profile
 from transactions.models import MenuLineItem
@@ -157,6 +159,24 @@ def admin_dashboard(request):
     context['debtors'] = Profile.objects.filter(current_balance__lt=0).order_by(
         'current_balance', 'user__last_name')[:10]
     return render(request, 'admin/admin.html', context=context)
+
+
+@login_required
+def admin_settings(request, section='general'):
+    SchoolsFormSet = modelformset_factory(School, form=SchoolsModelForm, extra=0)
+    if request.method == 'POST':
+        print(request.POST)
+        formset = SchoolsFormSet(request.POST)
+        if formset.is_valid():
+            formset.save()
+            messages.success(request, 'The school settings were successfully updated.')
+        return redirect('settings')
+    else:
+        context = {}
+        context['section'] = section
+        context['schools_count'] = School.objects.count()
+        context['formset'] = SchoolsFormSet()
+    return render(request, 'admin/settings.html', context=context)
 
 
 def orders_for_homeroom(staff: Profile):

@@ -14,7 +14,9 @@ urlpatterns = [
          name='user-transactions'),
 
     path('admin/', views.admin_dashboard, name='admin'),
-    path('admin/homeroom-orders-report',
+    path('admin/settings/', views.admin_settings, name='settings'),
+    path('admin/settings/<str:section>/', views.admin_settings),
+    path('admin/homeroom-orders-report/',
          views.homeroom_orders_report, name='homerooms-report'),
     path('admin/transactions/', include('transactions.urls')),
     path('admin/profiles/', include('profiles.urls')),
