@@ -30,7 +30,7 @@ urlpatterns = [
          name='transaction-deposit-create'),
     path('deposits/today/', TransactionsTodayArchiveView.as_view(filter='deposits'),
          name='transaction-today-deposits'),
-    path('deposits/batch', BatchDepositView.as_view(),
+    path('deposits/batch/', BatchDepositView.as_view(),
          name='transaction-deposits-batch'),
 
     path('orders/', TransactionListView.as_view(filter='orders'),

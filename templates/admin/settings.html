@@ -12,7 +12,7 @@
               <div x-data="{ tab: '{{ section }}' }">
               <div class="lg:hidden">
                 <label for="selected-tab" class="sr-only">Select a tab</label>
-                <select id="selected-tab" name="selected-tab" x-model="tab" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm rounded-md">
+                <select id="selected-tab" name="selected-tab" x-model="tab" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
                   <option value="general">General</option>
                   <option value="schools">Schools</option>
                   <option value="integrations">Integrations</option>
@@ -21,15 +21,15 @@
               <div class="hidden lg:block">
                 <div class="border-b border-gray-200">
                   <nav class="-mb-px flex">
-                    <button :class="{ 'border-blue-500 text-blue-700 active': tab === 'general', 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700': tab != 'general' }" @click="tab = 'general'" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                    <button :class="{ 'border-blue-500 text-blue-700 active': tab === 'general', 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700': tab != 'general' }" @click="tab = 'general'" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm focus:outline-none">
                       General
                     </button>
 
-                    <button :class="{ 'border-blue-500 text-blue-700 active': tab === 'schools', 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700': tab != 'schools' }" @click="tab = 'schools'" class="whitespace-nowrap ml-8 py-4 px-1 border-b-2 font-medium text-sm">
+                    <button :class="{ 'border-blue-500 text-blue-700 active': tab === 'schools', 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700': tab != 'schools' }" @click="tab = 'schools'" class="whitespace-nowrap ml-8 py-4 px-1 border-b-2 font-medium text-sm focus:outline-none">
                       Schools
                     </button>
 
-                    <button :class="{ 'border-blue-500 text-blue-700 active': tab === 'integrations', 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700': tab != 'integrations' }" @click="tab = 'integrations'" class="whitespace-nowrap ml-8 py-4 px-1 border-b-2 font-medium text-sm">
+                    <button :class="{ 'border-blue-500 text-blue-700 active': tab === 'integrations', 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700': tab != 'integrations' }" @click="tab = 'integrations'" class="whitespace-nowrap ml-8 py-4 px-1 border-b-2 font-medium text-sm focus:outline-none">
                       Integrations
                     </button>
                   </nav>
