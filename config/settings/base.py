@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
 import os
+from datetime import time
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -27,11 +28,12 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'django.contrib.sessions',
     'django.contrib.messages',
-    # 'django.contrib.staticfiles',
     'django.contrib.sites',
 
     'django_auth_adfs',
     'rest_framework',
+    'constance',
+    'constance.backends.database',
 
     'api.apps.ApiConfig',
     'cafeteria.apps.CafeteriaConfig',
@@ -76,6 +78,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+
 # Password validation
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-password-validators
 
@@ -115,8 +118,9 @@ AUTH_ADFS = {
     },
 }
 
-LOGIN_URL = "django_auth_adfs:login"
-LOGIN_REDIRECT_URL = "/"
+LOGIN_URL = 'django_auth_adfs:login'
+LOGIN_REDIRECT_URL = '/'
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/dev/topics/i18n/
@@ -137,3 +141,26 @@ STATIC_URL = '/static/'
 
 # MEDIA_ROOT = BASE_DIR / 'resources/'
 MEDIA_URL = '/resources/'
+
+
+# Constance Configuration
+# https://django-constance.readthedocs.io/en/latest/index.html
+
+CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+
+CONSTANCE_CONFIG = {
+    'OPEN_TIME': (time(0,0), 'The time orders should start being accepted.', time),
+    'CLOSE_TIME': (time(23,15), 'The time orders should stop being accepted.', time),
+    'BALANCE_EXPORT_PATH': ('/', 'File path where current balance export files should be saved.'),
+    'POWERSCHOOL_URL': ('', 'Full URL for your PowerSchool server.'),
+    'POWERSCHOOL_ID': ('', 'Found in the plugin on your PowerSchool server.'),
+    'POWERSCHOOL_SECRET': ('', 'Found in the plugin on your PowerSchool server.'),
+    'AZURE_TENANT_ID': ('', 'Found in the Azure portal.'),
+    'AZURE_APP_ID': ('', 'Found in the Azure portal.'),
+}
+
+CONSTANCE_CONFIG_FIELDSETS = {
+    'General Settings': ('OPEN_TIME', 'CLOSE_TIME', 'BALANCE_EXPORT_PATH'),
+    'PowerSchool Settings': ('POWERSCHOOL_URL', 'POWERSCHOOL_ID', 'POWERSCHOOL_SECRET'),
+    'Azure Settings': ('AZURE_TENANT_ID', 'AZURE_APP_ID'),
+}

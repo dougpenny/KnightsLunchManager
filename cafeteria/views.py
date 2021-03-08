@@ -11,9 +11,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q, Sum
 from django.forms import modelformset_factory
+from django.forms.models import modelform_factory
 from django.http import FileResponse, HttpRequest
 from django.shortcuts import redirect, render
 from django.utils import timezone
+
+from constance import config
 
 from reportlab import platypus
 from reportlab.lib import enums
@@ -21,7 +24,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 
-from cafeteria.forms import SchoolsModelForm
+from cafeteria.forms import GeneralForm, IntegrationsForm, SchoolsModelForm
 from cafeteria.models import School
 from menu.models import MenuItem
 from profiles.models import Profile
@@ -165,7 +168,25 @@ def admin_dashboard(request):
 def admin_settings(request, section='general'):
     SchoolsFormSet = modelformset_factory(School, form=SchoolsModelForm, extra=0)
     if request.method == 'POST':
-        if 'school-settings' in request.POST:
+        if 'general-settings' in request.POST:
+            general_form = GeneralForm(request.POST, prefix='general')
+            if general_form.is_valid():
+                form_data = general_form.cleaned_data
+                config.OPEN_TIME = form_data['open_time']
+                config.CLOSE_TIME = form_data['close_time']
+                config.BALANCE_EXPORT_PATH = form_data['balance_export_path']
+                messages.success(request, 'The general settings were successfully updated.')
+        elif 'integration-settings' in request.POST:
+            integrations_form = IntegrationsForm(request.POST, prefix='integrations')
+            if integrations_form.is_valid():
+                form_data = integrations_form.cleaned_data
+                config.POWERSCHOOL_URL = form_data['powerschool_url']
+                config.POWERSCHOOL_ID = form_data['powerschool_id']
+                config.POWERSCHOOL_SECRET = form_data['powerschool_secret']
+                config.AZURE_TENANT_ID = form_data['azure_tenant_id']
+                config.AZURE_APP_ID = form_data['azure_app_id']
+                messages.success(request, 'The integration settings were successfully updated.')
+        elif 'school-settings' in request.POST:
             schools_form = SchoolsFormSet(request.POST, prefix='schools')
             if schools_form.is_valid():
                 schools_form.save()
@@ -174,8 +195,20 @@ def admin_settings(request, section='general'):
     else:
         context = {}
         context['section'] = section
+        context['general_form'] = GeneralForm(prefix='general', initial={
+            'open_time': config.OPEN_TIME,
+            'close_time': config.CLOSE_TIME,
+            'balance_export_path': config.BALANCE_EXPORT_PATH,
+        })
         context['schools_count'] = School.objects.count()
-        context['formset'] = SchoolsFormSet(prefix='schools')
+        context['schools_formset'] = SchoolsFormSet(prefix='schools')
+        context['integrations_form'] = IntegrationsForm(prefix='integrations', initial={
+            'powerschool_url': config.POWERSCHOOL_URL,
+            'powerschool_id': config.POWERSCHOOL_ID,
+            'powerschool_secret': config.POWERSCHOOL_SECRET,
+            'azure_tenant_id': config.AZURE_TENANT_ID,
+            'azure_app_id': config.AZURE_APP_ID,
+        })
     return render(request, 'admin/settings.html', context=context)
 
 

@@ -38,7 +38,8 @@
 
               <div x-show="tab === 'general'" class="mt-10 divide-y divide-gray-200">
                 <div class="space-y-1">
-                  <form class="space-y-8 divide-y divide-gray-200">
+                  <form action="{% url 'settings' %}" method="post" class="space-y-8 divide-y divide-gray-200">
+                    {% csrf_token %}
                     <div>
                       <div>
                         <h3 class="text-lg leading-6 font-medium text-gray-900">
@@ -47,20 +48,20 @@
                       </div>
                       <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-8 sm:grid-cols-6">
                         <div class="sm:col-span-2">
-                          <label for="open-time" class="block text-sm font-medium text-gray-700">
+                          <label for="{{ general_form.open_time.id_for_label }}" class="block text-sm font-medium text-gray-700">
                             Orders Open
                           </label>
                           <div class="mt-1">
-                            <input id="open-time" name="open-time" type="time" autocomplete="open-time" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                            {{ general_form.open_time }}
                           </div>
                           <p class="mt-2 text-xs text-gray-500" id="open-time-description">Anytime after the close time is assumed to be the previous day.</p>
                         </div>
                         <div class="sm:col-span-2">
-                          <label for="close-time" class="block text-sm font-medium text-gray-700">
+                          <label for="{{ general_form.close_time.id_for_label }}" class="block text-sm font-medium text-gray-700">
                             Orders Close
                           </label>
                           <div class="mt-1">
-                            <input id="close-time" name="close-time" type="time" autocomplete="close-time" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                            {{ general_form.close_time }}
                           </div>
                         </div>
                       </div>
@@ -73,11 +74,11 @@
                       </div>
                       <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-8 sm:grid-cols-6">
                         <div class="sm:col-span-3">
-                          <label for="balance-export-path" class="block text-sm font-medium text-gray-700">
+                          <label for="{{ general_form.balance_export_path.id_for_label }}" class="block text-sm font-medium text-gray-700">
                             Export Path
                           </label>
                           <div class="mt-1">
-                            <input id="balance-export-path" name="balance-export-path" type="text" autocomplete="export-path" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                            {{ general_form.balance_export_path }}
                           </div>
                         </div>
                       </div>
@@ -109,7 +110,7 @@
 
                       <form action="{% url 'settings' %}" method="post" class="space-y-8 divide-y divide-gray-200">
                       {% csrf_token %}
-                      {{ formset.management_form }}
+                      {{ schools_formset.management_form }}
                         <div class="mt-8 flex flex-col">
                           <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                             <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
@@ -129,7 +130,7 @@
                                     </tr>
                                   </thead>
                                   <tbody>
-                                    {% for form in formset %}
+                                    {% for form in schools_formset %}
                                     {{ form.id }}
                                     {{ form.errors }}
                                     <tr {% if forloop.counter|divisibleby:2 %} class="bg-gray-50" {% else %} class="bg-white" {% endif %}>
@@ -177,7 +178,8 @@
 
               <div x-show="tab === 'integrations'" class="mt-10 divide-y divide-gray-200">
                 <div class="space-y-1">
-                  <form class="space-y-8 divide-y divide-gray-200">
+                  <form action="{% url 'settings' %}" method="post" class="space-y-8 divide-y divide-gray-200">
+                    {% csrf_token %}
                     <div>
                       <div>
                         <h3 class="text-lg leading-6 font-medium text-gray-900">
@@ -189,27 +191,27 @@
                       </div>
                       <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                         <div class="sm:col-span-4">
-                          <label for="powerschool-url" class="block text-sm font-medium text-gray-700">
+                          <label for="{{ integrations_form.powerschool_url.id_for_label }}" class="block text-sm font-medium text-gray-700">
                             PowerSchool URL
                           </label>
                           <div class="mt-1">
-                            <input id="powerschool-url" name="powerschool-url" type="url" autocomplete="url" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                            {{ integrations_form.powerschool_url }}
                           </div>
                         </div>
                         <div class="sm:col-span-3">
-                          <label for="ps-client-id" class="block text-sm font-medium text-gray-700">
+                          <label for="{{ integrations_form.powerschool_id.id_for_label }}" class="block text-sm font-medium text-gray-700">
                             PowerSchool Client ID
                           </label>
                           <div class="mt-1">
-                            <input id="ps-client-id" name="ps-client-id" type="text" autocomplete="ps-client-id" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                            {{ integrations_form.powerschool_id }}
                           </div>
                         </div>
                         <div class="sm:col-span-3">
-                          <label for="ps-client-secret" class="block text-sm font-medium text-gray-700">
+                          <label for="{{ integrations_form.powerschool_secret.id_for_label }}" class="block text-sm font-medium text-gray-700">
                             PowerSchool Client Secret
                           </label>
                           <div class="mt-1">
-                            <input id="ps-client-secret" name="ps-client-secret" type="text" autocomplete="ps-client-secret" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                            {{ integrations_form.powerschool_secret }}
                           </div>
                         </div>
                       </div>
@@ -225,19 +227,19 @@
                       </div>
                       <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                         <div class="sm:col-span-4">
-                          <label for="azure-tenant-id" class="block text-sm font-medium text-gray-700">
+                          <label for="{{ integrations_form.azure_tenant_id.id_for_label }}" class="block text-sm font-medium text-gray-700">
                             Azure Tenant ID
                           </label>
                           <div class="mt-1">
-                            <input id="azure-tenant-id" name="azure-tenant-id" type="text" autocomplete="azure-tenant-id" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                            {{ integrations_form.azure_tenant_id }}
                           </div>
                         </div>
                         <div class="sm:col-span-4">
-                          <label for="azure-app-id" class="block text-sm font-medium text-gray-700">
+                          <label for="{{ integrations_form.azure_app_id.id_for_label }}" class="block text-sm font-medium text-gray-700">
                             Azure Application ID
                           </label>
                           <div class="mt-1">
-                            <input id="azure-app-id" name="azure-app-id" type="text" autocomplete="azure-app-id" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
+                            {{ integrations_form.azure_app_id }}
                           </div>
                         </div>
                       </div>
