@@ -15,7 +15,7 @@
                 <select id="selected-tab" name="selected-tab" x-model="tab" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
                   <option value="general">General</option>
                   <option value="schools">Schools</option>
-                  <option value="integrations">Integrations</option>
+                  <option value="powerschool">PowerSchool</option>
                 </select>
               </div>
               <div class="hidden lg:block">
@@ -29,8 +29,8 @@
                       Schools
                     </button>
 
-                    <button :class="{ 'border-blue-500 text-blue-700 active': tab === 'integrations', 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700': tab != 'integrations' }" @click="tab = 'integrations'" class="whitespace-nowrap ml-8 py-4 px-1 border-b-2 font-medium text-sm focus:outline-none">
-                      Integrations
+                    <button :class="{ 'border-blue-500 text-blue-700 active': tab === 'powerschool', 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700': tab != 'powerschool' }" @click="tab = 'powerschool'" class="whitespace-nowrap ml-8 py-4 px-1 border-b-2 font-medium text-sm focus:outline-none">
+                      PowerSchool
                     </button>
                   </nav>
                 </div>
@@ -38,7 +38,7 @@
 
               <div x-show="tab === 'general'" class="mt-10 divide-y divide-gray-200">
                 <div class="space-y-1">
-                  <form action="{% url 'settings' %}" method="post" class="space-y-8 divide-y divide-gray-200">
+                  <form action="{% url 'settings' %}" method="post" class="space-y-8">
                     {% csrf_token %}
                     <div>
                       <div>
@@ -176,9 +176,9 @@
                 </div>
               </div>
 
-              <div x-show="tab === 'integrations'" class="mt-10 divide-y divide-gray-200">
+              <div x-show="tab === 'powerschool'" class="mt-10 divide-y divide-gray-200">
                 <div class="space-y-1">
-                  <form action="{% url 'settings' %}" method="post" class="space-y-8 divide-y divide-gray-200">
+                  <form action="{% url 'settings' %}" method="post" class="space-y-8">
                     {% csrf_token %}
                     <div>
                       <div>
@@ -191,55 +191,27 @@
                       </div>
                       <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                         <div class="sm:col-span-4">
-                          <label for="{{ integrations_form.powerschool_url.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                          <label for="{{ powerschool_form.powerschool_url.id_for_label }}" class="block text-sm font-medium text-gray-700">
                             PowerSchool URL
                           </label>
                           <div class="mt-1">
-                            {{ integrations_form.powerschool_url }}
+                            {{ powerschool_form.powerschool_url }}
                           </div>
                         </div>
                         <div class="sm:col-span-3">
-                          <label for="{{ integrations_form.powerschool_id.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                          <label for="{{ powerschool_form.powerschool_id.id_for_label }}" class="block text-sm font-medium text-gray-700">
                             PowerSchool Client ID
                           </label>
                           <div class="mt-1">
-                            {{ integrations_form.powerschool_id }}
+                            {{ powerschool_form.powerschool_id }}
                           </div>
                         </div>
                         <div class="sm:col-span-3">
-                          <label for="{{ integrations_form.powerschool_secret.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                          <label for="{{ powerschool_form.powerschool_secret.id_for_label }}" class="block text-sm font-medium text-gray-700">
                             PowerSchool Client Secret
                           </label>
                           <div class="mt-1">
-                            {{ integrations_form.powerschool_secret }}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="pt-8">
-                      <div>
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">
-                          Azure Authentication
-                        </h3>
-                        <p class="mt-1 text-sm text-gray-500">
-                          You will first need to create a new application in the Azure portal to generate the application ID.
-                        </p>
-                      </div>
-                      <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                        <div class="sm:col-span-4">
-                          <label for="{{ integrations_form.azure_tenant_id.id_for_label }}" class="block text-sm font-medium text-gray-700">
-                            Azure Tenant ID
-                          </label>
-                          <div class="mt-1">
-                            {{ integrations_form.azure_tenant_id }}
-                          </div>
-                        </div>
-                        <div class="sm:col-span-4">
-                          <label for="{{ integrations_form.azure_app_id.id_for_label }}" class="block text-sm font-medium text-gray-700">
-                            Azure Application ID
-                          </label>
-                          <div class="mt-1">
-                            {{ integrations_form.azure_app_id }}
+                            {{ powerschool_form.powerschool_secret }}
                           </div>
                         </div>
                       </div>
@@ -249,7 +221,7 @@
                         <button type="button" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                           Cancel
                         </button>
-                        <button type="submit" name="integration-settings" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <button type="submit" name="powerschool-settings" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                           Save
                         </button>
                       </div>

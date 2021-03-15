@@ -24,7 +24,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 
-from cafeteria.forms import GeneralForm, IntegrationsForm, SchoolsModelForm
+from cafeteria.forms import GeneralForm, PowerschoolForm, SchoolsModelForm
 from cafeteria.models import School
 from menu.models import MenuItem
 from profiles.models import Profile
@@ -176,16 +176,14 @@ def admin_settings(request, section='general'):
                 config.CLOSE_TIME = form_data['close_time']
                 config.BALANCE_EXPORT_PATH = form_data['balance_export_path']
                 messages.success(request, 'The general settings were successfully updated.')
-        elif 'integration-settings' in request.POST:
-            integrations_form = IntegrationsForm(request.POST, prefix='integrations')
-            if integrations_form.is_valid():
-                form_data = integrations_form.cleaned_data
+        elif 'powerschool-settings' in request.POST:
+            powerschool_form = PowerschoolForm(request.POST, prefix='powerschool')
+            if powerschool_form.is_valid():
+                form_data = powerschool_form.cleaned_data
                 config.POWERSCHOOL_URL = form_data['powerschool_url']
                 config.POWERSCHOOL_ID = form_data['powerschool_id']
                 config.POWERSCHOOL_SECRET = form_data['powerschool_secret']
-                config.AZURE_TENANT_ID = form_data['azure_tenant_id']
-                config.AZURE_APP_ID = form_data['azure_app_id']
-                messages.success(request, 'The integration settings were successfully updated.')
+                messages.success(request, 'The PowerSchool settings were successfully updated.')
         elif 'school-settings' in request.POST:
             schools_form = SchoolsFormSet(request.POST, prefix='schools')
             if schools_form.is_valid():
@@ -202,12 +200,10 @@ def admin_settings(request, section='general'):
         })
         context['schools_count'] = School.objects.count()
         context['schools_formset'] = SchoolsFormSet(prefix='schools')
-        context['integrations_form'] = IntegrationsForm(prefix='integrations', initial={
+        context['powerschool_form'] = PowerschoolForm(prefix='powerschool', initial={
             'powerschool_url': config.POWERSCHOOL_URL,
             'powerschool_id': config.POWERSCHOOL_ID,
             'powerschool_secret': config.POWERSCHOOL_SECRET,
-            'azure_tenant_id': config.AZURE_TENANT_ID,
-            'azure_app_id': config.AZURE_APP_ID,
         })
     return render(request, 'admin/settings.html', context=context)
 

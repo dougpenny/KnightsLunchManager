@@ -103,10 +103,10 @@ AUTHENTICATION_BACKENDS = (
 )
 
 AUTH_ADFS = {
-    'AUDIENCE': os.getenv('ADFS_AUDIENCE'),
-    'CLIENT_ID': os.getenv('ADFS_CLIENT_ID'),
-    'RELYING_PARTY_ID': os.getenv('ADFS_RELYING_PARTY_ID'),
-    'TENANT_ID': os.getenv('ADFS_TENANT_ID'),
+    'AUDIENCE': os.getenv('AZURE_APP_ID'),
+    'CLIENT_ID': os.getenv('AZURE_APP_ID'),
+    'RELYING_PARTY_ID': os.getenv('AZURE_APP_ID'),
+    'TENANT_ID': os.getenv('AZURE_TENANT_ID'),
     'CLAIM_MAPPING': {
         'first_name': 'given_name',
         'last_name': 'family_name',

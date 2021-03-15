@@ -7,6 +7,8 @@ import time
 
 import requests
 
+from constance import config
+
 #
 # Disable InsecureRequestWarning during testing
 #
@@ -17,10 +19,9 @@ class Powerschool:
     def __init__(self):
         """ Initialize a Powerschool object """
         # move these to a .env file
-        self.base_url = os.getenv('POWERSCHOOL_URL')
-        self.client_id = os.getenv('POWERSCHOOL_CLIENT_ID').encode('UTF-8')
-        self.client_secret = os.getenv(
-            'POWERSCHOOL_CLIENT_SECRET').encode('UTF-8')
+        self.base_url = config.POWERSCHOOL_URL
+        self.client_id = config.POWERSCHOOL_ID.encode('UTF-8')
+        self.client_secret = config.POWERSCHOOL_SECRET.encode('UTF-8')
         try:
             self.headers = {
                 'Accept': 'application/json',
@@ -40,7 +41,7 @@ class Powerschool:
         if(hasattr(self, 'access_token_response')):
             if(self.access_token_response['expiration_datetime'] > datetime.datetime.now()):
                 return "Bearer " + self.access_token_response['access_token']
-        token_url = self.base_url + "oauth/access_token"
+        token_url = self.base_url + "/oauth/access_token"
         credentials = base64.b64encode(
             self.client_id + b":" + self.client_secret)
         auth_string = 'Basic {0}'.format(str(credentials, encoding='utf8'))

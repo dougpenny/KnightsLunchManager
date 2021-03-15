@@ -14,7 +14,7 @@ class GeneralForm(forms.Form):
         'class': 'shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md'}))
 
 
-class IntegrationsForm(forms.Form):
+class PowerschoolForm(forms.Form):
     powerschool_url = forms.CharField(required=False, widget=forms.TextInput(attrs={
         'class': 'shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md',
         'placeholder': 'https://<full powerschool url>'
@@ -26,14 +26,6 @@ class IntegrationsForm(forms.Form):
     powerschool_secret = forms.CharField(required=False, widget=forms.TextInput(attrs={
         'class': 'shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md',
         'placeholder': '<powerschool plugin client secret>'
-    }))
-    azure_tenant_id = forms.CharField(required=False, widget=forms.TextInput(attrs={
-        'class': 'shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md',
-        'placeholder': '<azure tenant id>'
-    }))
-    azure_app_id = forms.CharField(required=False, widget=forms.TextInput(attrs={
-        'class': 'shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md',
-        'placeholder': '<azure application id>'
     }))
 
 
