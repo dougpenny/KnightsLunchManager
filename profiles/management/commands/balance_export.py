@@ -1,8 +1,10 @@
-from django.core.management.base import BaseCommand
-
 import csv
 import logging
 import os
+
+from django.core.management.base import BaseCommand
+
+from constance import config
 
 from profiles.models import Profile
 
@@ -15,7 +17,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         logger.info('Exporting lunch balances...')
-        file_path = os.getenv('BALANCE_EXPORT_PATH')
+        file_path = config.BALANCE_EXPORT_PATH
         students = Profile.objects.filter(role=Profile.STUDENT)
         filename = os.path.join(file_path, 'lunch_balance.csv')
         with open(filename, 'w') as csvfile:

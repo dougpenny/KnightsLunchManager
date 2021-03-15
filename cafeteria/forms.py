@@ -6,7 +6,7 @@ from cafeteria.models import School
 class GeneralForm(forms.Form):
     open_time = forms.TimeField(widget=forms.TimeInput(format='%H:%M', attrs={
         'class': 'shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md',
-        'type': 'time'}))
+        'type': 'time', 'disabled': 'true'}))
     close_time = forms.TimeField(widget=forms.TimeInput(format='%H:%M', attrs={
         'class': 'shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md',
         'type': 'time'}))

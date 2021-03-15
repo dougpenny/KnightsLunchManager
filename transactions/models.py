@@ -6,6 +6,8 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 
+from constance import config
+
 
 class MenuLineItem(models.Model):
     menu_item = models.ForeignKey(
@@ -64,6 +66,4 @@ class Transaction(models.Model):
 
     @staticmethod
     def accepting_orders() -> bool:
-        cutoff_time = datetime.time(datetime.strptime(
-            os.getenv('ORDER_CUTOFF'), '%H:%M'))
-        return cutoff_time > datetime.now().time()
+        return config.CLOSE_TIME > datetime.now().time()
