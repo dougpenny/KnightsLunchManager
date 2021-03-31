@@ -60,5 +60,9 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True
         },
+        'mozilla_django_oidc': {
+            'handlers': ['console'],
+            'level': 'DEBUG'
+        },
     },
 }

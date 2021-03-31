@@ -27,4 +27,5 @@ urlpatterns = [
     path('backally/', admin.site.urls, name='django-admin'),
     path('api/v1/', include('api.urls')),
     path('oauth2/', include('django_auth_adfs.urls')),
+    path('oidc/', include('mozilla_django_oidc.urls')),
 ]

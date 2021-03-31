@@ -14,21 +14,6 @@ class GeneralForm(forms.Form):
         'class': 'shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md'}))
 
 
-class PowerschoolForm(forms.Form):
-    powerschool_url = forms.CharField(required=False, widget=forms.TextInput(attrs={
-        'class': 'shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md',
-        'placeholder': 'https://<full powerschool url>'
-    }))
-    powerschool_id = forms.CharField(required=False, widget=forms.TextInput(attrs={
-        'class': 'shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md',
-        'placeholder': '<powerschool plugin client ID>'
-    }))
-    powerschool_secret = forms.CharField(required=False, widget=forms.TextInput(attrs={
-        'class': 'shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md',
-        'placeholder': '<powerschool plugin client secret>'
-    }))
-
-
 class SchoolsModelForm(forms.ModelForm):
     class Meta:
         model = School

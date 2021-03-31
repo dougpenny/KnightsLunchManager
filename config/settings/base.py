@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
 
     'django_auth_adfs',
+    'mozilla_django_oidc',
     'rest_framework',
     'constance',
     'constance.backends.database',
@@ -78,6 +79,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 # Password validation
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-password-validators
@@ -98,6 +100,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = (
+    'cafeteria.auth.PowerSchoolGuardianOIDC',
     'django_auth_adfs.backend.AdfsAuthCodeBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
@@ -117,6 +120,19 @@ AUTH_ADFS = {
         'is_superuser': 'IT Department'
     },
 }
+
+OIDC_RP_CLIENT_ID = os.getenv('POWERSCHOOL_CLIENT_ID')
+OIDC_RP_CLIENT_SECRET = os.getenv('POWERSCHOOL_CLIENT_SECRET')
+OIDC_OP_AUTHORIZATION_ENDPOINT = os.getenv('POWERSCHOOL_URL') + 'oauth2/authorize.action'
+OIDC_OP_TOKEN_ENDPOINT = os.getenv('POWERSCHOOL_URL') + 'oauth2/token.action'
+OIDC_OP_USER_ENDPOINT = os.getenv('POWERSCHOOL_URL') + 'oauth2/userinfo.action'
+OIDC_OP_JWKS_ENDPOINT = os.getenv('POWERSCHOOL_URL') + 'ws/unifiedclassroom/jwks'
+OIDC_RP_SIGN_ALGO = 'RS512'
+OIDC_RP_SCOPES = 'openid email profile'
+OIDC_USERNAME_ALGO = 'cafeteria.auth.generate_username'
+OIDC_OP_LOGOUT_URL_METHOD = 'cafeteria.auth.powerschool_logout'
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 
 LOGIN_URL = 'django_auth_adfs:login'
 LOGIN_REDIRECT_URL = '/'
@@ -152,15 +168,8 @@ CONSTANCE_CONFIG = {
     'OPEN_TIME': (time(0,0), 'The time orders should start being accepted.', time),
     'CLOSE_TIME': (time(23,15), 'The time orders should stop being accepted.', time),
     'BALANCE_EXPORT_PATH': ('/', 'File path where current balance export files should be saved.'),
-    'POWERSCHOOL_URL': ('', 'Full URL for your PowerSchool server.'),
-    'POWERSCHOOL_ID': ('', 'Found in the plugin on your PowerSchool server.'),
-    'POWERSCHOOL_SECRET': ('', 'Found in the plugin on your PowerSchool server.'),
-    'AZURE_TENANT_ID': ('', 'Found in the Azure portal.'),
-    'AZURE_APP_ID': ('', 'Found in the Azure portal.'),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
     'General Settings': ('OPEN_TIME', 'CLOSE_TIME', 'BALANCE_EXPORT_PATH'),
-    'PowerSchool Settings': ('POWERSCHOOL_URL', 'POWERSCHOOL_ID', 'POWERSCHOOL_SECRET'),
-    'Azure Settings': ('AZURE_TENANT_ID', 'AZURE_APP_ID'),
 }

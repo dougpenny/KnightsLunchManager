@@ -7,7 +7,6 @@ import time
 
 import requests
 
-from constance import config
 
 #
 # Disable InsecureRequestWarning during testing
@@ -18,10 +17,9 @@ requests.packages.urllib3.disable_warnings()
 class Powerschool:
     def __init__(self):
         """ Initialize a Powerschool object """
-        # move these to a .env file
-        self.base_url = config.POWERSCHOOL_URL
-        self.client_id = config.POWERSCHOOL_ID.encode('UTF-8')
-        self.client_secret = config.POWERSCHOOL_SECRET.encode('UTF-8')
+        self.base_url = os.getenv('POWERSCHOOL_URL')
+        self.client_id = os.getenv('POWERSCHOOL_CLIENT_ID').encode('UTF-8')
+        self.client_secret = os.getenv('POWERSCHOOL_CLIENT_SECRET').encode('UTF-8')
         try:
             self.headers = {
                 'Accept': 'application/json',
@@ -195,6 +193,14 @@ class Powerschool:
         resource_endpoint = "ws/schema/query/com.nrcaknights.knightslunch.students.homeroom_roster"
         return self.powerquery_resource(resource_endpoint, {'teacher_dcid': teacher_dcid})
 
+    def students_for_guardian(self, guardian_id):
+        resource_endpoint = "ws/schema/query/com.pearson.core.guardian.student_guardian_detail"
+        result = self.powerquery_resource(resource_endpoint, {'guardian_id': [guardian_id]})
+        students = []
+        for student in result:
+            students.append(student['id'])
+        return students
+        
     # POST endpoints for sending data to PowerSchool
     def new_lunch_transaction(self, transaction_info):
         transaction_data = { "tables": { "U_LUNCH_TRANSACTIONS": transaction_info }}

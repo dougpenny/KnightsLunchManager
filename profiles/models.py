@@ -5,31 +5,41 @@ from cafeteria.models import School
 
 
 class Profile(models.Model):
+    GUARDIAN = 3
     STAFF = 1
     STUDENT = 2
     ROLE_CHOICES = [
+        (GUARDIAN, 'Guardian'),
         (STAFF, 'Staff'),
         (STUDENT, 'Student'),
     ]
     current_balance = models.DecimalField(
         default=0, decimal_places=2, max_digits=6)
     grade_level = models.SmallIntegerField(default=None, null=True)
+    children = models.ManyToManyField(
+        'self',
+        blank=True,
+        related_name='guardians',
+        related_query_name='guardian',
+        symmetrical=False
+    )
     homeroom_teacher = models.ForeignKey(
         'self',
         null=True,
         on_delete=models.SET_NULL,
         related_name='students',
-        related_query_name='student'
+        related_query_name='student',
+        verbose_name='Homeroom Teacher'
     )
     last_sync = models.DateTimeField()
-    lunch_id = models.IntegerField(default=None, null=True)
+    lunch_id = models.IntegerField(default=None, null=True, verbose_name='Lunch ID')
     phone = models.CharField(max_length=5, blank=True, default='')
     role = models.SmallIntegerField(choices=ROLE_CHOICES, default=STUDENT)
     room = models.TextField(max_length=64, blank=True, default='')
     school = models.ForeignKey(School, null=True, on_delete=models.SET_NULL)
     status = models.BooleanField(default=False)
-    student_dcid = models.IntegerField(blank=True, null=True, unique=True)
-    user_dcid = models.IntegerField(blank=True, null=True, unique=True)
+    student_dcid = models.IntegerField(blank=True, null=True, unique=True, verbose_name='Student DCID')
+    user_dcid = models.IntegerField(blank=True, null=True, unique=True, verbose_name='User DCID')
     user_number = models.IntegerField(blank=True, null=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
 

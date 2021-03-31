@@ -12,8 +12,9 @@ from django.contrib.auth.models import User
 from django.db.models import Q, Sum
 from django.forms import modelformset_factory
 from django.forms.models import modelform_factory
-from django.http import FileResponse, HttpRequest
+from django.http import FileResponse, HttpResponse, HttpRequest
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.utils import timezone
 
 from constance import config
@@ -24,7 +25,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 
-from cafeteria.forms import GeneralForm, PowerschoolForm, SchoolsModelForm
+from cafeteria.forms import GeneralForm, SchoolsModelForm
 from cafeteria.models import School
 from menu.models import MenuItem
 from profiles.models import Profile
@@ -74,6 +75,24 @@ def delete_order(request):
             return redirect('home')
     return redirect('home')
 
+
+@login_required(login_url=('/oidc' + reverse('oidc_authentication_init', urlconf='mozilla_django_oidc.urls')))
+def guardian_home(request):
+    print(request.user)
+    context = {}
+    time = timezone.now()
+    context['time'] = time
+    menu = MenuItem.objects.filter(
+        days_available__name=timezone.localdate(timezone.now()).strftime("%A"))
+    context['menu'] = menu
+    context['orders_open'] = Transaction.accepting_orders()
+    context['ps_url'] = os.getenv('POWERSCHOOL_URL')
+    if request.user.is_authenticated:
+        context['guardian'] = request.user
+    else:
+        context['guardian'] = None
+    return render(request, 'guardian/guardian.html', context=context)
+    
 
 def home(request):
     context = {}
@@ -176,14 +195,6 @@ def admin_settings(request, section='general'):
                 config.CLOSE_TIME = form_data['close_time']
                 config.BALANCE_EXPORT_PATH = form_data['balance_export_path']
                 messages.success(request, 'The general settings were successfully updated.')
-        elif 'powerschool-settings' in request.POST:
-            powerschool_form = PowerschoolForm(request.POST, prefix='powerschool')
-            if powerschool_form.is_valid():
-                form_data = powerschool_form.cleaned_data
-                config.POWERSCHOOL_URL = form_data['powerschool_url']
-                config.POWERSCHOOL_ID = form_data['powerschool_id']
-                config.POWERSCHOOL_SECRET = form_data['powerschool_secret']
-                messages.success(request, 'The PowerSchool settings were successfully updated.')
         elif 'school-settings' in request.POST:
             schools_form = SchoolsFormSet(request.POST, prefix='schools')
             if schools_form.is_valid():
@@ -200,11 +211,6 @@ def admin_settings(request, section='general'):
         })
         context['schools_count'] = School.objects.count()
         context['schools_formset'] = SchoolsFormSet(prefix='schools')
-        context['powerschool_form'] = PowerschoolForm(prefix='powerschool', initial={
-            'powerschool_url': config.POWERSCHOOL_URL,
-            'powerschool_id': config.POWERSCHOOL_ID,
-            'powerschool_secret': config.POWERSCHOOL_SECRET,
-        })
     return render(request, 'admin/settings.html', context=context)
 
 

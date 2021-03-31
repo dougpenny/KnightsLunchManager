@@ -6,6 +6,7 @@ from transactions.views import HomeroomOrdersArchiveView, UsersTodayArchiveView,
 urlpatterns = [
     path('', views.home, name='home'),
     path('delete-order/', views.delete_order, name='delete'),
+    path('guardian/', views.guardian_home, name='guardian'),
     path('homeroom-orders/', HomeroomOrdersArchiveView.as_view(),
          name='homeroom-orders'),
     path('submit-order/', views.submit_order, name='submit'),
