@@ -79,6 +79,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 # Password validation
