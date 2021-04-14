@@ -8,12 +8,12 @@ class TransactionDepositForm(forms.Form):
         widget=forms.HiddenInput()
     )
     check_num = forms.CharField(
-        widget=forms.TextInput(attrs={
+        widget=forms.TextInput(attrs={'type': 'text',
                                'class': 'border border-gray-400 py-2 px-2 text-xs rounded-sm block w-full transition duration-150 ease-in-out'}),
         required=False
     )
     amount = forms.DecimalField(
-        widget=forms.NumberInput(attrs={
+        widget=forms.NumberInput(attrs={'type': 'number',
                                  'class': 'border border-gray-400 py-2 px-2 text-xs rounded-sm block w-full transition duration-150 ease-in-out'})
     )
     submitted = forms.DateTimeField(
