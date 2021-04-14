@@ -6,10 +6,12 @@ from cafeteria.models import School
 class GeneralForm(forms.Form):
     open_time = forms.TimeField(widget=forms.TimeInput(format='%H:%M', attrs={
         'class': 'shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md',
-        'type': 'time', 'disabled': 'true'}))
+        'type': 'time', 'disabled': 'true'}), required=False)
     close_time = forms.TimeField(widget=forms.TimeInput(format='%H:%M', attrs={
         'class': 'shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md',
         'type': 'time'}))
+    reports_email = forms.EmailField(widget=forms.EmailInput(attrs={
+        'class': 'shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md'}))
     balance_export_path = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md'}))
 

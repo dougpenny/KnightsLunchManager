@@ -193,6 +193,7 @@ def admin_settings(request, section='general'):
                 form_data = general_form.cleaned_data
                 config.OPEN_TIME = form_data['open_time']
                 config.CLOSE_TIME = form_data['close_time']
+                config.REPORTS_EMAIL = form_data['reports_email']
                 config.BALANCE_EXPORT_PATH = form_data['balance_export_path']
                 messages.success(request, 'The general settings were successfully updated.')
         elif 'school-settings' in request.POST:
@@ -207,6 +208,7 @@ def admin_settings(request, section='general'):
         context['general_form'] = GeneralForm(prefix='general', initial={
             'open_time': config.OPEN_TIME,
             'close_time': config.CLOSE_TIME,
+            'reports_email': config.REPORTS_EMAIL,
             'balance_export_path': config.BALANCE_EXPORT_PATH,
         })
         context['schools_count'] = School.objects.count()

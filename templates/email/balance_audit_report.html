@@ -1,0 +1,45 @@
+<!doctype html>
+
+<head>
+  <meta charset="utf-8">
+  <style>
+    #profiles {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    #profiles td, #profiles th {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    #profiles tr:nth-child(even) {background-color: #f2f2f2;}
+
+    #profiles tr:hover {background-color: #ddd;}
+
+    #profiles th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #000050;
+        color: white;
+    }
+</style>
+</head>
+<body>
+    <p>Below are the results from the lunch balance audit run on {{ time|date:"DATE_FORMAT" }} at {{ time|time }}.</p>
+    <br/>
+    <table id="profiles">
+        <tr>
+            <th>Name</th>
+            <th>Transactions</th>
+            <th>Current Balance</th>
+            <th>Expected Balance</th>
+        </tr>
+        {% for item in items %}
+        <tr>
+            {% for property in item %}<td>{{ property }}</td>{% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+</body>

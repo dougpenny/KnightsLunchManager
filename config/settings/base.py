@@ -100,8 +100,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-    'cafeteria.auth.PowerSchoolGuardianOIDC',
     'django_auth_adfs.backend.AdfsAuthCodeBackend',
+    'cafeteria.auth.PowerSchoolGuardianOIDC',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -133,6 +133,14 @@ OIDC_USERNAME_ALGO = 'cafeteria.auth.generate_username'
 OIDC_OP_LOGOUT_URL_METHOD = 'cafeteria.auth.powerschool_logout'
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
+# Email settings
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
+SERVER_EMAIL = os.getenv('SERVER_EMAIL')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 
 LOGIN_URL = 'django_auth_adfs:login'
 LOGIN_REDIRECT_URL = '/'
@@ -167,6 +175,7 @@ CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 CONSTANCE_CONFIG = {
     'OPEN_TIME': (time(0,0), 'The time orders should start being accepted.', time),
     'CLOSE_TIME': (time(23,15), 'The time orders should stop being accepted.', time),
+    'REPORTS_EMAIL': ('', 'Email addresses, comma seperated, to which system reports should be sent.'),
     'BALANCE_EXPORT_PATH': ('/', 'File path where current balance export files should be saved.'),
 }
 

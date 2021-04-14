@@ -63,6 +63,24 @@
                     <div class="pt-8">
                       <div>
                         <h3 class="text-lg leading-6 font-medium text-gray-900">
+                          Reports Email Addresses
+                        </h3>
+                      </div>
+                      <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-8 sm:grid-cols-6">
+                        <div class="sm:col-span-3">
+                          <label for="{{ general_form.reports_email.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            Email Addresses
+                          </label>
+                          <div class="mt-1">
+                            {{ general_form.reports_email }}
+                          </div>
+                          <p class="mt-2 text-xs text-gray-500" id="open-time-description">Multiple email addresses should be seperated with a comma.</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="pt-8">
+                      <div>
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">
                           Current Balance Export
                         </h3>
                       </div>
