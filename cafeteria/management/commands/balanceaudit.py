@@ -59,9 +59,9 @@ class Command(BaseCommand):
 		balance = 0
 		for transaction in transactions:
 			if transaction.transaction_type == Transaction.CREDIT:
-				balance = balance + transaction.amount
+				balance = balance + abs(transaction.amount)
 			else:
-				balance = balance - transaction.amount
+				balance = balance - abs(transaction.amount)
 		if user.current_balance != balance:
 			logger.info("*** Incorrect Balance ***\n{}'s balance should be ${}, but is listed as ${}.".format(user.name(), balance, user.current_balance))
 			return [user.name, transactions.count(), user.current_balance, balance]
