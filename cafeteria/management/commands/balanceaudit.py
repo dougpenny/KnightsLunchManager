@@ -59,7 +59,7 @@ class Command(BaseCommand):
 		balance = 0
 		for transaction in transactions:
 			if transaction.transaction_type == Transaction.CREDIT:
-				balance = balance + abs(transaction.amount)
+				balance = balance + transaction.amount
 			else:
 				balance = balance - abs(transaction.amount)
 		if user.current_balance != balance:

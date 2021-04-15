@@ -46,7 +46,7 @@ class DepositMixin:
         if deposit['amount'] < 0:
             transaction_type = Transaction.DEBIT
         transaction = Transaction(
-            amount=deposit['amount'],
+            amount=abs(deposit['amount']),
             beginning_balance=profile.current_balance,
             completed=timezone.now(),
             description=description,
