@@ -78,10 +78,7 @@ def delete_order(request):
 
 @login_required(login_url=('/oidc' + reverse('oidc_authentication_init', urlconf='mozilla_django_oidc.urls')))
 def guardian_home(request):
-    print(request.user)
     context = {}
-    time = timezone.now()
-    context['time'] = time
     menu = MenuItem.objects.filter(
         days_available__name=timezone.localdate(timezone.now()).strftime("%A"))
     context['menu'] = menu
@@ -89,8 +86,11 @@ def guardian_home(request):
     context['ps_url'] = os.getenv('POWERSCHOOL_URL')
     if request.user.is_authenticated:
         context['guardian'] = request.user
+        guardian = Profile.objects.get(user=request.user)
+        context['children'] = guardian.children.all()
     else:
         context['guardian'] = None
+        context['children'] = None
     return render(request, 'guardian/guardian.html', context=context)
     
 
