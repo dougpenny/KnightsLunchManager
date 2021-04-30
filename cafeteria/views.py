@@ -36,6 +36,21 @@ from transactions.models import Transaction
 logger = logging.getLogger(__file__)
 
 
+# Helper functions
+def orders_for_homeroom(staff: Profile):
+    orders = MenuLineItem.objects.filter(
+        Q(transaction__transactee__in=staff.students.all())
+        | Q(transaction__transactee=staff)
+    ).filter(transaction__submitted__date=timezone.localdate(timezone.now()))
+    if orders.count() == 0:
+        return None
+    else:
+        homeroom_orders = {
+            'teacher': staff,
+            'orders': orders
+        }
+        return homeroom_orders
+
 def todays_transaction(profile: Profile) -> Transaction:
     try:
         transactions = Transaction.objects.filter(
@@ -48,6 +63,7 @@ def todays_transaction(profile: Profile) -> Transaction:
         return None
 
 
+# Student/Staff views
 @login_required
 def delete_order(request):
     if request.method == 'POST':
@@ -75,25 +91,6 @@ def delete_order(request):
             return redirect('home')
     return redirect('home')
 
-
-@login_required(login_url=('/oidc' + reverse('oidc_authentication_init', urlconf='mozilla_django_oidc.urls')))
-def guardian_home(request):
-    context = {}
-    menu = MenuItem.objects.filter(
-        days_available__name=timezone.localdate(timezone.now()).strftime("%A"))
-    context['menu'] = menu
-    context['orders_open'] = Transaction.accepting_orders()
-    context['ps_url'] = os.getenv('POWERSCHOOL_URL')
-    if request.user.is_authenticated:
-        context['guardian'] = request.user
-        guardian = Profile.objects.get(user=request.user)
-        context['children'] = guardian.children.all()
-    else:
-        context['guardian'] = None
-        context['children'] = None
-    return render(request, 'guardian/guardian.html', context=context)
-    
-
 def home(request):
     context = {}
     time = timezone.now()
@@ -103,6 +100,8 @@ def home(request):
     context['menu'] = menu
     context['orders_open'] = Transaction.accepting_orders()
     if request.user.is_authenticated:
+        if request.user.profile.role == Profile.GUARDIAN:
+            return redirect('guardian')
         context['user'] = request.user
         context['balance'] = request.user.profile.current_balance
         context['transaction'] = todays_transaction(request.user.profile)
@@ -114,7 +113,6 @@ def home(request):
     else:
         context['user'] = None
     return render(request, 'user/user.html', context=context)
-
 
 @login_required
 def submit_order(request):
@@ -161,27 +159,101 @@ def submit_order(request):
         return redirect('home')
 
 
+# Guardian specific views
+@login_required(login_url=('/oidc' + reverse('oidc_authentication_init', urlconf='mozilla_django_oidc.urls')))
+def guardian_home(request):
+    context = {}
+    menu = MenuItem.objects.filter(
+        days_available__name=timezone.localdate(timezone.now()).strftime("%A"))
+    context['menu'] = menu
+    context['orders_open'] = Transaction.accepting_orders()
+    context['ps_url'] = os.getenv('POWERSCHOOL_URL')
+    if request.user.is_authenticated:
+        context['guardian'] = request.user
+        guardian = Profile.objects.get(user=request.user)
+        context['children'] = guardian.children.all()
+    else:
+        context['guardian'] = None
+        context['children'] = None
+    return render(request, 'guardian/guardian.html', context=context)
+
+@login_required(login_url=('/oidc' + reverse('oidc_authentication_init', urlconf='mozilla_django_oidc.urls')))
+def guardian_submit_order(request):
+    if request.method == 'POST':
+        print(request.POST)
+        return redirect('guardian')
+
+    # if request.method == 'POST':
+    #     if Transaction.accepting_orders():
+    #         if request.POST.__contains__('student'):
+    #             for key in request.POST:
+    #                 if key[:7] == 'student':
+    #                     student = Profile.objects.get(key[8:])
+    #                     if not todays_transaction(student):
+    #                         menu_item = MenuItem.objects.get(
+    #                             id=request.POST.get('itemID'))
+    #                         if menu_item not in MenuItem.objects.filter(days_available__name=timezone.localdate(timezone.now()).strftime("%A")):
+    #                             logger.warning('{} attempted to order a {}, which is not available today.'.format(
+    #                                 request.user.profile.name, menu_item))
+    #                             messages.error(
+    #                                 request, 'The {} is not available today. Please select from the available options.'.format(menu_item))
+    #                             return redirect('home')
+    #                         try:
+    #                             transaction = Transaction(
+    #                                 amount=menu_item.cost,
+    #                                 description=menu_item.name,
+    #                                 transaction_type=Transaction.DEBIT,
+    #                                 transactee=request.user.profile
+    #                             )
+    #                             transaction.save()
+    #                             transaction.menu_items.add(
+    #                                 menu_item, through_defaults={'quantity': 1})
+    #                             messages.success(
+    #                                 request, 'Your order was successfully submitted.')
+    #                             return redirect('todays-order')
+    #                         except Exception as e:
+    #                             logger.exception(
+    #                                 'An exception occured when trying to create a transaction: {}'.format(e))
+    #                             messages.error(
+    #                                 request, 'There was a problem submitting your order.')
+    #                             return redirect('guardian')
+    #                     else:
+    #                         messages.warning(
+    #                             request, 'You have already submitted an order today.')
+    #                         return redirect('todays-order')
+    #     else:
+    #         messages.warning(
+    #             request, 'Sorry, the cafeteria is no longer accepting orders today.')
+    #         return redirect('guardian')
+    else:
+        return redirect('guardian')
+
+
+# Admin dashboard views
 @login_required
 def admin_dashboard(request):
-    context = {}
-    time = timezone.localtime(timezone.now())
-    context['time'] = time
-    context['user'] = request.user
-    order_count = {}
-    orders = Transaction.objects.filter(submitted__date=time.date())
-    for order in orders:
-        for line_item in order.line_item.all():
-            if line_item.menu_item.name in order_count:
-                order_count[line_item.menu_item.name] = order_count[line_item.menu_item.name] + \
-                    line_item.quantity
-            else:
-                order_count[line_item.menu_item.name] = line_item.quantity
-    context['order_count'] = order_count
-    context['orders'] = orders
-    context['debtors'] = Profile.objects.filter(current_balance__lt=0).order_by(
-        'current_balance', 'user__last_name')[:10]
-    return render(request, 'admin/admin.html', context=context)
-
+    if request.user.is_staff:
+        context = {}
+        time = timezone.localtime(timezone.now())
+        context['time'] = time
+        context['user'] = request.user
+        order_count = {}
+        orders = Transaction.objects.filter(submitted__date=time.date())
+        for order in orders:
+            for line_item in order.line_item.all():
+                if line_item.menu_item.name in order_count:
+                    order_count[line_item.menu_item.name] = order_count[line_item.menu_item.name] + \
+                        line_item.quantity
+                else:
+                    order_count[line_item.menu_item.name] = line_item.quantity
+        context['order_count'] = order_count
+        context['orders'] = orders
+        context['debtors'] = Profile.objects.filter(current_balance__lt=0).order_by(
+            'current_balance', 'user__last_name')[:10]
+        return render(request, 'admin/admin.html', context=context)
+    else:
+        messages.warning(request, 'You do not have permission to access the admin dashbaord.')
+        return redirect('home')
 
 @login_required
 def admin_settings(request, section='general'):
@@ -214,22 +286,6 @@ def admin_settings(request, section='general'):
         context['schools_count'] = School.objects.count()
         context['schools_formset'] = SchoolsFormSet(prefix='schools')
     return render(request, 'admin/settings.html', context=context)
-
-
-def orders_for_homeroom(staff: Profile):
-    orders = MenuLineItem.objects.filter(
-        Q(transaction__transactee__in=staff.students.all())
-        | Q(transaction__transactee=staff)
-    ).filter(transaction__submitted__date=timezone.localdate(timezone.now()))
-    if orders.count() == 0:
-        return None
-    else:
-        homeroom_orders = {
-            'teacher': staff,
-            'orders': orders
-        }
-        return homeroom_orders
-
 
 @login_required
 def homeroom_orders_report(request):
