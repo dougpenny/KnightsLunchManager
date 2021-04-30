@@ -52,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'mozilla_django_oidc.middleware.SessionRefresh',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -80,8 +81,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
-
-SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 # Password validation
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-password-validators
@@ -133,6 +132,7 @@ OIDC_RP_SIGN_ALGO = 'RS512'
 OIDC_RP_SCOPES = 'openid email profile'
 OIDC_USERNAME_ALGO = 'cafeteria.auth.generate_username'
 OIDC_OP_LOGOUT_URL_METHOD = 'cafeteria.auth.powerschool_logout'
+#OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 30
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Email settings

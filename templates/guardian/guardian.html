@@ -4,6 +4,8 @@
 <div class="mt-4 px-8 py-4 bg-white shadow">
   <div class="mx-auto px-4 sm:px-16 lg:px-24">
 {% if children %}
+<form action="{% url 'guardian-submit' %}" method="post">
+  {% csrf_token %}
 {% for child in children %}
     <div class="px-4 {% if not forloop.first%}pt-8{% else %}pt-4{% endif %} border-b border-gray-200 pb-8 sm:px-6">
       <div class="flex justify-between items-center flex-wrap sm:flex-nowrap">
@@ -26,8 +28,8 @@
           </div>
           <div>
             <div class="mt-4 text-m leading-5 text-gray-700 sm:text-l sm:mt-8 sm:mr-6">
-              <label for="order-{{ child.id }}">Today's order:</label>
-              <select id="order-{{ child.id }}" name="order-{{ child.id }}" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+              <label for="order-{{ forloop.counter }}">Today's order:</label>
+              <select id="order-{{ forloop.counter }}" name="student-{{ child.id }}" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                 <option value="" selected>None</option>
                 {% for item in menu %}
                   <option value="{{ item.id }}">{{ item.name }} - ${{ item.cost }}</option>
@@ -56,6 +58,7 @@
     </button>
   </div>
 </div>
+</form>
 {% endif %}
   </div>
 </div>

@@ -26,7 +26,10 @@ class PowerSchoolGuardianOIDC(OIDCAuthenticationBackend):
 		students = client.students_for_guardian(profile.user_dcid)
 		profile.children.clear()
 		for student in students:
-			profile.children.add(Profile.objects.get(student_dcid=student))
+			try:
+				profile.children.add(Profile.objects.get(student_dcid=student))
+			except:
+				pass
 
 
 	def create_user(self, claims):
