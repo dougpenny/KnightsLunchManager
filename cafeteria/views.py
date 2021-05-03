@@ -25,6 +25,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 
+from cafeteria.decorators import admin_access_allowed
 from cafeteria.forms import GeneralForm, SchoolsModelForm
 from cafeteria.models import School
 from menu.models import MenuItem
@@ -231,31 +232,29 @@ def guardian_submit_order(request):
 
 # Admin dashboard views
 @login_required
+@admin_access_allowed
 def admin_dashboard(request):
-    if request.user.is_staff:
-        context = {}
-        time = timezone.localtime(timezone.now())
-        context['time'] = time
-        context['user'] = request.user
-        order_count = {}
-        orders = Transaction.objects.filter(submitted__date=time.date())
-        for order in orders:
-            for line_item in order.line_item.all():
-                if line_item.menu_item.name in order_count:
-                    order_count[line_item.menu_item.name] = order_count[line_item.menu_item.name] + \
-                        line_item.quantity
-                else:
-                    order_count[line_item.menu_item.name] = line_item.quantity
-        context['order_count'] = order_count
-        context['orders'] = orders
-        context['debtors'] = Profile.objects.filter(current_balance__lt=0).order_by(
-            'current_balance', 'user__last_name')[:10]
-        return render(request, 'admin/admin.html', context=context)
-    else:
-        messages.warning(request, 'You do not have permission to access the admin dashbaord.')
-        return redirect('home')
+    context = {}
+    time = timezone.localtime(timezone.now())
+    context['time'] = time
+    context['user'] = request.user
+    order_count = {}
+    orders = Transaction.objects.filter(submitted__date=time.date())
+    for order in orders:
+        for line_item in order.line_item.all():
+            if line_item.menu_item.name in order_count:
+                order_count[line_item.menu_item.name] = order_count[line_item.menu_item.name] + \
+                    line_item.quantity
+            else:
+                order_count[line_item.menu_item.name] = line_item.quantity
+    context['order_count'] = order_count
+    context['orders'] = orders
+    context['debtors'] = Profile.objects.filter(current_balance__lt=0).order_by(
+        'current_balance', 'user__last_name')[:10]
+    return render(request, 'admin/admin.html', context=context)
 
 @login_required
+@admin_access_allowed
 def admin_settings(request, section='general'):
     SchoolsFormSet = modelformset_factory(School, form=SchoolsModelForm, extra=0)
     if request.method == 'POST':
@@ -288,6 +287,7 @@ def admin_settings(request, section='general'):
     return render(request, 'admin/settings.html', context=context)
 
 @login_required
+@admin_access_allowed
 def homeroom_orders_report(request):
     todays_orders = []
     for staff in Profile.objects.filter(role=Profile.STAFF).order_by('grade_level', 'user__last_name'):

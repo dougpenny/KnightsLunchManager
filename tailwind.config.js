@@ -10,6 +10,7 @@ module.exports = {
       extend: {
         colors: {
             cyan: colors.cyan,
+            orange: colors.orange,
           },
         fontFamily: {
             sans: ['Inter var',],
