@@ -96,6 +96,9 @@ def home(request):
     context = {}
     time = timezone.now()
     context['time'] = time
+    if config.CLOSED_FOR_SUMMER:
+        context['closed'] = True
+        return render(request, 'user/closed.html', context=context)
     menu = MenuItem.objects.filter(
         days_available__name=timezone.localdate(timezone.now()).strftime("%A"))
     context['menu'] = menu
@@ -264,6 +267,7 @@ def admin_settings(request, section='general'):
                 form_data = general_form.cleaned_data
                 config.OPEN_TIME = form_data['open_time']
                 config.CLOSE_TIME = form_data['close_time']
+                config.CLOSED_FOR_SUMMER = form_data['closed_for_summer']
                 config.REPORTS_EMAIL = form_data['reports_email']
                 config.BALANCE_EXPORT_PATH = form_data['balance_export_path']
                 messages.success(request, 'The general settings were successfully updated.')
@@ -279,6 +283,7 @@ def admin_settings(request, section='general'):
         context['general_form'] = GeneralForm(prefix='general', initial={
             'open_time': config.OPEN_TIME,
             'close_time': config.CLOSE_TIME,
+            'closed_for_summer': config.CLOSED_FOR_SUMMER,
             'reports_email': config.REPORTS_EMAIL,
             'balance_export_path': config.BALANCE_EXPORT_PATH,
         })

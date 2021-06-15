@@ -25,6 +25,7 @@
             </div>
           </div>
         </a>
+        {% if not closed %}
         <div class="hidden md:block">
           <div class="ml-4 flex items-center md:ml-6">
             <div>
@@ -71,8 +72,10 @@
             </svg>
           </button>
         </div>
+        {% endif %}
       </div>
     </div>
+    {% if not closed %}
     <div x-description="Mobile menu, toggle classes based on menu state." x-state:on="Open" x-state:off="closed"
       :class="{ 'block': open, 'hidden': !open }" class="hidden md:hidden">
       <div class="pt-4 pb-3 border-t border-gray-700">
@@ -97,7 +100,9 @@
         </div>
       </div>
     </div>
+    {% endif %}
   </nav>
+  {% if not closed %}
   <div class="p-8 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 lg:flex lg:items-center lg:justify-between">
       {% if user %}
@@ -111,6 +116,7 @@
       {% endif %}
     </div>
   </div>
+  {% endif %}
   {% block user-content %}
   {% endblock %}
   {% endblock %}

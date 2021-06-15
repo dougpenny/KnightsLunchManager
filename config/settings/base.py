@@ -177,10 +177,11 @@ CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 CONSTANCE_CONFIG = {
     'OPEN_TIME': (time(0,0), 'The time orders should start being accepted.', time),
     'CLOSE_TIME': (time(23,15), 'The time orders should stop being accepted.', time),
+    'CLOSED_FOR_SUMMER': (False, 'The cafeteria is closed for the summer.'),
     'REPORTS_EMAIL': ('', 'Email addresses, comma seperated, to which system reports should be sent.'),
     'BALANCE_EXPORT_PATH': ('/', 'File path where current balance export files should be saved.'),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
-    'General Settings': ('OPEN_TIME', 'CLOSE_TIME', 'REPORTS_EMAIL', 'BALANCE_EXPORT_PATH'),
+    'General Settings': ('OPEN_TIME', 'CLOSE_TIME', 'CLOSED_FOR_SUMMER', 'REPORTS_EMAIL', 'BALANCE_EXPORT_PATH'),
 }

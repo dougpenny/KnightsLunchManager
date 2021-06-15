@@ -10,6 +10,7 @@ class GeneralForm(forms.Form):
     close_time = forms.TimeField(widget=forms.TimeInput(format='%H:%M', attrs={
         'class': 'shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md',
         'type': 'time'}))
+    closed_for_summer = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'Yes'), (False, 'No'),]))
     reports_email = forms.CharField(required=False, widget=forms.TextInput(attrs={'type': 'text',
         'class': 'shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md'}))
     balance_export_path = forms.CharField(widget=forms.TextInput(attrs={'type': 'text',
