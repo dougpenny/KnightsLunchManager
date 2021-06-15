@@ -13,7 +13,6 @@ from transactions.models import Transaction
 
 class ProfileMixin:
     allow_empty = True
-
     ascending = True
     filter = None
 

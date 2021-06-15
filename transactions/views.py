@@ -4,11 +4,11 @@ import operator
 import xlsxwriter
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import FileResponse, HttpResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import View
@@ -150,7 +150,13 @@ class TransactionMixin:
         return queryset.order_by(sorting)
 
 
-class BatchDepositView(LoginRequiredMixin, DepositMixin, FormView):
+class UserIsStaffMixin(UserPassesTestMixin):
+
+    def test_func(self):
+            return self.request.user.is_staff
+
+
+class BatchDepositView(LoginRequiredMixin, UserIsStaffMixin, DepositMixin, FormView):
     form_class = DepositFormSet
     template_name = 'admin/transaction_batch_deposit.html'
     success_url = '/admin/transactions/deposits/batch'
@@ -171,8 +177,21 @@ class BatchDepositView(LoginRequiredMixin, DepositMixin, FormView):
                 self.request, 'An error occured creating the deposit transactions.')
         return super().form_valid(form)
 
+def batch_deposit(request):
+    if request.method == 'POST':
+        form = DepositFormSet(request.POST, prefix='deposit')
+        if form.is_valid():
+            for deposit in form.cleaned_data:
+                if deposit:
+                    #create_deposit(deposit)
+                    count = count + 1
+            messages.success(self.request, 'Successfully processed {} deposits.'.format(count))
+    else:
+        context['form'] = DepositFormSet(prefix='deposit')
+    return render(request, 'admin/transaction_batch_deposit.html', context=context)
 
-class CreateDepositView(LoginRequiredMixin, DepositMixin, FormView):
+
+class CreateDepositView(LoginRequiredMixin, UserIsStaffMixin, DepositMixin, FormView):
     form_class = TransactionDepositForm
     template_name = 'admin/transaction_single_deposit.html'
     profile_id = None
@@ -199,7 +218,7 @@ class CreateDepositView(LoginRequiredMixin, DepositMixin, FormView):
             return reverse_lazy('transaction-today-deposits')
 
 
-class CreateOrderView(LoginRequiredMixin, OrderMixin, FormView):
+class CreateOrderView(LoginRequiredMixin, UserIsStaffMixin, OrderMixin, FormView):
     form_class = TransactionOrderForm
     template_name = 'admin/transaction_single_order.html'
     profile_id = None
@@ -240,7 +259,7 @@ class DeleteTransactionView(LoginRequiredMixin, View):
         return redirect(request.POST.get('path'))
 
 
-class ExportChecksView(LoginRequiredMixin, View):
+class ExportChecksView(LoginRequiredMixin, UserIsStaffMixin, View):
     def get(self, request, *args, **kwargs):
         deposits = Transaction.objects.filter(
             Q(description__icontains='Check #')
@@ -380,7 +399,7 @@ class HomeroomOrdersArchiveView(LoginRequiredMixin, TodayArchiveView):
         )
 
 
-class OrderProcessView(LoginRequiredMixin, OrderMixin, View):
+class OrderProcessView(LoginRequiredMixin, UserIsStaffMixin, OrderMixin, View):
     def get(self, request, *args, **kwargs):
         success = False
         message = None
@@ -401,19 +420,19 @@ class OrderProcessView(LoginRequiredMixin, OrderMixin, View):
         return redirect(redirect_url)
 
 
-class TransactionsDateArchiveView(LoginRequiredMixin, TransactionMixin, DayArchiveView):
+class TransactionsDateArchiveView(LoginRequiredMixin, UserIsStaffMixin, TransactionMixin, DayArchiveView):
     template_name = 'admin/transactions_list.html'
 
 
-class TransactionDetailView(LoginRequiredMixin, TransactionMixin, DetailView):
+class TransactionDetailView(LoginRequiredMixin, UserIsStaffMixin, TransactionMixin, DetailView):
     template_name = 'admin/transaction_detail.html'
 
 
-class TransactionListView(LoginRequiredMixin, TransactionMixin, ListView):
+class TransactionListView(LoginRequiredMixin, UserIsStaffMixin, TransactionMixin, ListView):
     template_name = 'admin/transactions_list.html'
 
 
-class TransactionsTodayArchiveView(LoginRequiredMixin, TransactionMixin, TodayArchiveView):
+class TransactionsTodayArchiveView(LoginRequiredMixin, UserIsStaffMixin, TransactionMixin, TodayArchiveView):
     template_name = 'admin/transactions_list.html'
 
 

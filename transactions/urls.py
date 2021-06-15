@@ -1,9 +1,11 @@
+from logging import basicConfig
 from django.urls import path
 
 from transactions.views import BatchDepositView, CreateDepositView
 from transactions.views import CreateOrderView, DeleteTransactionView, ExportChecksView
 from transactions.views import OrderProcessView, TransactionsDateArchiveView, TransactionDetailView
 from transactions.views import TransactionListView, TransactionsTodayArchiveView
+from transactions.views import batch_deposit
 
 
 urlpatterns = [
@@ -30,8 +32,7 @@ urlpatterns = [
          name='transaction-deposit-create'),
     path('deposits/today/', TransactionsTodayArchiveView.as_view(filter='deposits'),
          name='transaction-today-deposits'),
-    path('deposits/batch/', BatchDepositView.as_view(),
-         name='transaction-deposits-batch'),
+    path('deposits/batch/', batch_deposit, name='transaction-deposits-batch'),
 
     path('orders/', TransactionListView.as_view(filter='orders'),
          name='transaction-orders'),
