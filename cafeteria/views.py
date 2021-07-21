@@ -258,28 +258,20 @@ def admin_dashboard(request):
 
 @login_required
 @admin_access_allowed
-def admin_settings(request, section='general'):
-    SchoolsFormSet = modelformset_factory(School, form=SchoolsModelForm, extra=0)
+def general_settings(request):
     if request.method == 'POST':
-        if 'general-settings' in request.POST:
-            general_form = GeneralForm(request.POST, prefix='general')
-            if general_form.is_valid():
-                form_data = general_form.cleaned_data
-                config.OPEN_TIME = form_data['open_time']
-                config.CLOSE_TIME = form_data['close_time']
-                config.CLOSED_FOR_SUMMER = form_data['closed_for_summer']
-                config.REPORTS_EMAIL = form_data['reports_email']
-                config.BALANCE_EXPORT_PATH = form_data['balance_export_path']
-                messages.success(request, 'The general settings were successfully updated.')
-        elif 'school-settings' in request.POST:
-            schools_form = SchoolsFormSet(request.POST, prefix='schools')
-            if schools_form.is_valid():
-                schools_form.save()
-                messages.success(request, 'The school settings were successfully updated.')
-        return redirect('settings')
+        general_form = GeneralForm(request.POST, prefix='general')
+        if general_form.is_valid():
+            form_data = general_form.cleaned_data
+            config.OPEN_TIME = form_data['open_time']
+            config.CLOSE_TIME = form_data['close_time']
+            config.CLOSED_FOR_SUMMER = form_data['closed_for_summer']
+            config.REPORTS_EMAIL = form_data['reports_email']
+            config.BALANCE_EXPORT_PATH = form_data['balance_export_path']
+            messages.success(request, 'The general settings were successfully updated.')
+        return redirect('general-settings')
     else:
         context = {}
-        context['section'] = section
         context['general_form'] = GeneralForm(prefix='general', initial={
             'open_time': config.OPEN_TIME,
             'close_time': config.CLOSE_TIME,
@@ -287,9 +279,23 @@ def admin_settings(request, section='general'):
             'reports_email': config.REPORTS_EMAIL,
             'balance_export_path': config.BALANCE_EXPORT_PATH,
         })
+    return render(request, 'admin/general_settings.html', context=context)
+
+@login_required
+@admin_access_allowed
+def schools_settings(request):
+    SchoolsFormSet = modelformset_factory(School, form=SchoolsModelForm, extra=0)
+    if request.method == 'POST':
+        schools_form = SchoolsFormSet(request.POST, prefix='schools')
+        if schools_form.is_valid():
+            schools_form.save()
+            messages.success(request, 'The school settings were successfully updated.')
+        return redirect('schools-settings')
+    else:
+        context = {}
         context['schools_count'] = School.objects.count()
         context['schools_formset'] = SchoolsFormSet(prefix='schools')
-    return render(request, 'admin/settings.html', context=context)
+    return render(request, 'admin/schools_settings.html', context=context)
 
 @login_required
 @admin_access_allowed
