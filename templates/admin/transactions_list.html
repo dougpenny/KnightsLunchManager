@@ -80,131 +80,30 @@
         <thead>
           <tr>
             <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              <a href="?order_by=transactee&sort={{ view.ascending|yesno:'ASC,DES' }}">
-                <span class="inline-flex items-center">
-                  <span>Name</span>
-                  {% if 'order_by=transactee' in request.get_full_path %}
-                    {% if not view.ascending%}
-                      <svg xmlns="http://www.w3.org/2000/svg" class="pl-2" width="24" height="24" viewBox="0 0 24 24"
-                        stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <line x1="4" y1="6" x2="11" y2="6" />
-                        <line x1="4" y1="12" x2="11" y2="12" />
-                        <line x1="4" y1="18" x2="13" y2="18" />
-                        <polyline points="15 9 18 6 21 9" />
-                        <line x1="18" y1="6" x2="18" y2="18" />
-                      </svg>
-                    {% else %}
-                      <svg xmlns="http://www.w3.org/2000/svg" class="pl-2" width="24" height="24" viewBox="0 0 24 24"
-                        stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <line x1="4" y1="6" x2="13" y2="6" />
-                        <line x1="4" y1="12" x2="11" y2="12" />
-                        <line x1="4" y1="18" x2="11" y2="18" />
-                        <polyline points="15 15 18 18 21 15" />
-                        <line x1="18" y1="6" x2="18" y2="18" />
-                      </svg>
-                    {% endif %}
-                  {% endif %}
-                </span>
-              </a>
+              <span class="inline-flex items-center">
+                <span>Name</span>
+              </span>
             </th>
             <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              <a href="?order_by=grade&sort={{ view.ascending|yesno:'ASC,DES' }}">
-                <span class="inline-flex items-center">
-                  <span>Grade</span>
-                  {% if 'order_by=grade' in request.get_full_path %}
-                    {% if not view.ascending %}
-                      <svg xmlns="http://www.w3.org/2000/svg" class="pl-2" width="24" height="24" viewBox="0 0 24 24"
-                        stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <line x1="4" y1="6" x2="11" y2="6" />
-                        <line x1="4" y1="12" x2="11" y2="12" />
-                        <line x1="4" y1="18" x2="13" y2="18" />
-                        <polyline points="15 9 18 6 21 9" />
-                        <line x1="18" y1="6" x2="18" y2="18" />
-                      </svg>
-                    {% else %}
-                      <svg xmlns="http://www.w3.org/2000/svg" class="pl-2" width="24" height="24" viewBox="0 0 24 24"
-                        stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <line x1="4" y1="6" x2="13" y2="6" />
-                        <line x1="4" y1="12" x2="11" y2="12" />
-                        <line x1="4" y1="18" x2="11" y2="18" />
-                        <polyline points="15 15 18 18 21 15" />
-                        <line x1="18" y1="6" x2="18" y2="18" />
-                      </svg>
-                    {% endif %}
-                  {% endif %}
-                </span>
-              </a>
+              <span class="inline-flex items-center">
+                <span>Grade</span>
+              </span>
             </th>
             <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Description
             </th>
             <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              <a href="?order_by=amount&sort={{ view.ascending|yesno:'ASC,DES' }}">
-                <span class="inline-flex items-center">
-                  <span>Amount</span>
-                  {% if 'order_by=amount' in request.get_full_path %}
-                    {% if not view.ascending %}
-                      <svg xmlns="http://www.w3.org/2000/svg" class="pl-2" width="24" height="24" viewBox="0 0 24 24"
-                        stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <line x1="4" y1="6" x2="11" y2="6" />
-                        <line x1="4" y1="12" x2="11" y2="12" />
-                        <line x1="4" y1="18" x2="13" y2="18" />
-                        <polyline points="15 9 18 6 21 9" />
-                        <line x1="18" y1="6" x2="18" y2="18" />
-                      </svg>
-                    {% else %}
-                      <svg xmlns="http://www.w3.org/2000/svg" class="pl-2" width="24" height="24" viewBox="0 0 24 24"
-                        stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <line x1="4" y1="6" x2="13" y2="6" />
-                        <line x1="4" y1="12" x2="11" y2="12" />
-                        <line x1="4" y1="18" x2="11" y2="18" />
-                        <polyline points="15 15 18 18 21 15" />
-                        <line x1="18" y1="6" x2="18" y2="18" />
-                      </svg>
-                    {% endif %}
-                  {% endif %}
-                </span>
-              </a>
+              <span class="inline-flex items-center">
+                <span>Amount</span>
+              </span>
             </th>
             <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Status
             </th>
-            <th
-              class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              <a href="?order_by=submitted&sort={{ view.ascending|yesno:'ASC,DES' }}">
-                <span class="inline-flex items-center">
-                  <span>Submitted</span>
-                  {% if 'order_by=submitted' in request.get_full_path %}
-                    {% if not view.ascending %}
-                      <svg xmlns="http://www.w3.org/2000/svg" class="pl-2" width="24" height="24" viewBox="0 0 24 24"
-                        stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <line x1="4" y1="6" x2="11" y2="6" />
-                        <line x1="4" y1="12" x2="11" y2="12" />
-                        <line x1="4" y1="18" x2="13" y2="18" />
-                        <polyline points="15 9 18 6 21 9" />
-                        <line x1="18" y1="6" x2="18" y2="18" />
-                      </svg>
-                    {% else %}
-                      <svg xmlns="http://www.w3.org/2000/svg" class="pl-2" width="24" height="24" viewBox="0 0 24 24"
-                        stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <line x1="4" y1="6" x2="13" y2="6" />
-                        <line x1="4" y1="12" x2="11" y2="12" />
-                        <line x1="4" y1="18" x2="11" y2="18" />
-                        <polyline points="15 15 18 18 21 15" />
-                        <line x1="18" y1="6" x2="18" y2="18" />
-                      </svg>
-                    {% endif %}
-                  {% endif %}
-                </span>
-              </a>
+            <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              <span class="inline-flex items-center">
+                <span>Submitted</span>
+              </span>
             </th>
             <th class="px-6 py-3 border-b border-gray-200 bg-gray-50">
               &nbsp;
@@ -212,7 +111,7 @@
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          {% for transaction in object_list %}
+          {% for transaction in page_obj %}
           <tr>
             <td class="px-6 py-4 text-left border-b border-gray-200 text-sm leading-5 text-gray-900">
               <a class="text-indigo-700 hover:underline"
@@ -266,6 +165,69 @@
       </table>
     </div>
 
+    <div class="px-4 py-3 flex items-center justify-between sm:px-6">
+      <div class="flex-1 flex justify-between sm:hidden">
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+            Previous
+          </a>
+        {% endif %}
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+            Next
+          </a>
+        {% endif %}
+      </div>
+      <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+        <span class="inline-flex"></span>
+        <div>
+          <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+            {% if page_obj.has_previous %}
+              <a href="?page=1" class="relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                <!-- Tabler name: icons/chevrons-left -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="mr-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <polyline points="11 7 6 12 11 17" />
+                  <polyline points="17 7 12 12 17 17" />
+                </svg>
+                First
+              </a>
+              <a href="?page={{ page_obj.previous_page_number }}" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                <!-- Tabler name: icons/chevron-left -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="mr-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <polyline points="15 6 9 12 15 18" />
+                </svg>
+                Previous
+              </a>
+            {% endif %}
+            <div class="bg-white border-gray-300 text-gray-500 relative inline-flex items-center px-8 py-2 border text-sm font-medium {%if not page_obj.has_previous %}rounded-l-md{%elif not page_obj.has_next %}rounded-r-md{% endif %}">
+              <p>Page <span class="text-gray-800">{{ page_obj.number }}</span> of <span class="text-gray-800">{{ page_obj.paginator.num_pages }}</span></p>
+            </div>
+            {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                Next
+                <!-- Tabler name: icons/chevron-right -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <polyline points="9 6 15 12 9 18" />
+                </svg>
+              </a>
+              <a href="?page={{ page_obj.paginator.num_pages }}" class="relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                Last
+                <!-- Tabler name: icons/chevrons-right -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <polyline points="7 7 12 12 7 17" />
+                  <polyline points="13 7 18 12 13 17" />
+                </svg>
+              </a>
+            {% endif %}
+          </nav>
+        </div>
+      </div>
+    </div>
+
     <div class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center"
       style="background-color: rgba(0,0,0,.75);" x-show.transition.opacity.duration.300ms="isOpen()">
       <div
@@ -315,8 +277,7 @@
   </div>
 
   <div class="mx-8 mt-12 flex items-center justify-between">
-    <span class="inline-flex">
-    </span>
+    <span class="inline-flex"></span>
     {% if view.filter == "deposits" %}
     <div class="mt-8 flex flex-shrink-0 sm:mt-0">
       <div class="inline-flex rounded-md shadow">

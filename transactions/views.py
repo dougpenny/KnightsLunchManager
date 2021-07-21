@@ -127,6 +127,7 @@ class TransactionMixin:
     ascending = True
     today = timezone.now
     allow_empty = True
+    paginate_by = 20
     date_field = "submitted"
 
     def get_queryset(self):
