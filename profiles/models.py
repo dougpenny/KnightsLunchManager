@@ -38,6 +38,7 @@ class Profile(models.Model):
     room = models.TextField(max_length=64, blank=True, default='')
     school = models.ForeignKey(School, null=True, on_delete=models.SET_NULL)
     active = models.BooleanField(default=False)
+    pending = models.BooleanField(default=False)
     student_dcid = models.IntegerField(blank=True, null=True, unique=True, verbose_name='Student DCID')
     user_dcid = models.IntegerField(blank=True, null=True, unique=True, verbose_name='User DCID')
     user_number = models.IntegerField(blank=True, null=True)
