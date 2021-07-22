@@ -37,7 +37,7 @@ class Profile(models.Model):
     role = models.SmallIntegerField(choices=ROLE_CHOICES, default=STUDENT)
     room = models.TextField(max_length=64, blank=True, default='')
     school = models.ForeignKey(School, null=True, on_delete=models.SET_NULL)
-    status = models.BooleanField(default=False)
+    active = models.BooleanField(default=False)
     student_dcid = models.IntegerField(blank=True, null=True, unique=True, verbose_name='Student DCID')
     user_dcid = models.IntegerField(blank=True, null=True, unique=True, verbose_name='User DCID')
     user_number = models.IntegerField(blank=True, null=True)

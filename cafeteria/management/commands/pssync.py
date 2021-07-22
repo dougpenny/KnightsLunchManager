@@ -72,7 +72,7 @@ class Command(BaseCommand):
                 'phone': phone,
                 'role': Profile.STAFF,
                 'room': room,
-                'status': True,
+                'active': True,
                 'user_number': member['teachernumber'],
             }
             )
@@ -149,7 +149,7 @@ class Command(BaseCommand):
                     'lunch_id': member['lunch']['lunch_id'],
                     'role': Profile.STUDENT,
                     'school': School.objects.get(id=member['school_enrollment']['school_id']),
-                    'status': True,
+                    'active': True,
                     'user_number': member['local_id'],
                 }
                 )

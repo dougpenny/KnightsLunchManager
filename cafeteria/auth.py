@@ -40,7 +40,7 @@ class PowerSchoolGuardianOIDC(OIDCAuthenticationBackend):
 		profile = Profile(
 			last_sync = timezone.now(),
 			role = Profile.GUARDIAN,
-			status = True,
+			active = True,
 			user_dcid = claims.get('ps_dcid'),
 			user = user
 		)
@@ -61,7 +61,7 @@ class PowerSchoolGuardianOIDC(OIDCAuthenticationBackend):
 			profile = Profile(
 				last_sync = timezone.now(),
 				role = Profile.GUARDIAN,
-				status = True,
+				active = True,
 				user_dcid = claims.get('ps_dcid'),
 				user = user
 			)
