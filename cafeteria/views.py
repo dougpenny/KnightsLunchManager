@@ -28,6 +28,7 @@ from reportlab.lib.units import inch
 from cafeteria.decorators import admin_access_allowed
 from cafeteria.forms import GeneralForm, SchoolsModelForm
 from cafeteria.models import School
+from cafeteria.operations import end_of_year_process
 from menu.models import MenuItem
 from profiles.models import Profile
 from transactions.models import MenuLineItem
@@ -265,6 +266,7 @@ def general_settings(request):
             form_data = general_form.cleaned_data
             config.OPEN_TIME = form_data['open_time']
             config.CLOSE_TIME = form_data['close_time']
+            config.CURRENT_YEAR = form_data['current_year']
             config.CLOSED_FOR_SUMMER = form_data['closed_for_summer']
             config.REPORTS_EMAIL = form_data['reports_email']
             config.BALANCE_EXPORT_PATH = form_data['balance_export_path']
@@ -275,6 +277,7 @@ def general_settings(request):
         context['general_form'] = GeneralForm(prefix='general', initial={
             'open_time': config.OPEN_TIME,
             'close_time': config.CLOSE_TIME,
+            'current_year': config.CURRENT_YEAR,
             'closed_for_summer': config.CLOSED_FOR_SUMMER,
             'reports_email': config.REPORTS_EMAIL,
             'balance_export_path': config.BALANCE_EXPORT_PATH,
@@ -296,6 +299,17 @@ def schools_settings(request):
         context['schools_count'] = School.objects.count()
         context['schools_formset'] = SchoolsFormSet(prefix='schools')
     return render(request, 'admin/schools_settings.html', context=context)
+
+@login_required
+@admin_access_allowed
+def operations(request):
+    if request.method == 'POST':
+        #end_of_year_process(config.CURRENT_YEAR, None)
+        messages.info(request, 'The End-of-Year process cannot currently be run from this page.')
+        return redirect('operations')
+    else:
+        pass
+    return render(request, 'admin/operations.html')
 
 @login_required
 @admin_access_allowed

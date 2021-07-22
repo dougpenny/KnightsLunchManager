@@ -180,8 +180,9 @@ CONSTANCE_CONFIG = {
     'CLOSED_FOR_SUMMER': (False, 'The cafeteria is closed for the summer.'),
     'REPORTS_EMAIL': ('', 'Email addresses, comma seperated, to which system reports should be sent.'),
     'BALANCE_EXPORT_PATH': ('/', 'File path where current balance export files should be saved.'),
+    'CURRENT_YEAR': ('', 'Current school year.'),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
-    'General Settings': ('OPEN_TIME', 'CLOSE_TIME', 'CLOSED_FOR_SUMMER', 'REPORTS_EMAIL', 'BALANCE_EXPORT_PATH'),
+    'General Settings': ('OPEN_TIME', 'CLOSE_TIME', 'CLOSED_FOR_SUMMER', 'REPORTS_EMAIL', 'BALANCE_EXPORT_PATH', 'CURRENT_YEAR'),
 }

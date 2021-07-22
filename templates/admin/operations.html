@@ -1,0 +1,42 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin-content %}
+  <h3 class="ml-8 mt-12 text-2xl leading-6 font-medium text-gray-700">
+    Cafeteria Tools
+  </h3>
+  <div class="relative max-w-4xl mx-auto md:px-8 xl:px-0">
+    <div class="pt-6 pb-16">
+      <div class="px-4 sm:px-6 md:px-0">
+        <div class="py-0">
+          <div class="space-y-1">
+            <div>
+              <div class="max-w-2xl px-4 py-5 sm:p-6">
+                <form action="{% url 'operations' %}" method="post">
+                  {% csrf_token %}
+                  <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    End-of-Year Process
+                  </h3>
+                  <div class="text-sm text-gray-500">
+                    <p>
+                      This function will record each students' current balance, delete all transactions, and create a new transaction for the carryover balance from the previous year.
+                    </p>
+                  </div>
+                  <div class="mt-5 sm:flex-shrink-0 sm:flex sm:items-center">
+                    <button type="submit" name="operations" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400 sm:text-sm">
+                      Run EOY Process
+                    </button>
+                  </div>
+              </div>
+              <div class="mt-2">
+              </div>
+              <div class="pt-8">
+              </div>
+              <div class="pt-8">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

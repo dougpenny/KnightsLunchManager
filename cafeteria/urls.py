@@ -20,6 +20,7 @@ urlpatterns = [
     path('admin/', views.admin_dashboard, name='admin'),
     path('admin/homeroom-orders-report/', views.homeroom_orders_report, name='homerooms-report'),
     path('admin/profiles/', include('profiles.urls')),
+    path('admin/operations', views.operations, name='operations'),
     path('admin/settings/general', views.general_settings, name='general-settings'),
     path('admin/settings/schools', views.schools_settings, name='schools-settings'),
     path('admin/transactions/', include('transactions.urls')),

@@ -17,7 +17,7 @@
                     Operating Hours
                   </h3>
                 </div>
-                <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-8 sm:grid-cols-6">
+                <div class="mt-2 grid grid-cols-1 gap-y-6 gap-x-8 sm:grid-cols-6">
                   <div class="sm:col-span-2">
                     <label for="{{ general_form.open_time.id_for_label }}" class="block text-sm font-medium text-gray-700">
                       Orders Open
@@ -37,7 +37,22 @@
                   </div>
                 </div>
               </div>
-              <div>
+              <div class="pt-2 max-w-xl">
+                <div>
+                  <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Current School Year
+                  </h3>
+                </div>
+                <div class="mt-2">
+                  <div class="mt-1">
+                    {{ general_form.current_year }}
+                  </div>
+                  <p class="mt-2 text-xs text-gray-500" id="current-year-description">
+                    Current school year to be used when creating rollover balance transaction. For example, entering 2019-2020 here would result in a transaction description of "Ending balance from the 2019-2020 school year."
+                  </p>
+                </div>
+              </div>
+              <div class="pt-2">
                 <div>
                   <h3 class="text-lg leading-6 font-medium text-gray-900">
                     Closed for the Summer
@@ -52,7 +67,7 @@
                   </div>
                 </div>
               </div>
-              <div class="pt-8">
+              <div class="pt-2">
                 <div>
                   <h3 class="text-lg leading-6 font-medium text-gray-900">
                     Reports Email Addresses
@@ -61,7 +76,7 @@
                     Email addresses to which you would like system reports sent.
                   </p>
                 </div>
-                <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-8 sm:grid-cols-6">
+                <div class="mt-2 grid grid-cols-1 gap-y-6 gap-x-8 sm:grid-cols-6">
                   <div class="sm:col-span-4">
                     <label for="{{ general_form.reports_email.id_for_label }}" class="block text-sm font-medium text-gray-700">
                       Addresses
@@ -73,13 +88,13 @@
                   </div>
                 </div>
               </div>
-              <div class="pt-8">
+              <div class="pt-2">
                 <div>
                   <h3 class="text-lg leading-6 font-medium text-gray-900">
                     Current Balance Export
                   </h3>
                 </div>
-                <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-8 sm:grid-cols-6">
+                <div class="mt-2 grid grid-cols-1 gap-y-6 gap-x-8 sm:grid-cols-6">
                   <div class="sm:col-span-3">
                     <label for="{{ general_form.balance_export_path.id_for_label }}" class="block text-sm font-medium text-gray-700">
                       Export Path

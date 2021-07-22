@@ -125,7 +125,7 @@
 <div class="mt-6 overflow-y-auto">
   <nav class="px-2 space-y-1">
     <a href="{% url 'general-settings' %}"
-      class="group flex items-center px-2 py-2 text-sm leading-6 font-medium rounded-md text-gray-100 {% if request.path == '/admin/settings/' %}text-gray-700  bg-yellow-200{% endif %} hover:text-gray-700 hover:bg-yellow-200 focus:outline-none focus:bg-yellow-200 transition ease-in-out duration-150">
+      class="group flex items-center px-2 py-2 text-sm leading-6 font-medium rounded-md text-gray-100 {% if request.path == '/admin/settings/general' %}text-gray-700  bg-yellow-200{% endif %} hover:text-gray-700 hover:bg-yellow-200 focus:outline-none focus:bg-yellow-200 transition ease-in-out duration-150">
       <!-- Tabler name: icons/settings -->
       <svg xmlns="http://www.w3.org/2000/svg" class="mr-4 h-6 w-6"
         width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
@@ -137,7 +137,7 @@
       General Settings
     </a>
     <a href="{% url 'schools-settings' %}"
-      class="group flex items-center px-2 py-2 text-sm leading-6 font-medium rounded-md text-gray-100 {% if request.path == '/admin/settings/' %}text-gray-700  bg-yellow-200{% endif %} hover:text-gray-700 hover:bg-yellow-200 focus:outline-none focus:bg-yellow-200 transition ease-in-out duration-150">
+      class="group flex items-center px-2 py-2 text-sm leading-6 font-medium rounded-md text-gray-100 {% if request.path == '/admin/settings/schools' %}text-gray-700  bg-yellow-200{% endif %} hover:text-gray-700 hover:bg-yellow-200 focus:outline-none focus:bg-yellow-200 transition ease-in-out duration-150">
       <!-- Tabler name: icons/school -->
       <svg xmlns="http://www.w3.org/2000/svg" class="mr-4 h-6 w-6" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -145,6 +145,15 @@
         <path d="M6 10.6v5.4a6 3 0 0 0 12 0v-5.4"></path>
       </svg>
       Schools
+    </a>
+    <a href="{% url 'operations' %}"
+      class="group flex items-center px-2 py-2 text-sm leading-6 font-medium rounded-md text-gray-100 {% if request.path == '/admin/operations' %}text-gray-700  bg-yellow-200{% endif %} hover:text-gray-700 hover:bg-yellow-200 focus:outline-none focus:bg-yellow-200 transition ease-in-out duration-150">
+      <!-- Tabler name: icons/tool -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="mr-4 h-6 w-6" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M7 10h3v-3l-3.5 -3.5a6 6 0 0 1 8 8l6 6a2 2 0 0 1 -3 3l-6 -6a6 6 0 0 1 -8 -8l3.5 3.5"></path>
+      </svg>
+      Tools
     </a>
   </nav>
 </div>
