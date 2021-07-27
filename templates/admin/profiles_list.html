@@ -3,7 +3,7 @@
 <div class="p-8">
   {% if object_list %}
     <h3 class="max-w-7xl mx-auto px-4 text-xl tracking-tight text-gray-900 sm:text-2xl sm:px-6 lg:px-8">
-      {% if search %}Matching {% endif %}Students {% if search %}or{% else %}and{% endif %} Staff{% if filter == 'debt' %} in Debt{% endif %}
+      {% if search %}Matching {% elif inactive %}Pending Inactive {% endif %}Students {% if search or inactive%}or{% else %}and{% endif %} Staff{% if filter == 'debt' %} in Debt{% endif %}
     </h3>
     <div class="mt-2 mx-auto px-4 flex flex-col sm:px-6 lg:px-8">
       <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
@@ -12,94 +12,19 @@
             <thead>
               <tr>
                 <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                  <a href="{{ request.path }}?{% if query %}q={{ query }}&{% endif %}order_by=name&sort={{ view.ascending|yesno:'ASC,DES' }}">
-                    <span class="inline-flex items-center">
-                      <span>Name</span>
-                      {% if 'order_by=name' in request.get_full_path %}
-                        {% if not view.ascending%}
-                          <svg xmlns="http://www.w3.org/2000/svg" class="pl-2" width="24" height="24" viewBox="0 0 24 24"
-                            stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <line x1="4" y1="6" x2="11" y2="6" />
-                            <line x1="4" y1="12" x2="11" y2="12" />
-                            <line x1="4" y1="18" x2="13" y2="18" />
-                            <polyline points="15 9 18 6 21 9" />
-                            <line x1="18" y1="6" x2="18" y2="18" />
-                          </svg>
-                        {% else %}
-                          <svg xmlns="http://www.w3.org/2000/svg" class="pl-2" width="24" height="24" viewBox="0 0 24 24"
-                            stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <line x1="4" y1="6" x2="13" y2="6" />
-                            <line x1="4" y1="12" x2="11" y2="12" />
-                            <line x1="4" y1="18" x2="11" y2="18" />
-                            <polyline points="15 15 18 18 21 15" />
-                            <line x1="18" y1="6" x2="18" y2="18" />
-                          </svg>
-                        {% endif %}
-                      {% endif %}
-                    </span>
-                  </a>
+                  <span class="inline-flex items-center">
+                    <span>Name</span>
+                  </span>
                 </th>
                 <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                  <a href="{{ request.path }}?{% if query %}q={{ query }}&{% endif %}order_by=grade_level&sort={{ view.ascending|yesno:'ASC,DES' }}">
-                    <span class="inline-flex items-center">
-                      <span>Grade</span>
-                      {% if 'order_by=grade_level' in request.get_full_path %}
-                        {% if not view.ascending%}
-                          <svg xmlns="http://www.w3.org/2000/svg" class="pl-2" width="24" height="24" viewBox="0 0 24 24"
-                            stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <line x1="4" y1="6" x2="11" y2="6" />
-                            <line x1="4" y1="12" x2="11" y2="12" />
-                            <line x1="4" y1="18" x2="13" y2="18" />
-                            <polyline points="15 9 18 6 21 9" />
-                            <line x1="18" y1="6" x2="18" y2="18" />
-                          </svg>
-                        {% else %}
-                          <svg xmlns="http://www.w3.org/2000/svg" class="pl-2" width="24" height="24" viewBox="0 0 24 24"
-                            stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <line x1="4" y1="6" x2="13" y2="6" />
-                            <line x1="4" y1="12" x2="11" y2="12" />
-                            <line x1="4" y1="18" x2="11" y2="18" />
-                            <polyline points="15 15 18 18 21 15" />
-                            <line x1="18" y1="6" x2="18" y2="18" />
-                          </svg>
-                        {% endif %}
-                      {% endif %}
-                    </span>
-                  </a>
+                  <span class="inline-flex items-center">
+                    <span>Grade</span>
+                  </span>
                 </th>
                 <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                  <a href="{{ request.path }}?{% if query %}q={{ query }}&{% endif %}order_by=current_balance&sort={{ view.ascending|yesno:'ASC,DES' }}">
-                    <span class="inline-flex items-center">
-                      <span>Current Balance</span>
-                      {% if 'order_by=current_balance' in request.get_full_path %}
-                        {% if not view.ascending%}
-                          <svg xmlns="http://www.w3.org/2000/svg" class="pl-2" width="24" height="24" viewBox="0 0 24 24"
-                            stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <line x1="4" y1="6" x2="11" y2="6" />
-                            <line x1="4" y1="12" x2="11" y2="12" />
-                            <line x1="4" y1="18" x2="13" y2="18" />
-                            <polyline points="15 9 18 6 21 9" />
-                            <line x1="18" y1="6" x2="18" y2="18" />
-                          </svg>
-                        {% else %}
-                          <svg xmlns="http://www.w3.org/2000/svg" class="pl-2" width="24" height="24" viewBox="0 0 24 24"
-                            stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <line x1="4" y1="6" x2="13" y2="6" />
-                            <line x1="4" y1="12" x2="11" y2="12" />
-                            <line x1="4" y1="18" x2="11" y2="18" />
-                            <polyline points="15 15 18 18 21 15" />
-                            <line x1="18" y1="6" x2="18" y2="18" />
-                          </svg>
-                        {% endif %}
-                      {% endif %}
-                    </span>
-                  </a>
+                  <span class="inline-flex items-center">
+                    <span>Current Balance</span>
+                  </span>
                 </th>
               </tr>
             </thead>

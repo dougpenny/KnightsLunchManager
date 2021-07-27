@@ -1,12 +1,15 @@
 from functools import reduce
 import operator
 
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.shortcuts import redirect, render
 from django.urls import resolve
 from django.views.generic import DetailView, ListView
 
+from cafeteria.decorators import admin_access_allowed
 from profiles.models import Profile
 from transactions.models import Transaction
 
@@ -86,3 +89,15 @@ class ProfileSearchResultsView(LoginRequiredMixin, ProfileMixin, ListView):
     #         return result
     #     else:
     #         return Profile.objects.none()
+
+@login_required
+@admin_access_allowed
+def pending_inactive_students(request):
+    if request.method == 'POST':
+        pass
+    else:
+        context = {}
+        context['inactive'] = True
+        context['object_list'] = Profile.objects.filter(pending=True)
+
+    return render(request, 'admin/profiles_list.html', context=context)
