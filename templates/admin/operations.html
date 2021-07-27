@@ -1,6 +1,7 @@
 {% extends "admin/base_admin.html" %}
 
 {% block admin-content %}
+{% load humanize %}
   <h3 class="ml-8 mt-12 text-2xl leading-6 font-medium text-gray-700">
     Cafeteria Tools
   </h3>
@@ -9,8 +10,31 @@
       <div class="px-4 sm:px-6 md:px-0">
         <div class="py-0">
           <div class="space-y-1">
-            <div>
-              <div class="max-w-2xl px-4 py-5 sm:p-6">
+            <div class="max-w-2xl">
+              <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                  Pending Inactive Users
+                </h3>
+                <div class="text-sm text-gray-500">
+                  <p>
+                    {% if pending_count > 1 %}
+                      There are currently <span class="font-bold text-red-600">{{ pending_count|apnumber }}</span> inactive users with a current balanace.<br/>These accounts should be marked as inactive, but their current balance needs to be cleared first. Use the button below to view these users and take action to clear their current balance.
+                    {% elif pending_count == 1 %}
+                      There is currently <span class="font-bold text-red-600">one</span> inactive user with a current balanace. This account should be marked as inactive, but the current balance needs to be cleared first. Use the button below to view the user and take action to clear the current balance.
+                    {% else %}
+                      There are currently no inactive users with a current balance.
+                    {% endif %}
+                  </p>
+                </div>
+                <div class="mt-5 sm:flex-shrink-0 sm:flex sm:items-center">
+                  <a href="{% url 'pending-inactive' %}">
+                    <button type="button" name="pending-inactive" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 sm:text-sm">
+                      View Pending Inactive
+                    </button>
+                  </a>
+                </div>
+              </div>
+              <div class="px-4 py-5 sm:p-6">
                 <form action="{% url 'operations' %}" method="post">
                   {% csrf_token %}
                   <h3 class="text-lg leading-6 font-medium text-gray-900">
@@ -26,6 +50,7 @@
                       Run EOY Process
                     </button>
                   </div>
+                </form>
               </div>
               <div class="mt-2">
               </div>

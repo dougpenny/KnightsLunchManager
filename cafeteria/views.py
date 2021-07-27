@@ -308,8 +308,9 @@ def operations(request):
         messages.info(request, 'The End-of-Year process cannot currently be run from this page.')
         return redirect('operations')
     else:
-        pass
-    return render(request, 'admin/operations.html')
+        context = {}
+        context['pending_count'] = Profile.objects.filter(pending=True).count()
+    return render(request, 'admin/operations.html', context=context)
 
 @login_required
 @admin_access_allowed
