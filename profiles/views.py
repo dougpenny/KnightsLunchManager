@@ -23,19 +23,19 @@ class ProfileMixin:
 
     def get_queryset(self):
         if self.filter == 'debt':
-            queryset = Profile.objects.filter(current_balance__lt=0)
+            queryset = Profile.objects.filter(active=True).filter(current_balance__lt=0)
         elif self.filter == 'search':
             query = self.request.GET.get('q')
             if query:
                 query_list = query.split()
-                queryset = Profile.objects.filter(
+                queryset = Profile.objects.filter(active=True).filter(
                     reduce(operator.or_, (Q(user__first_name__icontains=q) for q in query_list)) |
                     reduce(operator.or_, (Q(user__last_name__icontains=q) for q in query_list))
                 )
             else:
                 queryset = Profile.objects.none()
         else:
-            queryset = Profile.objects.all()
+            queryset = Profile.objects.filter(active=True)
         sort_order = self.request.GET.get('sort') or 'ASC'
         self.ascending = sort_order == 'ASC'
         sorting = self.request.GET.get('order_by') or 'current_balance'

@@ -14,7 +14,7 @@ def end_of_year_process(year: str, profile: Profile = None):
     if profile:
         users.append(profile)
     else:
-        users = Profile.objects.all()
+        users = Profile.objects.filter(active=True)
     for user in users:
         transactions = Transaction.objects.filter(transactee=user)
         if transactions.count() != 0:
@@ -49,5 +49,5 @@ def check_for_inactive(users: QuerySet):
                 user.pending = False
                 user.save()
                 account = user.user
-                account.active = False
+                account.is_active = False
                 account.save()

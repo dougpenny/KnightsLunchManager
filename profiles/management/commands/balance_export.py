@@ -18,7 +18,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         logger.info('Exporting lunch balances...')
         file_path = config.BALANCE_EXPORT_PATH
-        students = Profile.objects.filter(role=Profile.STUDENT)
+        students = Profile.objects.filter(active=True).filter(role=Profile.STUDENT)
         filename = os.path.join(file_path, 'lunch_balance.csv')
         with open(filename, 'w') as csvfile:
             csvwriter = csv.writer(csvfile)
