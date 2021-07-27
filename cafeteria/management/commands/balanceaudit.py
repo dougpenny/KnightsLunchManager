@@ -37,7 +37,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         incorrect_balances = []
         if options['all']:
-            all_users = Profile.objects.all()
+            all_users = Profile.objects.filter(active=True)
             for user in all_users:
                 audit_info = self.audit_current_balance(user.id)
                 if audit_info:

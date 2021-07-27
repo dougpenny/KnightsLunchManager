@@ -31,7 +31,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if options['all']:
-            all_users = Profile.objects.all()
+            all_users = Profile.objects.filter(active=True)
             for user in all_users:
                 self.correct_current_balance(user)
         else:
