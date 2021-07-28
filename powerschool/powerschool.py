@@ -123,7 +123,11 @@ class Powerschool:
                     resource_url, headers=headers, params=params, verify=False)
                 requested_resources = requested_resource_response.json()[
                     key_1][key_2]
-                data.extend(requested_resources)
+                if isinstance(requested_resources, dict):
+                    data.extend(requested_resources)
+                else:
+                    resource_dict = [requested_resources]
+                    data.extend(resource_dict)
             except:
                 return []
             page_number += 1
