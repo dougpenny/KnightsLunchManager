@@ -117,7 +117,7 @@ def home(request):
             return redirect('todays-order')
     else:
         context['user'] = None
-    return render(request, 'user/user.html', context=context)
+    return render(request, 'user/new_order.html', context=context)
 
 @login_required
 def submit_order(request):
