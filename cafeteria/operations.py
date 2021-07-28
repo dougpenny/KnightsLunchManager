@@ -1,3 +1,5 @@
+import logging
+
 from datetime import timedelta
 from typing import List
 from django.db.models.query import QuerySet
@@ -7,6 +9,9 @@ from django.utils import timezone
 
 from profiles.models import Profile
 from transactions.models import Transaction
+
+
+logger = logging.getLogger(__file__)
 
 
 def end_of_year_process(year: str, profile: Profile = None):
@@ -36,18 +41,20 @@ def end_of_year_process(year: str, profile: Profile = None):
             user.current_balance = transaction.ending_balance
             user.save()
 
-def check_for_inactive(users: QuerySet):
-    for user in users:
+def check_for_inactive(profiles: QuerySet):
+    for profile in profiles:
         # Check to see if the last sync was more than 2 days ago
-        if user.last_sync.date() < timezone.now().date() + timedelta(days=-2):
+        if profile.last_sync.date() < timezone.now().date() + timedelta(days=-2):
             # Make sure the user's balance is zero before setting as inactive
-            if user.current_balance != 0:
-                user.pending = True
-                user.save()
+            if profile.current_balance != 0:
+                profile.pending = True
+                profile.save()
+                logger.info('{} has a current balance of {}; marked pending inactive.'.format(profile.name(), profile.current_balance))
             else:
-                user.active = False
-                user.pending = False
-                user.save()
-                account = user.user
+                profile.active = False
+                profile.pending = False
+                profile.save()
+                account = profile.user
                 account.is_active = False
                 account.save()
+                logger.info('{} has not synced from PowerSchool in more than 2 days; marked inactive.'.format(profile.name()))
