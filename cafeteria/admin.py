@@ -1,7 +1,19 @@
 from django.contrib import admin
 
-from cafeteria.models import School
-from cafeteria.models import Weekday
+from cafeteria.models import GradeLevel, School, Weekday
+
+
+@admin.register(GradeLevel)
+class GradeLevelAdmin(admin.ModelAdmin):
+    fields = ['display_name', 'value', 'school']
+    list_filter = ['school']
+    list_display = ('__str__', 'value', 'school')
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(School)

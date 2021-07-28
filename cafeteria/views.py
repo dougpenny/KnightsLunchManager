@@ -316,7 +316,7 @@ def operations(request):
 @admin_access_allowed
 def homeroom_orders_report(request):
     todays_orders = []
-    for staff in Profile.objects.filter(role=Profile.STAFF).order_by('grade_level', 'user__last_name'):
+    for staff in Profile.objects.filter(role=Profile.STAFF).order_by('grade', 'user__last_name'):
         homeroom_order = orders_for_homeroom(staff)
         if homeroom_order:
             todays_orders.append(homeroom_order)
@@ -358,12 +358,10 @@ def homeroom_orders_report(request):
             teacher = orders['teacher']
             title = teacher.user.last_name + ' - ' + teacher.room
             data.append(platypus.Paragraph(title, title_style))
-            if teacher.grade_level == 0:
-                grade_level = 'Grade: K5'
-            elif not teacher.grade_level:
+            if not teacher.grade:
                 grade_level = 'Staff'
             else:
-                grade_level = 'Grade: ' + str(teacher.grade_level)
+                grade_level = teacher.grade.display_name
             data.append(platypus.Paragraph(grade_level, grade_style))
             data.append(platypus.FrameBreak())
             order_groups = orders['orders'].values(

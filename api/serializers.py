@@ -19,7 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
         if obj.profile.role == Profile.STAFF:
             grade = 'Staff'
         else:
-            grade = str(obj.profile.grade_level)
+            grade = str(obj.profile.grade)
         return obj.first_name + ' ' + obj.last_name + ' - ' + grade
 
     class Meta:

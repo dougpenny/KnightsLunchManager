@@ -6,7 +6,7 @@ from django.utils import timezone
 import logging
 import requests
 
-from cafeteria.models import School
+from cafeteria.models import GradeLevel, School
 from powerschool.powerschool import Powerschool
 from profiles.models import Profile
 
@@ -47,8 +47,15 @@ class Command(BaseCommand):
                                                               defaults={
                 'name': item['name'],
                 'school_number': item['school_number']
-            }
-            )
+            })
+            if (created == False and school.active == True):
+                start = item['low_grade']
+                end = item['high_grade']
+                for grade_level in range(start, end + 1):
+                    grade, created = GradeLevel.objects.update_or_create(value=grade_level,
+                        defaults={
+                            'school': school
+                        })
         logger.info('All schools successfully synchronized...')
 
     def sync_staff_using_client(self, client):
@@ -117,9 +124,9 @@ class Command(BaseCommand):
                 staff.user_dcid)
             if homeroom_roster:
                 try:
-                    staff.grade_level = int(homeroom_roster[0]['grade_level'])
+                    staff.grade = GradeLevel.objects.get(value=int(homeroom_roster[0]['grade_level']))
                 except:
-                    staff.grade_level = None
+                    staff.grade = None
                 staff.students.clear()
                 for student in homeroom_roster:
                     try:
@@ -128,13 +135,15 @@ class Command(BaseCommand):
                         staff.students.add(student)
                     except:
                         pass
-                staff.save()
+            else:
+                staff.grade = None
+            staff.save()
         logger.info('Retrieved {} staff, created {} new staff members'.format(
             len(active_staff), newly_created))
 
     def sync_students_using_client(self, client):
         logger.info('Synchronizing students...')
-        for school in School.objects.filter(active__exact=True):
+        for school in School.objects.filter(active=True):
             logger.info('Sycning students from {} (id {})...'.format(
                 school, school.id))
             active_students = client.studentsForSchool(
@@ -142,9 +151,10 @@ class Command(BaseCommand):
             newly_created = 0
             for member in active_students:
                 # look for an existing student and create a new one if not found
+                grade = GradeLevel.objects.get(value=member['school_enrollment']['grade_level'])
                 student, created = Profile.objects.update_or_create(student_dcid=member['id'],
                                                                     defaults={
-                    'grade_level': member['school_enrollment']['grade_level'],
+                    'grade': grade,
                     'last_sync': timezone.now(),
                     'lunch_id': member['lunch']['lunch_id'],
                     'role': Profile.STUDENT,

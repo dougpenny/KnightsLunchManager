@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-from cafeteria.models import School
+from cafeteria.models import GradeLevel, School
 
 
 class Profile(models.Model):
@@ -15,7 +15,7 @@ class Profile(models.Model):
     ]
     current_balance = models.DecimalField(
         default=0, decimal_places=2, max_digits=6)
-    grade_level = models.SmallIntegerField(default=None, null=True)
+    grade = models.ForeignKey(GradeLevel, on_delete=models.CASCADE, default=None, null=True)
     children = models.ManyToManyField(
         'self',
         blank=True,

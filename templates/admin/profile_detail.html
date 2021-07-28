@@ -10,7 +10,7 @@
       </h2>
       <div class="mt-2 text-base text-gray-600 leading-tight sm:text-lg">
         {% if object.role == 2 %}
-          {{ object.grade_level|ordinal }} Grade
+          {{ object.grade }}
           <br />Homeroom:
           {% if object.homeroom_teacher %}
             <a class="text-indigo-700 hover:underline"
@@ -194,7 +194,7 @@
                     <a class="text-indigo-700 hover:underline" href="{% url 'profile-detail' student.pk %}">{{ student.name }}</a>
                   </td>
                   <td class="px-6 py-4 text-left border-b border-gray-200 text-sm leading-5 text-gray-900">
-                    {{ student.grade_level }}
+                    {{ student.grade }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-left border-b border-gray-200 text-sm leading-5 {% if student.current_balance < 0 %}text-red-600{% else %}text-gray-900{% endif %}">
                     ${{ student.current_balance }}

@@ -144,7 +144,7 @@ class TransactionMixin:
         self.ascending = sort_order == 'ASC'
         sorting = self.request.GET.get('order_by') or 'submitted'
         if sorting == 'grade':
-            sorting = 'transactee__grade_level'
+            sorting = 'transactee__grade.value'
         if not self.ascending:
             sorting = '-' + sorting
         self.ascending = not self.ascending
@@ -330,7 +330,7 @@ class ExportChecksView(LoginRequiredMixin, UserIsStaffMixin, View):
                     worksheet.write(row, col + 2, 'Staff', center)
                 else:
                     worksheet.write(
-                        row, col + 2, deposit.transactee.grade_level, center)
+                        row, col + 2, deposit.transactee.grade, center)
                 if 'check #' in deposit.description.lower():
                     worksheet.write(
                         row, col + 3, deposit.amount, basic_currency)
