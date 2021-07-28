@@ -123,7 +123,7 @@ class Powerschool:
                     resource_url, headers=headers, params=params, verify=False)
                 requested_resources = requested_resource_response.json()[
                     key_1][key_2]
-                if isinstance(requested_resources, dict):
+                if isinstance(requested_resources, list):
                     data.extend(requested_resources)
                 else:
                     resource_dict = [requested_resources]
