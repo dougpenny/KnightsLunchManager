@@ -322,9 +322,9 @@
   {% else %}
   <h3 class="w-full text-center mt-14 text-lg font-medium text-gray-700 sm:text-3xl">
     {% if view.filter == "deposits" %}
-    There are no deposits for {% if view.today.date == day %}today{% else %}{{ day|date:'l, M jS' }}{% endif %}.
+    There are no deposits{% if day %} for {% if view.today.date == day %}today{% else %}{{ day|date:'l, M jS' }}{% endif %}{% endif %}.
     {% elif view.filter == "orders" %}
-    There are no orders for {% if view.today.date == day %}today{% else %}{{ day|date:'l, M jS' }}{% endif %}.
+    There are no orders{% if day %} for {% if view.today.date == day %}today{% else %}{{ day|date:'l, M jS' }}{% endif %}{% endif %}.
     {% else %}
     There are no transactions for {% if view.today.date == day %}today{% else %}{{ day|date:'l, M jS' }}{% endif %}.
     {% endif %}
