@@ -19,11 +19,12 @@ class MenuItem(models.Model):
         related_name='menu_items'
     )
     description = models.TextField(blank=True, default='')
-    schools_available = models.ManyToManyField(
-        'cafeteria.School',
+    lunch_period = models.ManyToManyField(
+        'cafeteria.LunchPeriod',
         blank=True,
-        help_text='Choose school availability',
-        related_name='menu_items'
+        help_text='Choose lunch period availability',
+        related_name='menu_items',
+        verbose_name='lunch periods available'
     )
     name = models.CharField(
         help_text='Will be displayed to students',

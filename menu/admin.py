@@ -11,15 +11,10 @@ class MenuItemAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {'fields': ['name', 'short_name',
                            'description', 'cost', 'category', 'sequence']}),
-        ('Availability', {'fields': ['days_available', 'schools_available']})
+        ('Availability', {'fields': ['days_available', 'lunch_period']})
     ]
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
     list_display = ('name', 'short_name', 'sequence', 'cost')
-    list_filter = ['days_available', 'schools_available']
-
-    def formfield_for_manytomany(self, db_field, request, **kwargs):
-        if db_field.name == 'schools_available':
-            kwargs["queryset"] = School.objects.filter(active=True)
-        return super().formfield_for_manytomany(db_field, request, **kwargs)
+    list_filter = ['days_available', 'lunch_period']
