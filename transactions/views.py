@@ -445,7 +445,6 @@ class UsersTodayArchiveView(LoginRequiredMixin, TodayArchiveView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['today'] = timezone.now
         context['orders_open'] = Transaction.accepting_orders()
         if self.request.user.profile.role == Profile.STAFF:
             if self.request.user.profile.students.all():

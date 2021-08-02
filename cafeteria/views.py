@@ -4,13 +4,14 @@ import io
 import logging
 import os
 
+from collections import Counter
 from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q, Sum
-from django.forms import modelformset_factory
+from django.forms import formset_factory, modelformset_factory
 from django.forms.models import modelform_factory
 from django.http import FileResponse, HttpResponse, HttpRequest
 from django.shortcuts import redirect, render
@@ -26,7 +27,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 
 from cafeteria.decorators import admin_access_allowed
-from cafeteria.forms import GeneralForm, SchoolsModelForm
+from cafeteria.forms import GeneralForm, SchoolsModelForm, UserOrderForm
 from cafeteria.models import School
 from cafeteria.operations import end_of_year_process
 from menu.models import MenuItem
@@ -95,26 +96,73 @@ def delete_order(request):
 
 def home(request):
     context = {}
-    time = timezone.now()
-    context['time'] = time
     if config.CLOSED_FOR_SUMMER:
         context['closed'] = True
         return render(request, 'user/closed.html', context=context)
-    menu = MenuItem.objects.filter(
-        days_available__name=timezone.localdate(timezone.now()).strftime("%A"))
-    context['menu'] = menu
+    
     context['orders_open'] = Transaction.accepting_orders()
     if request.user.is_authenticated:
         if request.user.profile.role == Profile.GUARDIAN:
             return redirect('guardian')
+        
+        if todays_transaction(request.user.profile):
+            return redirect('todays-order')
+
         context['user'] = request.user
         context['balance'] = request.user.profile.current_balance
-        context['transaction'] = todays_transaction(request.user.profile)
-        if request.user.profile.role == Profile.STAFF:
-            if request.user.profile.students.all():
-                context['homeroom_teacher'] = True
-        if context['transaction']:
-            return redirect('todays-order')
+        if request.method == 'POST':
+            if context['orders_open']:
+                OrderFormSet = formset_factory(UserOrderForm)
+                formset = OrderFormSet(request.POST, prefix='order_form')
+                if formset.is_valid():
+                    ordered_items_list = []
+                    for item in formset.cleaned_data:
+                        try:
+                            ordered_items_list.append(item['menu_item'])
+                        except Exception as e:
+                            messages.error(request, 'You must select at least one item.')
+                            return redirect('home')
+                    
+                    counted_items = Counter(ordered_items_list)
+                    description = ''
+                    cost = 0
+                    for item in counted_items:
+                        if description:
+                            description = description + ', '
+                        description = description + '({}) {}'.format(counted_items[item], item.name)
+                        cost = cost + (item.cost * counted_items[item])
+                    try:
+                        transaction = Transaction(
+                            amount=cost,
+                            description=description,
+                            transaction_type=Transaction.DEBIT,
+                            transactee=request.user.profile
+                        )
+                        transaction.save()
+                        for item in counted_items:
+                            transaction.menu_items.add(item, through_defaults={'quantity': counted_items[item]})
+                        messages.success(request, 'Your order was successfully submitted.')
+                        return redirect('todays-order')
+                    except Exception as e:
+                        logger.exception('An exception occured when trying to create a transaction: {}'.format(e))
+                        messages.error(request, 'There was a problem submitting your order.')
+                        return redirect('home')
+
+        else:
+            if request.user.profile.role == Profile.STAFF:
+                if request.user.profile.students.all():
+                    context['homeroom_teacher'] = True
+
+            queryset = MenuItem.objects.filter(days_available__name=timezone.localdate(timezone.now()).strftime("%A"))
+            context['menu_items'] = queryset.count()
+            if request.user.profile.role == Profile.STUDENT:
+                student_grade = request.user.profile.grade
+                lunch_period = student_grade.lunch_period
+                queryset = queryset.filter(lunch_period=lunch_period)
+            else:
+                queryset = queryset.filter(category=MenuItem.ENTREE)
+            OrderFormSet = formset_factory(UserOrderForm)
+            context['formset'] = OrderFormSet(form_kwargs={'queryset': queryset}, prefix='order_form')
     else:
         context['user'] = None
     return render(request, 'user/new_order.html', context=context)

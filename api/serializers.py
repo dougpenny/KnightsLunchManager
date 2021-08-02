@@ -8,8 +8,7 @@ from profiles.models import Profile
 class MenuItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = MenuItem
-        fields = ['id', 'cost', 'days_available',
-                  'schools_available', 'name', 'sequence']
+        fields = ['id', 'cost', 'days_available', 'lunch_period', 'name', 'sequence']
 
 
 class UserSerializer(serializers.ModelSerializer):

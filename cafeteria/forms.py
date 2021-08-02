@@ -1,6 +1,7 @@
 from django import forms
 
 from cafeteria.models import School
+from menu.models import MenuItem
 
 
 class GeneralForm(forms.Form):
@@ -32,3 +33,18 @@ class SchoolsModelForm(forms.ModelForm):
             }),
             'name': forms.HiddenInput(attrs={'readonly': 'True'})
         }
+
+
+class MenuItemChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return '{} - ${}'.format(obj.name, obj.cost)
+
+
+class UserOrderForm(forms.Form):
+    menu_item = MenuItemChoiceField(queryset=MenuItem.objects.all(), widget=forms.Select(attrs={
+        'class': 'block pl-3 pr-10 py-2 text-sm border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md'}))
+    def __init__(self, *args, **kwargs):
+        queryset = kwargs.pop('queryset', None)
+        super(UserOrderForm, self).__init__(*args, **kwargs)
+        if queryset:
+            self.fields['menu_item'].queryset = queryset
