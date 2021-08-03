@@ -12,9 +12,9 @@ class MenuItemSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    name = serializers.SerializerMethodField()
+    text = serializers.SerializerMethodField()
 
-    def get_name(self, obj):
+    def get_text(self, obj):
         if obj.profile.role == Profile.STAFF:
             grade = 'Staff'
         else:
@@ -23,4 +23,4 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'name']
+        fields = ['id', 'text']

@@ -5,7 +5,7 @@ from transactions.views import BatchDepositView, CreateDepositView
 from transactions.views import CreateOrderView, DeleteTransactionView, ExportChecksView
 from transactions.views import OrderProcessView, TransactionsDateArchiveView, TransactionDetailView
 from transactions.views import TransactionListView, TransactionsTodayArchiveView
-from transactions.views import batch_deposit
+from transactions.views import batch_deposit, new_single_order
 
 
 urlpatterns = [
@@ -42,8 +42,7 @@ urlpatterns = [
         filter='orders', month_format='%m'), name='transaction-date-orders'),
     path('orders/today/', TransactionsTodayArchiveView.as_view(filter='orders'),
          name='transaction-today-orders'),
-    path('order/new/', CreateOrderView.as_view(),
-         name='transaction-order-create'),
+    path('order/new/', new_single_order, name='transaction-order-create'),
     path('orders/process/<int:year>/<int:month>/<int:day>/',
          OrderProcessView.as_view(), name='transaction-date-process'),
     path('order/process/<int:pk>/', OrderProcessView.as_view(),

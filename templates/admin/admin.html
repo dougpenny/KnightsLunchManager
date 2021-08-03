@@ -22,8 +22,10 @@
   <div class="max-w-6xl pb-8 border-b border-gray-300 mx-auto px-4 sm:px-6 lg:px-8">
     <div class="pb-5 space-y-3 sm:flex sm:items-center sm:justify-between sm:space-x-4 sm:space-y-0">
       <h2 class="text-lg leading-6 font-medium text-gray-900">
-        Today's Orders
+        Today's Entree Orders
       </h2>
+
+      {% comment %}
       <div class="flex space-x-3">
         <a href="{% url 'homerooms-report' %}">
           <span class="shadow-sm rounded-md">
@@ -42,13 +44,15 @@
           </span>
         </a>
       </div>
+      {% endcomment %}
+
     </div>
-    <div class="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-2" x-max="1">
+    <div class="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2" x-max="1">
       {% for menu_item, count in order_count.items %}
       <div class="bg-white overflow-hidden shadow rounded-lg">
         <div class="p-5">
           <div class="flex items-center">
-            <div class="ml-5 w-0 flex-1">
+            <div class="w-0 flex-1">
               <h2 class="text-lg leading-7 font-medium text-center text-gray-500 truncate">
                 {{ menu_item }}
               </h2>

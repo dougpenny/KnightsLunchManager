@@ -21,7 +21,7 @@
             Student / Staff
           </label>
           <div class="mt-1">
-            <v-select v-model="selected.user" name="user" id="user_selection" as="name:id:id"
+            <v-select v-model="selected.user" name="user" id="user_selection" as="text:id:id"
               from="{{ request.scheme }}://{{ request.site }}/api/v1/users/basic/?search=%s"></v-select>
           </div>
           {{ form.transactee }}

@@ -1,5 +1,6 @@
 from django import forms
 
+from menu.models import MenuItem
 from transactions.models import Transaction, MenuLineItem
 
 
@@ -32,6 +33,11 @@ class TransactionOrderForm(forms.Form):
     submitted = forms.DateTimeField(
         widget=forms.HiddenInput()
     )
+
+
+class ItemOrderForm(forms.Form):
+    menu_item = forms.ModelChoiceField(queryset=MenuItem.objects.all(), widget=forms.Select(attrs={
+        'class': 'block pl-2 pr-10 text-base leading-none text-gray-800 border-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md'}))
 
 
 DepositFormSet = forms.formset_factory(

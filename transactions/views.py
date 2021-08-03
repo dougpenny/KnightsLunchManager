@@ -3,11 +3,16 @@ import logging
 import operator
 import xlsxwriter
 
+from collections import Counter
+from datetime import date
+
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.http import FileResponse, HttpResponse
+from django.forms import formset_factory
+from django.http import FileResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -15,14 +20,12 @@ from django.views import View
 from django.views.generic import CreateView, ListView, DetailView, FormView
 from django.views.generic import DayArchiveView, TodayArchiveView
 
-from datetime import date
-
+from cafeteria.decorators import admin_access_allowed
 from menu.models import MenuItem
 from profiles.models import Profile
-
 from transactions.models import Transaction, MenuLineItem
 from transactions.forms import TransactionDepositForm
-from transactions.forms import TransactionOrderForm, DepositFormSet
+from transactions.forms import TransactionOrderForm, DepositFormSet, ItemOrderForm
 from transactions import utils
 
 
@@ -482,3 +485,53 @@ class UsersTransactionsArchiveView(LoginRequiredMixin, ListView):
             sorting = '-' + sorting
         self.ascending = not self.ascending
         return queryset.order_by(sorting)
+
+
+@login_required
+@admin_access_allowed
+def new_single_order(request):
+    context = {}
+    if request.method == 'POST':
+        ItemFormSet = formset_factory(ItemOrderForm)
+        formset = ItemFormSet(request.POST, prefix='order_form')
+        if formset.is_valid():
+            ordered_items_list = []
+            for item in formset.cleaned_data:
+                try:
+                    ordered_items_list.append(item['menu_item'])
+                except Exception as e:
+                    messages.error(request, 'You must select at least one item.')
+                    return redirect('transaction-order-create')
+            
+            transactee = User.objects.get(id=request.POST['transactee']).profile
+            counted_items = Counter(ordered_items_list)
+            description = ''
+            cost = 0
+            for item in counted_items:
+                if description:
+                    description = description + ', '
+                description = description + '({}) {}'.format(counted_items[item], item.name)
+                cost = cost + (item.cost * counted_items[item])
+            try:
+                transaction = Transaction(
+                    amount=cost,
+                    description=description,
+                    transaction_type=Transaction.DEBIT,
+                    transactee=transactee
+                )
+                transaction.save()
+                for item in counted_items:
+                    transaction.menu_items.add(item, through_defaults={'quantity': counted_items[item]})
+                messages.success(request, 'Successfully created an order for {}.'.format(transactee.name()))
+                return HttpResponseRedirect(reverse_lazy('profile-detail', args=[transactee.id]))
+            
+            except Exception as e:
+                logger.exception('An exception occured when trying to create a transaction: {}'.format(e))
+                messages.error(request, 'An error occured creating the order.')
+                return redirect('transaction-order-create')
+
+    else:
+        ItemFormSet = formset_factory(ItemOrderForm)
+        context['formset'] = ItemFormSet(prefix='order_form')
+    
+    return render(request, 'admin/transaction_single_order.html', context=context)
