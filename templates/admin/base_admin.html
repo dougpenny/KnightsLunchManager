@@ -7,7 +7,7 @@
 
 {% block main-content %}
 <div style="min-height: 640px">
-  <div class="h-screen flex overflow-hidden bg-gray-100" x-data="{ sidebarOpen: false }"
+  <div class="h-screen flex bg-gray-100" x-data="{ sidebarOpen: false }"
     @keydown.window.escape="sidebarOpen = false">
     {% include 'admin/mobile_menu.html' %}
     {% include 'admin/menu.html' %}
