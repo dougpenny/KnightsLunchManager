@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -33,6 +35,7 @@ class Profile(models.Model):
     )
     last_sync = models.DateTimeField()
     lunch_id = models.IntegerField(default=None, null=True, verbose_name='Lunch ID')
+    lunch_uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     phone = models.CharField(max_length=5, blank=True, default='')
     role = models.SmallIntegerField(choices=ROLE_CHOICES, default=STUDENT)
     room = models.TextField(max_length=64, blank=True, default='')
