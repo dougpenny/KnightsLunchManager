@@ -18,7 +18,7 @@ class GradeLevelAdmin(admin.ModelAdmin):
 
 @admin.register(LunchPeriod)
 class LunchPeriodAdmin(admin.ModelAdmin):
-    fields = ['display_name', 'start_time']
+    fields = ['display_name', 'start_time', 'teacher_distributes']
     list_display = ('__str__', 'start_time')
 
 
