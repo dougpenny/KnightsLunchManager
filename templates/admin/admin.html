@@ -24,31 +24,9 @@
       <h2 class="text-lg leading-6 font-medium text-gray-900">
         Today's Entree Orders
       </h2>
-
-      {% comment %}
-      <div class="flex space-x-3">
-        <a href="{% url 'homerooms-report' %}">
-          <span class="shadow-sm rounded-md">
-            <button type="button"
-              class="inline-flex items-center px-6 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-blue-800 hover:bg-blue-600 focus:outline-none focus:border-blue-700 active:bg-blue-700 transition ease-in-out duration-150">
-              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-download mr-3" width="24"
-                height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path stroke="none" d="M0 0h24v24H0z" />
-                <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
-                <polyline points="7 11 12 16 17 11" />
-                <line x1="12" y1="4" x2="12" y2="16" />
-              </svg>
-              Homeroom Reports
-            </button>
-          </span>
-        </a>
-      </div>
-      {% endcomment %}
-
     </div>
     <div class="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2" x-max="1">
-      {% for menu_item, count in order_count.items %}
+      {% for menu_item, count in total_item_counts.items %}
       <div class="bg-white overflow-hidden shadow rounded-lg">
         <div class="p-5">
           <div class="flex items-center">
@@ -68,9 +46,78 @@
   </div>
 </div>
 
-<div class="mt-14">
+<div class="mt-4">
+  <div x-data="{ tab: 1 }" class="max-w-6xl pb-12 mx-auto px-4 sm:px-6 lg:px-8 border-b border-gray-300">
+    <div class="sm:hidden">
+      <label for="selected-tab" class="sr-only">Select a tab</label>
+      <select id="selected-tab" name="selected-tab" x-model="tab" class="block w-full focus:ring-blue-500 focus:border-blue-500 border-gray-300 rounded-md">
+      {% for lunch_period in period_item_counts %}
+        <option value="{{ lunch_period.id }}">{{ lunch_period }}</option>
+      {% endfor %}
+      </select>
+    </div>
+    <div class="hidden sm:block">
+      <div class="border-b border-gray-200">
+        <nav class="-mb-px flex" aria-label="Tabs">
+        {% for lunch_period in period_item_counts %}
+          <a href="#" :class="{ 'border-blue-600 text-blue-700': tab === {{ lunch_period.id }}, 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': tab != {{ lunch_period.id }} }" @click="tab = {{ lunch_period.id }}" class="w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm">
+            {{ lunch_period }}
+          </a>
+        {% endfor %}
+        </nav>
+      </div>
+    </div>
+    {% for lunch_period, counts in period_item_counts.items %}
+      <div x-show="tab === {{ lunch_period.id }}" class="mt-6">
+        <div class="pb-3 space-y-3 sm:flex sm:items-start sm:justify-between sm:space-x-4 sm:space-y-0">
+          <h2 class="text-lg leading-6 font-medium text-gray-900">
+            Entree Orders for {{ lunch_period }}
+          </h2>
+        </div>
+        <div class="grid grid-cols-2 gap-5">
+          {% for menu_item, count in counts.items %}
+          <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+              <div class="flex items-center">
+                <div class="w-0 flex-1">
+                  <h2 class="text-md font-medium leading-none text-center text-gray-500">
+                    {{ menu_item }}
+                  </h2>
+                  <h2 class="mt-4 mb-8 text-3xl font-medium leading-none text-center text-gray-900">
+                    {{ count }}
+                  </h2>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% if lunch_period.id == 3 %}
+          <div class="mt-6">
+            <a href="{% url 'homerooms-report' %}">
+              <span class="shadow-sm rounded-md">
+                <button type="button"
+                  class="inline-flex items-center px-6 py-3 border border-transparent text-base leading-6 rounded-md text-white bg-blue-800 hover:bg-blue-600 focus:outline-none focus:border-blue-700 active:bg-blue-700 transition ease-in-out duration-150">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-download mr-3" width="24"
+                    height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" />
+                    <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
+                    <polyline points="7 11 12 16 17 11" />
+                    <line x1="12" y1="4" x2="12" y2="16" />
+                  </svg>
+                  Classroom Reports
+                </button>
+              </span>
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+
   <div class="max-w-6xl pb-8 mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-2" x-max="1">
+    <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-2" x-max="1">
       <div class="bg-white overflow-hidden shadow rounded-lg">
         <div class="bg-red-100 border-b border-gray-200 px-4 py-5 sm:px-6">
           <div class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-nowrap">
@@ -110,28 +157,28 @@
           </table>
         </div>
       </div>
-      <!--
-              <div class="relative">
-                <dl class="rounded-lg bg-white shadow sm:grid sm:grid-cols-2">
-                  <div class="flex flex-col border-b border-gray-100 p-6 text-center sm:border-0 sm:border-r">
-                    <dt class="order-2 mt-2 text-lg leading-6 font-medium text-gray-500" id="item-1">
-                      Balance
-                    </dt>
-                    <dd class="order-1 text-5xl leading-none font-extrabold text-green-600" aria-describedby="item-1">
-                      $31,987
-                    </dd>
-                  </div>
-                  <div class="flex flex-col border-t border-b border-gray-100 p-6 text-center sm:border-0 sm:border-l sm:border-r">
-                    <dt class="order-2 mt-2 text-lg leading-6 font-medium text-gray-500">
-                      Owed
-                    </dt>
-                    <dd class="order-1 text-5xl leading-none font-extrabold text-red-600">
-                      $-5,983
-                    </dd>
-                  </div>
-                </dl>
-              </div>
-              -->
+      {% comment %}
+      <div class="relative">
+        <dl class="rounded-lg bg-white shadow sm:grid sm:grid-cols-2">
+          <div class="flex flex-col border-b border-gray-100 p-6 text-center sm:border-0 sm:border-r">
+            <dt class="order-2 mt-2 text-lg leading-6 font-medium text-gray-500" id="item-1">
+              Balance
+            </dt>
+            <dd class="order-1 text-5xl leading-none font-extrabold text-green-600" aria-describedby="item-1">
+              $31,987
+            </dd>
+          </div>
+          <div class="flex flex-col border-t border-b border-gray-100 p-6 text-center sm:border-0 sm:border-l sm:border-r">
+            <dt class="order-2 mt-2 text-lg leading-6 font-medium text-gray-500">
+              Owed
+            </dt>
+            <dd class="order-1 text-5xl leading-none font-extrabold text-red-600">
+              $-5,983
+            </dd>
+          </div>
+        </dl>
+      </div>
+      {% endcomment %}
     </div>
   </div>
 </div>
