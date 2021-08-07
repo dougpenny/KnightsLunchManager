@@ -75,7 +75,6 @@ class Command(BaseCommand):
             staff, created = Profile.objects.update_or_create(user_dcid=member['dcid'],
                                                               defaults={
                 'last_sync': timezone.now(),
-                'lunch_id': member['lunch_id'],
                 'phone': phone,
                 'role': Profile.STAFF,
                 'room': room,
@@ -156,7 +155,6 @@ class Command(BaseCommand):
                                                                     defaults={
                     'grade': grade,
                     'last_sync': timezone.now(),
-                    'lunch_id': member['lunch']['lunch_id'],
                     'role': Profile.STUDENT,
                     'school': School.objects.get(id=member['school_enrollment']['school_id']),
                     'active': True,

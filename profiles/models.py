@@ -15,9 +15,9 @@ class Profile(models.Model):
         (STAFF, 'Staff'),
         (STUDENT, 'Student'),
     ]
-    current_balance = models.DecimalField(
-        default=0, decimal_places=2, max_digits=6)
-    grade = models.ForeignKey(GradeLevel, on_delete=models.CASCADE, default=None, null=True)
+
+    active = models.BooleanField(default=False)
+    cards_printed = models.SmallIntegerField(default=0, verbose_name='Lunch Cards Printed')
     children = models.ManyToManyField(
         'self',
         blank=True,
@@ -25,6 +25,8 @@ class Profile(models.Model):
         related_query_name='guardian',
         symmetrical=False
     )
+    current_balance = models.DecimalField(default=0, decimal_places=2, max_digits=6)
+    grade = models.ForeignKey(GradeLevel, on_delete=models.CASCADE, default=None, null=True)
     homeroom_teacher = models.ForeignKey(
         'self',
         null=True,
@@ -34,18 +36,16 @@ class Profile(models.Model):
         verbose_name='Homeroom Teacher'
     )
     last_sync = models.DateTimeField()
-    lunch_id = models.IntegerField(default=None, null=True, verbose_name='Lunch ID')
     lunch_uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    pending = models.BooleanField(default=False)
     phone = models.CharField(max_length=5, blank=True, default='')
     role = models.SmallIntegerField(choices=ROLE_CHOICES, default=STUDENT)
     room = models.TextField(max_length=64, blank=True, default='')
     school = models.ForeignKey(School, null=True, on_delete=models.SET_NULL)
-    active = models.BooleanField(default=False)
-    pending = models.BooleanField(default=False)
     student_dcid = models.IntegerField(blank=True, null=True, unique=True, verbose_name='Student DCID')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     user_dcid = models.IntegerField(blank=True, null=True, unique=True, verbose_name='User DCID')
     user_number = models.IntegerField(blank=True, null=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
 
     class Meta:
         ordering = ['user__last_name', 'user__first_name']

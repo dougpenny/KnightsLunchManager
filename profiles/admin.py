@@ -15,19 +15,19 @@ class StudentsInline(admin.TabularInline):
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('last_first', 'role', 'lunch_id', 'current_balance')
+    list_display = ('last_first', 'role', 'current_balance')
     list_filter = ['role', 'active', 'pending', 'grade', 'school']
     ordering = ['user__last_name']
-    readonly_fields = ['children', 'grade', 'homeroom_teacher', 'last_sync', 'lunch_id', 'phone',
+    readonly_fields = ['cards_printed', 'children', 'grade', 'homeroom_teacher', 'last_sync', 'phone',
                        'role', 'room', 'school', 'student_dcid', 'user_dcid', 'user_number']
-    search_fields = ['user__first_name', 'user__last_name', 'user_number', 'lunch_id']
+    search_fields = ['user__first_name', 'user__last_name', 'user_number']
 
     def get_fields(self, request, obj=None):
         role_fields = {
             Profile.STAFF: ['user', 'current_balance', 'role', 'active', 'pending', 'grade',
-            'room', 'phone', 'lunch_id', 'user_number', 'user_dcid', 'last_sync'],
-            Profile.STUDENT: ['user', 'current_balance', 'role', 'active', 'pending', 'grade', 'school',
-            'lunch_id', 'user_number', 'student_dcid', 'homeroom_teacher', 'last_sync'],
+            'room', 'phone', 'cards_printed', 'user_number', 'user_dcid', 'last_sync'],
+            Profile.STUDENT: ['user', 'current_balance', 'role', 'active', 'pending', 'grade', 'homeroom_teacher',
+            'school', 'cards_printed', 'user_number', 'student_dcid', 'last_sync'],
             Profile.GUARDIAN: ['user', 'role', 'active', 'user_dcid', 'children', 'last_sync']
         }
         return role_fields.get(obj.role, [])
