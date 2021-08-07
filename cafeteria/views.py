@@ -6,11 +6,13 @@ import os
 
 from collections import Counter
 from decimal import Decimal
+from typing import Dict
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q, Sum
+from django.db.models.query import QuerySet
 from django.forms import formset_factory, modelformset_factory
 from django.forms.models import modelform_factory
 from django.http import FileResponse, HttpResponse, HttpRequest
@@ -28,7 +30,7 @@ from reportlab.lib.units import inch
 
 from cafeteria.decorators import admin_access_allowed
 from cafeteria.forms import GeneralForm, SchoolsModelForm, UserOrderForm
-from cafeteria.models import School
+from cafeteria.models import LunchPeriod, School
 from cafeteria.operations import end_of_year_process
 from menu.models import MenuItem
 from profiles.models import Profile
@@ -282,6 +284,17 @@ def guardian_submit_order(request):
         return redirect('guardian')
 
 
+def get_item_counts(orders: QuerySet[MenuItem]) -> Dict:
+    count = {}
+    for order in orders:
+        for line_item in order.line_item.all():
+            if line_item.menu_item.category == MenuItem.ENTREE:
+                if line_item.menu_item.name in count:
+                    count[line_item.menu_item.name] = count[line_item.menu_item.name] + line_item.quantity
+                else:
+                    count[line_item.menu_item.name] = line_item.quantity
+    return count
+
 # Admin dashboard views
 @login_required
 @admin_access_allowed
@@ -290,19 +303,15 @@ def admin_dashboard(request):
     time = timezone.localtime(timezone.now())
     context['time'] = time
     context['user'] = request.user
-    order_count = {}
     orders = Transaction.objects.filter(submitted__date=time.date())
-    for order in orders:
-        for line_item in order.line_item.all():
-            if line_item.menu_item.name in order_count:
-                order_count[line_item.menu_item.name] = order_count[line_item.menu_item.name] + \
-                    line_item.quantity
-            else:
-                order_count[line_item.menu_item.name] = line_item.quantity
-    context['order_count'] = order_count
+    context['total_item_counts'] = get_item_counts(orders)
+    lunch_period_counts = {}
+    for lunch_period in LunchPeriod.objects.all():
+        lunch_period_counts[lunch_period] = get_item_counts(orders.filter(transactee__grade__lunch_period=lunch_period))
+    context['period_item_counts'] = lunch_period_counts
     context['orders'] = orders
     context['debtors'] = Profile.objects.filter(active=True).filter(current_balance__lt=0).order_by(
-        'current_balance', 'user__last_name')[:10]
+        'current_balance', 'user__last_name')[:5]
     return render(request, 'admin/admin.html', context=context)
 
 @login_required
@@ -428,6 +437,95 @@ def homeroom_orders_report(request):
         document.build(data)
         buffer.seek(0)
         return FileResponse(buffer, as_attachment=True, filename='homeroom_orders.pdf')
+    else:
+        messages.warning(request, 'No orders were found for today.')
+        return redirect('admin')
+
+@login_required
+@admin_access_allowed
+def lunch_period_order_report(request, lunch_period_id):
+    todays_orders = []
+    lunch_period = LunchPeriod.objects.get(id=lunch_period_id)
+    for staff in Profile.objects.filter(role=Profile.STAFF).filter(grade__lunch_period=lunch_period):
+        class_order = orders_for_homeroom(staff)
+        if class_order:
+            todays_orders.append(class_order)
+    if todays_orders:
+        buffer = io.BytesIO()
+        styles = getSampleStyleSheet()
+        
+        # create some styles and the base document
+        normal_style = copy.copy(styles['Normal'])
+        normal_style.fontSize = 12
+        normal_style.leading = 14
+        item_count_style = copy.copy(styles['Normal'])
+        item_count_style.fontSize = 14
+        item_count_style.leading = 16
+        title_style = copy.copy(styles['Title'])
+        title_style.fontSize = 26
+        margin = inch * 0.5
+        document = platypus.BaseDocTemplate(buffer, pagesize=letter, rightMargin=margin, leftMargin=margin, topMargin=margin, bottomMargin=margin)
+        
+        # create the title frame
+        title_frame_height = inch * 0.5
+        title_frame_bottom = document.height + document.bottomMargin - title_frame_height
+        title_frame = platypus.Frame(document.leftMargin, title_frame_bottom, document.width - document.rightMargin, title_frame_height)
+        frames = [title_frame]
+        
+        # create three frames to hold the list of orders for each item
+        item_frame_height = inch * 2.0
+        student_frame_height = title_frame_bottom - (inch * 2.25) - document.bottomMargin
+        frame_width = document.width / 3.0
+        for frame in range(3):
+            left_margin = document.leftMargin + (frame * frame_width)
+            column = platypus.Frame(left_margin, document.bottomMargin + item_frame_height, frame_width, student_frame_height, id='student-frame-{}'.format(frame))
+            frames.append(column)
+        
+        # create a frame to hold the list of item totals
+        column = platypus.Frame(document.leftMargin, document.bottomMargin, document.width, item_frame_height, id='item-frame')
+        frames.append(column)
+
+        template = platypus.PageTemplate(frames=frames)
+        document.addPageTemplates(template)
+        
+        data = []
+        for orders in todays_orders:
+            item_orders = {}
+            item_counts = {}
+            teacher = orders['teacher']
+            for item in orders['orders']:
+                student = item.transaction.transactee.name()
+                if item.quantity > 1:
+                    student = student + ' ({})'.format(item.quantity)
+                if item.menu_item in item_orders:
+                    item_orders[item.menu_item].append(student)
+                else:
+                    item_orders[item.menu_item] = [student]
+                if item.menu_item in item_counts:
+                    item_counts[item.menu_item] = item_counts[item.menu_item] + item.quantity
+                else:
+                    item_counts[item.menu_item] = item.quantity
+            title = teacher.user.last_name
+            data.append(platypus.Paragraph(title, title_style))
+            data.append(platypus.FrameBreak())
+            for item in item_orders:
+                content = [platypus.Paragraph('<b><u>{}</u></b>'.format(item.name), normal_style)]
+                for student in item_orders[item]:
+                    content.append(platypus.Paragraph(student, normal_style))
+                content.append(platypus.Paragraph('<br/><br/>', normal_style))
+                data.append(platypus.KeepTogether(content))
+            data.append(platypus.FrameBreak('item-frame'))
+            data.append(platypus.HRFlowable())
+            content = []
+            for item in item_counts:
+                content.append(platypus.Paragraph('{} - <b>{}</b>'.format(item.name, item_counts[item]), item_count_style))
+            data.append(platypus.BalancedColumns(content, nCols = 2, topPadding=(0.25 * inch)))
+            data.append(platypus.PageBreak())
+        document.build(data)
+        buffer.seek(0)
+        today = timezone.now()
+        report_name = 'class_orders_{}-{}-{}.pdf'.format(today.year, today.month, today.day)
+        return FileResponse(buffer, as_attachment=True, filename=report_name)
     else:
         messages.warning(request, 'No orders were found for today.')
         return redirect('admin')
