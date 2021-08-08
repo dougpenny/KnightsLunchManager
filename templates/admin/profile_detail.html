@@ -26,6 +26,23 @@
         Current balance: <span class="ml-1 font-extrabold {% if object.current_balance < 0 %}text-red-700{% else %}text-gray-900{% endif %}">${{ object.current_balance }}</span>
       </div>
     </div>
+    <div>
+      <form form action="/admin/profiles/{{ object.id }}/new-card" method="post">
+        {% csrf_token %}
+        <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          Print Lunch Card
+        </button>
+        <input type="hidden" name="profile" id="profile_id" value="{{ object.id }}">
+        <div class="mt-2 relative flex items-start">
+          <div class="flex items-center h-5">
+            <input id="waive-fee" aria-describedby="waive-fee" name="waive-fee" type="checkbox" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="waive-fee" class="font-medium text-gray-700">Waive fee?</label>
+          </div>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 

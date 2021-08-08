@@ -18,6 +18,9 @@ class GeneralForm(forms.Form):
         'class': 'shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md'}))
     current_year = forms.CharField(required=False, widget=forms.TextInput(attrs={'type': 'text',
         'class': 'shadow-sm focus:ring-blue-500 focus:border-blue-500 block sm:text-sm border-gray-300 rounded-md'}))
+    new_card_fee = forms.DecimalField(required=False, widget=forms.NumberInput(attrs={'type': 'number',
+        'class': 'shadow-sm pl-7 focus:ring-blue-500 focus:border-blue-500 block sm:text-sm border-gray-300 rounded-md',
+        'placeholder': '0.00'}), decimal_places=2)
 
 
 class SchoolsModelForm(forms.ModelForm):

@@ -35,22 +35,48 @@
                 </div>
               </div>
               <div class="px-4 py-5 sm:p-6">
-                <form action="{% url 'operations' %}" method="post">
+                <form method="post" action="">
                   {% csrf_token %}
                   <h3 class="text-lg leading-6 font-medium text-gray-900">
-                    End-of-Year Process
+                    Print Lunch Cards
                   </h3>
                   <div class="text-sm text-gray-500">
                     <p>
-                      This function will record each students' current balance, delete all transactions, and create a new transaction for the carryover balance from the previous year.
+                      Print new lunch cards for the group selected below. Cards will be sorted alphabetically, grouped by homeroom. This operation does not invalidate existing lunch cards, nor does it charge a fee. Please note, Kindergarten through 2nd grade do not receive lunch cards.
                     </p>
                   </div>
+                  <div class="mt-2">
+                    <label for="group" class="block text-sm font-medium text-gray-700">Group</label>
+                    <select id="group" name="group" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                      <option value="NEW">New Students</option>
+                      {% for school in schools %}
+                        <option value="{{ school.id }}">{{ school.display_name }} Students & Staff</option>
+                      {% endfor %}
+                      <option value="STAFF">Staff without a Homeroom</option>
+                      <option value="ALL">All Students & Staff</option>
+                    </select>
+                  </div>
                   <div class="mt-5 sm:flex-shrink-0 sm:flex sm:items-center">
-                    <button type="submit" name="operations" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400 sm:text-sm">
-                      Run EOY Process
+                    <button type="submit" name="action" value="print-cards" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 sm:text-sm">
+                      Print Cards
                     </button>
                   </div>
                 </form>
+              </div>
+              <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                  End-of-Year Process
+                </h3>
+                <div class="text-sm text-gray-500">
+                  <p>
+                    This function will record each students' current balance, delete all transactions, and create a new transaction for the carryover balance from the previous year.
+                  </p>
+                </div>
+                <div class="mt-5 sm:flex-shrink-0 sm:flex sm:items-center">
+                  <button type="button" name="operations" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400 sm:text-sm">
+                    Run EOY Process
+                  </button>
+                </div>
               </div>
               <div class="mt-2">
               </div>

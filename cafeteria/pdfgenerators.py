@@ -1,17 +1,79 @@
 import copy
 import io
 
+from pathlib import Path
 from typing import List
 
 from reportlab import platypus
-from reportlab.lib import enums
+from reportlab.graphics.barcode import qr
+from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.units import inch
+from reportlab.lib.units import inch, mm
 
 from django.http import FileResponse
 from django.utils import timezone
 
+from profiles.models import Profile
+
+
+def lunch_card_for_users(profiles: List[Profile]) -> FileResponse:
+    buffer = io.BytesIO()
+    card_width = 86*mm
+    card_height = 54*mm
+    margin = 2*mm
+    document = platypus.BaseDocTemplate(buffer, pagesize=(card_width, card_height), rightMargin=margin, leftMargin=margin, topMargin=margin, bottomMargin=margin)
+
+    styles = getSampleStyleSheet()
+    title_style = copy.copy(styles['Title'])
+    title_style.fontSize = 20
+    title_style.leading = 20
+    title_style.spaceBefore = 0
+    title_style.spaceAfter = 0
+    normal_style = copy.copy(styles['Normal'])
+    normal_style.fontSize = 16
+    normal_style.leading = 18
+    normal_style.alignment = TA_CENTER
+    role_style = copy.copy(styles['Normal'])
+    role_style.fontSize = 8
+    role_style.leading = 8
+    role_style.textTransform = 'uppercase'
+    role_style.alignment = TA_CENTER
+
+    qr_size = 37*mm
+    top_offset = 4*mm
+    role_height = 8*mm
+    title_height = card_height - qr_size - top_offset
+    
+    frames = [platypus.Frame(document.leftMargin, card_height - title_height - top_offset, document.width, title_height, id="title-frame")]
+    frames.append(platypus.Frame(document.leftMargin, document.bottomMargin, document.width - qr_size, qr_size, id="image-frame"))
+    frames.append(platypus.Frame(document.leftMargin, document.bottomMargin, document.width - qr_size, qr_size, id="misc-frame"))
+    frames.append(platypus.Frame(document.leftMargin, 0, document.width - qr_size, role_height, id="role-frame"))
+    frames.append(platypus.Frame(card_width - qr_size, document.bottomMargin - margin, qr_size, qr_size, id="qr-frame"))
+    template = platypus.PageTemplate(frames=frames)
+    document.addPageTemplates(template)
+
+    image_path = Path(__file__).resolve(strict=True).parent / 'report_images/knights-head.jpg'
+    image = platypus.Image(image_path, width=30*mm, height=30*mm)
+
+    data = []
+    for profile in profiles:
+        profile.cards_printed = profile.cards_printed + 1
+        profile.save()
+        name = platypus.Paragraph(profile.name(), title_style)
+        data.append(platypus.KeepInFrame(card_width, title_height, content=[name]))
+        data.append(platypus.FrameBreak('image-frame'))
+        data.append(image)
+        data.append(platypus.FrameBreak('misc-frame'))
+        data.append(platypus.Paragraph('NRCA Cafeteria<br/>Lunch Card', normal_style))
+        data.append(platypus.FrameBreak('role-frame'))
+        data.append(platypus.Paragraph(profile.get_role_display(), role_style))
+        data.append(platypus.FrameBreak('qr-frame'))
+        data.append(qr.QrCode(str(profile.lunch_uuid), qrBorder=0))
+        data.append(platypus.PageBreak())
+    document.build(data)
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename='lunch_cards.pdf')
 
 def orders_report_by_homeroom(todays_orders: List) -> FileResponse:
     buffer = io.BytesIO()
@@ -26,18 +88,18 @@ def orders_report_by_homeroom(todays_orders: List) -> FileResponse:
     item_count_style.leading = 16
     title_style = copy.copy(styles['Title'])
     title_style.fontSize = 26
-    margin = inch * 0.5
+    margin = 0.5*inch
     document = platypus.BaseDocTemplate(buffer, pagesize=letter, rightMargin=margin, leftMargin=margin, topMargin=margin, bottomMargin=margin)
     
     # create the title frame
-    title_frame_height = inch * 0.5
+    title_frame_height = 0.5*inch
     title_frame_bottom = document.height + document.bottomMargin - title_frame_height
     title_frame = platypus.Frame(document.leftMargin, title_frame_bottom, document.width - document.rightMargin, title_frame_height)
     frames = [title_frame]
     
     # create three frames to hold the list of orders for each item
-    item_frame_height = inch * 2.0
-    student_frame_height = title_frame_bottom - (inch * 2.25) - document.bottomMargin
+    item_frame_height = 2.0*inch
+    student_frame_height = title_frame_bottom - (2.25*inch) - document.bottomMargin
     frame_width = document.width / 3.0
     for frame in range(3):
         left_margin = document.leftMargin + (frame * frame_width)

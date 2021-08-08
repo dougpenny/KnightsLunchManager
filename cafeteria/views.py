@@ -6,7 +6,7 @@ import os
 
 from collections import Counter
 from decimal import Decimal
-from typing import Dict
+from typing import Dict, List
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -32,7 +32,7 @@ from cafeteria.decorators import admin_access_allowed
 from cafeteria.forms import GeneralForm, SchoolsModelForm, UserOrderForm
 from cafeteria.models import LunchPeriod, School
 from cafeteria.operations import end_of_year_process
-from cafeteria.pdfgenerators import orders_report_by_homeroom
+from cafeteria.pdfgenerators import lunch_card_for_users, orders_report_by_homeroom
 from menu.models import MenuItem
 from profiles.models import Profile
 from transactions.models import MenuLineItem
@@ -328,6 +328,7 @@ def general_settings(request):
             config.CLOSED_FOR_SUMMER = form_data['closed_for_summer']
             config.REPORTS_EMAIL = form_data['reports_email']
             config.BALANCE_EXPORT_PATH = form_data['balance_export_path']
+            config.NEW_CARD_FEE = form_data['new_card_fee']
             messages.success(request, 'The general settings were successfully updated.')
         return redirect('general-settings')
     else:
@@ -339,6 +340,7 @@ def general_settings(request):
             'closed_for_summer': config.CLOSED_FOR_SUMMER,
             'reports_email': config.REPORTS_EMAIL,
             'balance_export_path': config.BALANCE_EXPORT_PATH,
+            'new_card_fee': config.NEW_CARD_FEE,
         })
     return render(request, 'admin/general_settings.html', context=context)
 
@@ -358,16 +360,45 @@ def schools_settings(request):
         context['schools_formset'] = SchoolsFormSet(prefix='schools')
     return render(request, 'admin/schools_settings.html', context=context)
 
+def students_grouped_by_homeroom(staff: QuerySet[Profile]):
+    grouped = []
+    no_homeroom = []
+    for teacher in staff:
+        students = teacher.students.all()
+        if students:
+            grouped.append(teacher)
+            for student in students:
+                grouped.append(student)
+        else:
+            no_homeroom.append(teacher)
+    grouped.extend(no_homeroom)
+    return grouped
+
 @login_required
 @admin_access_allowed
 def operations(request):
     if request.method == 'POST':
-        #end_of_year_process(config.CURRENT_YEAR, None)
-        messages.info(request, 'The End-of-Year process cannot currently be run from this page.')
+        if request.POST['action'] == 'print-cards':
+            staff = Profile.objects.filter(role=Profile.STAFF).filter(active=True)
+            if request.POST['group'] == 'NEW':  # No lunch card previously printed
+                profiles = Profile.objects.filter(active=True).filter(cards_printed=0)
+            elif request.POST['group'] == 'STAFF':  # Staff without a Homeroom
+                profiles = staff.filter(grade=None)
+            elif request.POST['group'] == 'ALL':  # All Students & Staff
+                profiles = set(students_grouped_by_homeroom(staff))
+            else:
+                school = School.objects.get(id=request.POST['group'])
+                staff = staff.filter(grade__in=school.grades.all())
+                profiles = students_grouped_by_homeroom(staff)
+            if profiles:
+                return lunch_card_for_users(profiles)
+            else:
+                messages.info(request, 'No users found to print cards for.')
         return redirect('operations')
     else:
         context = {}
         context['pending_count'] = Profile.objects.filter(pending=True).count()
+        context['schools'] = School.objects.filter(active=True)
     return render(request, 'admin/operations.html', context=context)
 
 @login_required

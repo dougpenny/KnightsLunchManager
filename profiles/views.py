@@ -1,17 +1,28 @@
-from functools import reduce
+import logging
 import operator
+import uuid
 
+from functools import reduce
+
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.http import FileResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
-from django.urls import resolve
+from django.urls import resolve, reverse_lazy
 from django.views.generic import DetailView, ListView
 
+from constance import config
+
 from cafeteria.decorators import admin_access_allowed
+from cafeteria.pdfgenerators import lunch_card_for_users
 from profiles.models import Profile
+from transactions.helpers import process_order
 from transactions.models import Transaction
+
+logger = logging.getLogger(__file__)
 
 
 class ProfileMixin:
@@ -101,3 +112,29 @@ def pending_inactive_students(request):
         context['object_list'] = Profile.objects.filter(pending=True)
 
     return render(request, 'admin/profiles_list.html', context=context)
+
+@login_required
+@admin_access_allowed
+def new_individual_card(request, pk):
+    if request.method == 'POST':
+        if 'waive-fee' in request.POST:
+            cost = 0
+        else:
+            cost = config.NEW_CARD_FEE
+        try:
+            profile = Profile.objects.get(id=pk)
+            transaction = Transaction(
+                        amount=cost,
+                        description='Replacement lunch card.',
+                        transaction_type=Transaction.DEBIT,
+                        transactee=profile)
+            transaction.save()
+            success = process_order(transaction)
+            profile.lunch_uuid = uuid.uuid4()
+            profile.save()
+            return lunch_card_for_users([profile])
+        except:
+            logger.info('An error occured trying to print a new lunch card.')
+            messages.error(request, 'An error occured trying to print the new lunch card.')
+
+    return HttpResponseRedirect(reverse_lazy('profile-detail', args=[pk]))
