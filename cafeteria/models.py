@@ -6,7 +6,6 @@ from django.db import models
 
 class GradeLevel(models.Model):
     display_name = models.CharField(blank=True, max_length=24)
-    id = models.IntegerField(primary_key=True)
     lunch_period = models.ForeignKey('LunchPeriod', on_delete=models.SET_NULL, blank=True, null=True, related_name='grades')
     school = models.ForeignKey('School', on_delete=models.CASCADE, limit_choices_to={'active': True}, related_name='grades')
     value = models.SmallIntegerField(unique=True)
