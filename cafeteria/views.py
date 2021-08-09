@@ -385,7 +385,7 @@ def operations(request):
             elif request.POST['group'] == 'STAFF':  # Staff without a Homeroom
                 profiles = staff.filter(grade=None)
             elif request.POST['group'] == 'ALL':  # All Students & Staff
-                profiles = set(students_grouped_by_homeroom(staff))
+                profiles = students_grouped_by_homeroom(staff)
             else:
                 school = School.objects.get(id=request.POST['group'])
                 staff = staff.filter(grade__in=school.grades.all())
