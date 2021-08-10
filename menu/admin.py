@@ -11,7 +11,7 @@ class MenuItemAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {'fields': ['name', 'short_name',
                            'description', 'cost', 'category', 'sequence']}),
-        ('Availability', {'fields': ['days_available', 'lunch_period']})
+        ('Availability', {'fields': ['days_available', 'lunch_period', 'app_only']})
     ]
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},

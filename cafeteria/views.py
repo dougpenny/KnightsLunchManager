@@ -156,7 +156,7 @@ def home(request):
                 if request.user.profile.students.all():
                     context['homeroom_teacher'] = True
 
-            queryset = MenuItem.objects.filter(days_available__name=timezone.localdate(timezone.now()).strftime("%A"))
+            queryset = MenuItem.objects.filter(days_available__name=timezone.localdate(timezone.now()).strftime("%A")).filter(app_only=False)
             context['menu_items'] = queryset.count()
             if request.user.profile.role == Profile.STUDENT:
                 student_grade = request.user.profile.grade

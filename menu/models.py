@@ -4,12 +4,15 @@ from django.db import models
 class MenuItem(models.Model):
     ENTREE = 'ENT'
     SIDE = 'SIDE'
+    DESSERT = 'DEST'
     DRINK = 'DRINK'
     CATEGORY_CHOICES = [
         (ENTREE, 'Entree'),
         (SIDE, 'Side'),
+        (DESSERT, 'Dessert'),
         (DRINK, 'Drink'),
     ]
+    app_only = models.BooleanField(default=False, verbose_name='à la carte only')
     cost = models.DecimalField(decimal_places=2, max_digits=6)
     category = models.CharField(
         choices=CATEGORY_CHOICES, default='', max_length=6)
