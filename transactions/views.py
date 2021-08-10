@@ -12,56 +12,22 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.forms import formset_factory
-from django.http import FileResponse, HttpResponse, HttpResponseRedirect
+from django.http import FileResponse
 from django.shortcuts import redirect, render
-from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import View
-from django.views.generic import CreateView, ListView, DetailView, FormView
+from django.views.generic import ListView, DetailView
 from django.views.generic import DayArchiveView, TodayArchiveView
 
 from cafeteria.decorators import admin_access_allowed
 from menu.models import MenuItem
 from profiles.models import Profile
 from transactions.models import Transaction, MenuLineItem
-from transactions.forms import TransactionDepositForm
-from transactions.forms import TransactionOrderForm, DepositFormSet, ItemOrderForm
-from transactions import utils
+from transactions.forms import ItemOrderForm, TransactionDepositForm
+from transactions import helpers
 
 
 logger = logging.getLogger(__file__)
-
-
-class DepositMixin:
-    def create_deposit(self, deposit: dict) -> None:
-        profile = Profile.objects.get(user__id=deposit['transactee'])
-        new_balance = profile.current_balance + deposit['amount']
-        description = ''
-        if deposit['check_num'].lower() == 'lc':
-            description = 'Previous lunch card balance'
-        elif deposit['check_num'].lower() == 'st':
-            description = 'Transfer to/from sibling'
-        elif deposit['check_num'] == '':
-            description = 'Cash'
-        else:
-            description = 'Check #' + deposit['check_num']
-        transaction_type = Transaction.CREDIT
-        if deposit['amount'] < 0:
-            transaction_type = Transaction.DEBIT
-        transaction = Transaction(
-            amount=abs(deposit['amount']),
-            beginning_balance=profile.current_balance,
-            completed=timezone.now(),
-            description=description,
-            ending_balance=new_balance,
-            transaction_type=transaction_type,
-            transactee=profile,
-        )
-        if deposit['submitted']:
-            transaction.submitted = deposit['submitted']
-        transaction.save()
-        profile.current_balance = new_balance
-        profile.save()
 
 
 class OrderMixin:
@@ -158,94 +124,6 @@ class UserIsStaffMixin(UserPassesTestMixin):
 
     def test_func(self):
             return self.request.user.is_staff
-
-
-class BatchDepositView(LoginRequiredMixin, UserIsStaffMixin, DepositMixin, FormView):
-    form_class = DepositFormSet
-    template_name = 'admin/transaction_batch_deposit.html'
-    success_url = '/admin/transactions/deposits/batch'
-
-    def form_valid(self, form):
-        count = 0
-        try:
-            for deposit in form.cleaned_data:
-                if deposit:
-                    self.create_deposit(deposit)
-                    count = count + 1
-            messages.success(
-                self.request, 'Successfully processed {} deposits.'.format(count))
-        except Exception as e:
-            logger.error(
-                'An error occured processing a batch deposit: {}'.format(e))
-            messages.error(
-                self.request, 'An error occured creating the deposit transactions.')
-        return super().form_valid(form)
-
-def batch_deposit(request):
-    if request.method == 'POST':
-        form = DepositFormSet(request.POST, prefix='deposit')
-        if form.is_valid():
-            for deposit in form.cleaned_data:
-                if deposit:
-                    #create_deposit(deposit)
-                    count = count + 1
-            messages.success(self.request, 'Successfully processed {} deposits.'.format(count))
-    else:
-        context['form'] = DepositFormSet(prefix='deposit')
-    return render(request, 'admin/transaction_batch_deposit.html', context=context)
-
-
-class CreateDepositView(LoginRequiredMixin, UserIsStaffMixin, DepositMixin, FormView):
-    form_class = TransactionDepositForm
-    template_name = 'admin/transaction_single_deposit.html'
-    profile_id = None
-
-    def form_valid(self, form):
-        try:
-            self.create_deposit(form.cleaned_data)
-            profile = Profile.objects.get(
-                user__id=form.cleaned_data['transactee'])
-            self.profile_id = profile.pk
-            messages.success(
-                self.request, 'Successfully processed deposit for {}.'.format(profile.name()))
-        except Exception as e:
-            logger.error(
-                'An error occured processing the deposit: {}'.format(e))
-            messages.error(
-                self.request, 'An error occured creating the deposit transaction.')
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        if self.profile_id is not None:
-            return reverse_lazy('profile-detail', args=[self.profile_id])
-        else:
-            return reverse_lazy('transaction-today-deposits')
-
-
-class CreateOrderView(LoginRequiredMixin, UserIsStaffMixin, OrderMixin, FormView):
-    form_class = TransactionOrderForm
-    template_name = 'admin/transaction_single_order.html'
-    profile_id = None
-
-    def form_valid(self, form):
-        try:
-            self.create_order(form.cleaned_data)
-            profile = Profile.objects.get(
-                user__id=form.cleaned_data['transactee'])
-            self.profile_id = profile.pk
-            messages.success(
-                self.request, 'Successfully created an order for {}.'.format(profile.name()))
-        except Exception as e:
-            logger.error('An error occured creating an order: {}'.format(e))
-            messages.error(
-                self.request, 'An error occured creating the order.')
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        if self.profile_id is not None:
-            return reverse_lazy('profile-detail', args=[self.profile_id])
-        else:
-            return reverse_lazy('transaction-today-orders')
 
 
 class DeleteTransactionView(LoginRequiredMixin, View):
@@ -489,6 +367,51 @@ class UsersTransactionsArchiveView(LoginRequiredMixin, ListView):
 
 @login_required
 @admin_access_allowed
+def batch_deposit(request):
+    context = {}
+    DepositFormSet = formset_factory(TransactionDepositForm, extra=25)
+    if request.method == 'POST':
+        deposit_form = DepositFormSet(request.POST, prefix='deposit')
+        if deposit_form.is_valid():
+            count = 0
+            for deposit in deposit_form.cleaned_data:
+                if deposit:
+                    try:
+                        helpers.create_deposit(deposit)
+                        count = count + 1
+                    except Exception as e:
+                        logger.exception('An error occured processing batch deposits: {}'.format(e))
+                        messages.error(request, 'An error occured processing the batch deposits.')
+            messages.success(request, 'Successfully processed {} deposits.'.format(count))
+            return redirect('transaction-deposits-batch')
+    else:
+        context['form'] = DepositFormSet(prefix='deposit')
+    return render(request, 'admin/transaction_batch_deposit.html', context=context)
+
+
+@login_required
+@admin_access_allowed
+def new_single_deposit(request):
+    context = {}
+    if request.method == 'POST':
+        deposit_form = TransactionDepositForm(request.POST)
+        if deposit_form.is_valid():
+            try:
+                helpers.create_deposit(deposit_form.cleaned_data)
+                profile = deposit_form.cleaned_data['transactee']
+                messages.success(request, 'Successfully processed deposit for {}.'.format(profile.name()))
+                return redirect('profile-detail', profile.id)
+            except Exception as e:
+                logger.exception('An exception occured when trying to create a deposit: {}'.format(e))
+                messages.error(request, 'An error occured creating the deposit, please try again.')
+                return redirect('transaction-deposit-create')
+    else:
+        context['deposit_form'] = TransactionDepositForm()
+    return render(request, 'admin/transaction_single_deposit.html', context=context)
+
+
+@login_required
+@admin_access_allowed
 def new_single_order(request):
     context = {}
     if request.method == 'POST':
@@ -523,7 +446,7 @@ def new_single_order(request):
                 for item in counted_items:
                     transaction.menu_items.add(item, through_defaults={'quantity': counted_items[item]})
                 messages.success(request, 'Successfully created an order for {}.'.format(transactee.name()))
-                return HttpResponseRedirect(reverse_lazy('profile-detail', args=[transactee.id]))
+                return redirect('profile-detail', transactee.id)
             
             except Exception as e:
                 logger.exception('An exception occured when trying to create a transaction: {}'.format(e))

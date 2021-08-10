@@ -1,25 +1,58 @@
 from django import forms
 
 from menu.models import MenuItem
-from transactions.models import Transaction, MenuLineItem
+from profiles.models import Profile
+
+
+class ItemOrderForm(forms.Form):
+    menu_item = forms.ModelChoiceField(queryset=MenuItem.objects.all(),
+        widget=forms.Select(
+            attrs={'class': 'block pl-2 pr-10 text-base leading-none text-gray-800 border-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md'}
+        )
+    )
+
+
+class TransacteeSelectField(forms.Field):
+    def clean(self, value):
+        if value:
+            profile = Profile.objects.get(user__id=value)
+            if profile:
+                return profile
+            else:
+                return None
+        else:
+            return None
 
 
 class TransactionDepositForm(forms.Form):
-    transactee = forms.CharField(
-        widget=forms.HiddenInput()
+    CASH = 'CASH'
+    CHECK = 'CHECK'
+    ONLINE = 'ONLINE'
+    TRANS = 'TRANS'
+    DEPOSIT_TYPE_CHOICES = [
+        (None, '--------'),
+        (CASH, 'Cash'),
+        (CHECK, 'Check'),
+        (ONLINE, 'Online'),
+        (TRANS, 'Transfer'),
+    ]
+    transactee = TransacteeSelectField(
+        widget=forms.Select(attrs={'class': 'transactee-select-ajax', 'style': 'width: 100%'})
     )
-    check_num = forms.CharField(
-        widget=forms.TextInput(attrs={'type': 'text',
-                               'class': 'border border-gray-400 py-2 px-2 text-xs rounded-sm block w-full transition duration-150 ease-in-out'}),
-        required=False
+    deposit_type = forms.ChoiceField(choices=DEPOSIT_TYPE_CHOICES,
+        widget=forms.Select(
+            attrs={'class': 'block pr-10 py-1.5 text-base leading-none text-gray-800 border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-md'}
+        )
     )
-    amount = forms.DecimalField(
-        widget=forms.NumberInput(attrs={'type': 'number',
-                                 'class': 'border border-gray-400 py-2 px-2 text-xs rounded-sm block w-full transition duration-150 ease-in-out'})
+    ref = forms.CharField(empty_value=None, required=False,
+        widget=forms.TextInput(
+            attrs={'class': 'shadow-sm py-1 w-full focus:ring-blue-500 focus:border-blue-500 block sm:text-sm border-gray-300 rounded-md'}
+        )
     )
-    submitted = forms.DateTimeField(
-        required=False,
-        widget=forms.HiddenInput()
+    amount = forms.DecimalField(decimal_places=2,
+        widget=forms.NumberInput(
+            attrs={'class': 'shadow-sm pl-7 py-1 w-1/2 focus:ring-blue-500 focus:border-blue-500 block sm:text-sm border-gray-300 rounded-md', 'placeholder': '0.00'}
+        )
     )
 
 
@@ -33,14 +66,3 @@ class TransactionOrderForm(forms.Form):
     submitted = forms.DateTimeField(
         widget=forms.HiddenInput()
     )
-
-
-class ItemOrderForm(forms.Form):
-    menu_item = forms.ModelChoiceField(queryset=MenuItem.objects.all(), widget=forms.Select(attrs={
-        'class': 'block pl-2 pr-10 text-base leading-none text-gray-800 border-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md'}))
-
-
-DepositFormSet = forms.formset_factory(
-    TransactionDepositForm,
-    extra=25
-)
