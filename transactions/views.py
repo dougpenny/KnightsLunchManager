@@ -211,7 +211,7 @@ class ExportChecksView(LoginRequiredMixin, UserIsStaffMixin, View):
                     worksheet.write(row, col + 2, 'Staff', center)
                 else:
                     worksheet.write(
-                        row, col + 2, deposit.transactee.grade, center)
+                        row, col + 2, deposit.transactee.grade.value, center)
                 if 'check #' in deposit.description.lower():
                     worksheet.write(
                         row, col + 3, deposit.amount, basic_currency)
@@ -377,7 +377,8 @@ def batch_deposit(request):
             for deposit in deposit_form.cleaned_data:
                 if deposit:
                     try:
-                        helpers.create_deposit(deposit)
+                        new_deposit = helpers.create_deposit(deposit)
+                        helpers.process_transaction(new_deposit)
                         count = count + 1
                     except Exception as e:
                         logger.exception('An error occured processing batch deposits: {}'.format(e))
@@ -397,7 +398,8 @@ def new_single_deposit(request):
         deposit_form = TransactionDepositForm(request.POST)
         if deposit_form.is_valid():
             try:
-                helpers.create_deposit(deposit_form.cleaned_data)
+                new_deposit = helpers.create_deposit(deposit_form.cleaned_data)
+                helpers.process_transaction(new_deposit)
                 profile = deposit_form.cleaned_data['transactee']
                 messages.success(request, 'Successfully processed deposit for {}.'.format(profile.name()))
                 return redirect('profile-detail', profile.id)

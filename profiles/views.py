@@ -19,7 +19,7 @@ from constance import config
 from cafeteria.decorators import admin_access_allowed
 from cafeteria.pdfgenerators import lunch_card_for_users
 from profiles.models import Profile
-from transactions.helpers import process_order
+from transactions import helpers
 from transactions.models import Transaction
 
 logger = logging.getLogger(__file__)
@@ -129,7 +129,7 @@ def new_individual_card(request, pk):
                         transaction_type=Transaction.DEBIT,
                         transactee=profile)
             transaction.save()
-            success = process_order(transaction)
+            helpers.process_transaction(transaction)
             profile.lunch_uuid = uuid.uuid4()
             profile.save()
             return lunch_card_for_users([profile])
