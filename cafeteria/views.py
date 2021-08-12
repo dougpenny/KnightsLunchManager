@@ -360,12 +360,12 @@ def schools_settings(request):
         context['schools_formset'] = SchoolsFormSet(prefix='schools')
     return render(request, 'admin/schools_settings.html', context=context)
 
-def students_grouped_by_homeroom(staff: QuerySet[Profile]):
+def students_grouped_by_homeroom(staff: QuerySet[Profile], above_grade: int = -1):
     grouped = []
     no_homeroom = []
     for teacher in staff:
         students = teacher.students.all()
-        if students:
+        if students and teacher.grade.value > above_grade:
             grouped.append(teacher)
             for student in students:
                 grouped.append(student)
@@ -385,7 +385,7 @@ def operations(request):
             elif request.POST['group'] == 'STAFF':  # Staff without a Homeroom
                 profiles = staff.filter(grade=None)
             elif request.POST['group'] == 'ALL':  # All Students & Staff
-                profiles = students_grouped_by_homeroom(staff)
+                profiles = students_grouped_by_homeroom(staff, 2)
             else:
                 school = School.objects.get(id=request.POST['group'])
                 staff = staff.filter(grade__in=school.grades.all())
