@@ -364,13 +364,16 @@ def students_grouped_by_homeroom(staff: QuerySet[Profile], above_grade: int = -1
     grouped = []
     no_homeroom = []
     for teacher in staff:
-        students = teacher.students.all()
-        if students and teacher.grade.value > above_grade:
-            grouped.append(teacher)
-            for student in students:
-                grouped.append(student)
-        else:
+        if not teacher.grade:
             no_homeroom.append(teacher)
+        else:
+            students = teacher.students.all()
+            if students and teacher.grade.value > above_grade:
+                grouped.append(teacher)
+                for student in students:
+                    grouped.append(student)
+            else:
+                no_homeroom.append(teacher)
     grouped.extend(no_homeroom)
     return grouped
 
