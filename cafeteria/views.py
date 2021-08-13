@@ -385,7 +385,7 @@ def operations(request):
             staff = Profile.objects.filter(role=Profile.STAFF).filter(active=True)
             if request.POST['group'] == 'NEW':  # No lunch card previously printed
                 profiles = Profile.objects.filter(active=True)\
-                    .exclude(pending=True).filter(cards_printed=0).filter(grade__gt=2)
+                    .exclude(pending=True).filter(cards_printed=0).filter(grade__value__gt=2)
             elif request.POST['group'] == 'STAFF':  # Staff without a Homeroom
                 profiles = staff.filter(grade=None)
             elif request.POST['group'] == 'ALL':  # All Students & Staff
