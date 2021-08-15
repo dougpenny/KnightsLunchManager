@@ -1,80 +1,323 @@
-[
-  {
+[{
     "model": "menu.menuitem",
     "pk": 27,
     "fields": {
-      "cost": "7.00",
-      "category": "ENT",
-      "description": "Includes a Chick-fil-A sandwich, Ruffle's potato chips, Famous Amos cookies, and a bottle of water.",
-      "name": "Chick-fil-A Sandwich Box",
-      "sequence": 1,
-      "days_available": [1, 4],
-      "schools_available": []
+        "app_only": false,
+        "cost": "4.75",
+        "category": "ENT",
+        "description": "",
+        "name": "Chick-fil-A Sandwich",
+        "sequence": 1,
+        "short_name": "Sandwich",
+        "days_available": [1, 4],
+        "lunch_period": [1, 2, 3, 4]
     }
-  },
-  {
+}, {
     "model": "menu.menuitem",
     "pk": 28,
     "fields": {
-      "cost": "7.00",
-      "category": "ENT",
-      "description": "Includes a 6-count of Chick-fil-A nuggets, Ruffle's potato chips, Famous Amos cookies, and a bottle of water.",
-      "name": "Chick-fil-A Nuggets Box",
-      "sequence": 2,
-      "days_available": [1, 4],
-      "schools_available": []
+        "app_only": false,
+        "cost": "4.75",
+        "category": "ENT",
+        "description": "",
+        "name": "Chick-fil-A Nuggets",
+        "sequence": 2,
+        "short_name": "Nuggets",
+        "days_available": [1, 4],
+        "lunch_period": [1, 2, 3, 4]
     }
-  },
-  {
+}, {
     "model": "menu.menuitem",
     "pk": 29,
     "fields": {
-      "cost": "7.00",
-      "category": "ENT",
-      "description": "Includes a Jersey Mike's turkey sub, Lay's potato chips, Vanilla Cream cookies (K-2nd) or Oreo cookies (3rd-12th), and a bottle of water.",
-      "name": "Jersey Mike's Turkey Sub Box",
-      "sequence": 1,
-      "days_available": [2, 5],
-      "schools_available": []
+        "app_only": false,
+        "cost": "4.75",
+        "category": "ENT",
+        "description": "",
+        "name": "Jersey Mike's Turkey Sub",
+        "sequence": 3,
+        "short_name": "Turkey Sub",
+        "days_available": [2],
+        "lunch_period": [1, 2, 3, 4]
     }
-  },
-  {
+}, {
     "model": "menu.menuitem",
     "pk": 30,
     "fields": {
-      "cost": "7.00",
-      "category": "ENT",
-      "description": "Includes a Jersey Mike's ham sub, Lay's potato chips, Vanilla Cream cookies (K-2nd) or Oreo cookies (3rd-12th), and a bottle of water.",
-      "name": "Jersey Mike's Ham Sub Box",
-      "sequence": 2,
-      "days_available": [2, 5],
-      "schools_available": []
+        "app_only": false,
+        "cost": "4.75",
+        "category": "ENT",
+        "description": "",
+        "name": "Jersey Mike's Ham Sub",
+        "sequence": 4,
+        "short_name": "Ham Sub",
+        "days_available": [2],
+        "lunch_period": [1, 2, 3, 4]
     }
-  },
-  {
+}, {
     "model": "menu.menuitem",
     "pk": 31,
     "fields": {
-      "cost": "7.00",
-      "category": "ENT",
-      "description": "Includes a Moe's chicken burrito with no beans, tortilla chips, Famous Amos cookies, and a bottle of water.",
-      "name": "Moe's Chicken Burrito Box",
-      "sequence": 1,
-      "days_available": [3],
-      "schools_available": []
+        "app_only": false,
+        "cost": "4.75",
+        "category": "ENT",
+        "description": "",
+        "name": "Moe's Chicken Burrito",
+        "sequence": 5,
+        "short_name": "Chicken Burrito",
+        "days_available": [3],
+        "lunch_period": [1, 2, 3, 4]
     }
-  },
-  {
+}, {
     "model": "menu.menuitem",
     "pk": 32,
     "fields": {
-      "cost": "7.00",
-      "category": "ENT",
-      "description": "Includes a Moe's chicken quesadilla, tortilla chips, Famous Amos cookies, and a bottle of water.",
-      "name": "Moe's Chicken Quesadilla Box",
-      "sequence": 2,
-      "days_available": [3],
-      "schools_available": []
+        "app_only": false,
+        "cost": "4.75",
+        "category": "ENT",
+        "description": "",
+        "name": "Moe's Chicken Quesadilla",
+        "sequence": 6,
+        "short_name": "Chicken Quesadilla",
+        "days_available": [3],
+        "lunch_period": [1, 2, 3, 4]
     }
-  }
-]
+}, {
+    "model": "menu.menuitem",
+    "pk": 35,
+    "fields": {
+        "app_only": false,
+        "cost": "4.75",
+        "category": "ENT",
+        "description": "",
+        "name": "Moe's Cheese Quesadilla",
+        "sequence": 7,
+        "short_name": "Cheese Quesadilla",
+        "days_available": [3],
+        "lunch_period": [1, 2, 3, 4]
+    }
+}, {
+    "model": "menu.menuitem",
+    "pk": 36,
+    "fields": {
+        "app_only": false,
+        "cost": "2.75",
+        "category": "ENT",
+        "description": "",
+        "name": "Cheese Pizza Slice",
+        "sequence": 11,
+        "short_name": "Cheese",
+        "days_available": [5],
+        "lunch_period": [1, 2, 3, 4]
+    }
+}, {
+    "model": "menu.menuitem",
+    "pk": 37,
+    "fields": {
+        "app_only": false,
+        "cost": "2.75",
+        "category": "ENT",
+        "description": "",
+        "name": "Pepperoni Pizza Slice",
+        "sequence": 10,
+        "short_name": "Pepperoni",
+        "days_available": [5],
+        "lunch_period": [1, 2, 3, 4]
+    }
+}, {
+    "model": "menu.menuitem",
+    "pk": 38,
+    "fields": {
+        "app_only": false,
+        "cost": "2.00",
+        "category": "ENT",
+        "description": "",
+        "name": "Moe's Queso & Chips",
+        "sequence": 8,
+        "short_name": "Queso & Chips",
+        "days_available": [3],
+        "lunch_period": [1, 2, 3, 4]
+    }
+}, {
+    "model": "menu.menuitem",
+    "pk": 39,
+    "fields": {
+        "app_only": false,
+        "cost": "1.25",
+        "category": "SIDE",
+        "description": "",
+        "name": "Ruffles",
+        "sequence": 20,
+        "short_name": "Ruffles",
+        "days_available": [1, 2, 3, 4, 5],
+        "lunch_period": [3]
+    }
+}, {
+    "model": "menu.menuitem",
+    "pk": 40,
+    "fields": {
+        "app_only": false,
+        "cost": "1.25",
+        "category": "SIDE",
+        "description": "",
+        "name": "Goldfish",
+        "sequence": 21,
+        "short_name": "Goldfish",
+        "days_available": [1, 2, 3, 4, 5],
+        "lunch_period": [3]
+    }
+}, {
+    "model": "menu.menuitem",
+    "pk": 41,
+    "fields": {
+        "app_only": false,
+        "cost": "1.25",
+        "category": "SIDE",
+        "description": "",
+        "name": "Go-Gurt",
+        "sequence": 22,
+        "short_name": "Go-Gurt",
+        "days_available": [1, 2, 3, 4, 5],
+        "lunch_period": [3]
+    }
+}, {
+    "model": "menu.menuitem",
+    "pk": 42,
+    "fields": {
+        "app_only": false,
+        "cost": "1.25",
+        "category": "SIDE",
+        "description": "",
+        "name": "Applesauce",
+        "sequence": 23,
+        "short_name": "Applesauce",
+        "days_available": [1, 2, 3, 4, 5],
+        "lunch_period": [3]
+    }
+}, {
+    "model": "menu.menuitem",
+    "pk": 43,
+    "fields": {
+        "app_only": false,
+        "cost": "1.25",
+        "category": "DEST",
+        "description": "",
+        "name": "Chocolate Chip Cookies",
+        "sequence": 25,
+        "short_name": "Chocolate",
+        "days_available": [1, 2, 3, 4, 5],
+        "lunch_period": [3]
+    }
+}, {
+    "model": "menu.menuitem",
+    "pk": 44,
+    "fields": {
+        "app_only": false,
+        "cost": "1.25",
+        "category": "DEST",
+        "description": "",
+        "name": "Vanilla Creme Cookies",
+        "sequence": 26,
+        "short_name": "Vanilla",
+        "days_available": [1, 2, 3, 4, 5],
+        "lunch_period": [3]
+    }
+}, {
+    "model": "menu.menuitem",
+    "pk": 45,
+    "fields": {
+        "app_only": false,
+        "cost": "1.25",
+        "category": "DRINK",
+        "description": "",
+        "name": "Small Water Bottle",
+        "sequence": 27,
+        "short_name": "Water",
+        "days_available": [1, 2, 3, 4, 5],
+        "lunch_period": [3]
+    }
+}, {
+    "model": "menu.menuitem",
+    "pk": 46,
+    "fields": {
+        "app_only": false,
+        "cost": "1.25",
+        "category": "DRINK",
+        "description": "",
+        "name": "Apple Juice",
+        "sequence": 28,
+        "short_name": "Juice",
+        "days_available": [1, 2, 3, 4, 5],
+        "lunch_period": [3]
+    }
+}, {
+    "model": "menu.menuitem",
+    "pk": 47,
+    "fields": {
+        "app_only": true,
+        "cost": "1.00",
+        "category": "DEST",
+        "description": "",
+        "name": "Ice Cream",
+        "sequence": 60,
+        "short_name": "Ice Cream",
+        "days_available": [1, 2, 3, 4, 5],
+        "lunch_period": [1, 2, 4]
+    }
+}, {
+    "model": "menu.menuitem",
+    "pk": 48,
+    "fields": {
+        "app_only": true,
+        "cost": "1.25",
+        "category": "SIDE",
+        "description": "",
+        "name": "Side/Snack",
+        "sequence": 61,
+        "short_name": "Side/Snack",
+        "days_available": [1, 2, 3, 4, 5],
+        "lunch_period": [1, 2, 4]
+    }
+}, {
+    "model": "menu.menuitem",
+    "pk": 49,
+    "fields": {
+        "app_only": true,
+        "cost": "1.25",
+        "category": "DRINK",
+        "description": "",
+        "name": "Fountain Drink/Dasani Water/Tea",
+        "sequence": 62,
+        "short_name": "Drink",
+        "days_available": [1, 2, 3, 4, 5],
+        "lunch_period": [1, 2, 4]
+    }
+}, {
+    "model": "menu.menuitem",
+    "pk": 50,
+    "fields": {
+        "app_only": true,
+        "cost": "2.00",
+        "category": "DRINK",
+        "description": "",
+        "name": "Vitamin Water",
+        "sequence": 63,
+        "short_name": "Vitamin Water",
+        "days_available": [1, 2, 3, 4, 5],
+        "lunch_period": [1, 2, 4]
+    }
+}, {
+    "model": "menu.menuitem",
+    "pk": 51,
+    "fields": {
+        "app_only": true,
+        "cost": "2.00",
+        "category": "SIDE",
+        "description": "",
+        "name": "Moe's Salsa & Chips",
+        "sequence": 9,
+        "short_name": "Salsa & Chips",
+        "days_available": [3],
+        "lunch_period": [1, 2, 4]
+    }
+}]

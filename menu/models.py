@@ -37,7 +37,7 @@ class MenuItem(models.Model):
         help_text='Order item will appear in menu')
     short_name = models.CharField(
         help_text='Will be used on reports to quickly identify the item',
-        max_length=10,
+        max_length=20,
         blank=True
     )
 
