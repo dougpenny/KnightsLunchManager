@@ -3,13 +3,24 @@ from rest_framework import serializers
 
 from menu.models import MenuItem
 from profiles.models import Profile
+from transactions import helpers
 from transactions.models import MenuLineItem, Transaction
 
 
-class MenuItemSerializer(serializers.ModelSerializer):
+class ExistingOrderMenuItemSerializer(serializers.ModelSerializer):
+    cost = serializers.DecimalField(max_digits=None, decimal_places=2, coerce_to_string=False)
+
     class Meta:
         model = MenuItem
-        fields = ['id', 'cost', 'days_available', 'name', 'sequence', 'short_name']
+        fields = ['cost', 'id', 'name']
+
+
+class MenuItemSerializer(serializers.ModelSerializer):
+    cost = serializers.DecimalField(max_digits=None, decimal_places=2, coerce_to_string=False)
+
+    class Meta:
+        model = MenuItem
+        fields = ['app_only', 'category', 'cost', 'id', 'name', 'sequence', 'short_name']
 
 
 class MenuLineItemSerializer(serializers.ModelSerializer):
@@ -19,46 +30,39 @@ class MenuLineItemSerializer(serializers.ModelSerializer):
         model = MenuLineItem
         fields = ['menu_item', 'quantity']
 
-    def create(self, validated_data):
-        print('create line item: {}'.format(**validated_data))
-        menu_item_data = validated_data.pop('menu_item')
-        line_item = MenuLineItem.objects.create(**validated_data)
-        for menu_item in menu_item_data:
-            print(**menu_item)
-        return line_item
-
-    def update(self, instance, validated_data):
-        print('update line item: {}'.format(**validated_data))
-        return instance
-
-
-class ProfileSerializer(serializers.ModelSerializer):
-    grade = serializers.StringRelatedField()
-
-    class Meta:
-        model = Profile
-        fields = ['current_balance', 'grade', 'lunch_uuid', 'name']
-
 
 class OrderSerializer(serializers.ModelSerializer):
     line_item = MenuLineItemSerializer(many=True)
-    transactee = ProfileSerializer()
     
     class Meta:
         model = Transaction
-        fields = ['id', 'amount', 'description', 'submitted', 'transactee', 'line_item']
-    
+        fields = ['id', 'line_item']
+
+
+class OrderSubmissionSerializer(serializers.Serializer):
+    items = serializers.ListField(child=serializers.IntegerField())
+    temp_trans = serializers.IntegerField(required=False)
+    transactee = serializers.IntegerField()
+
     def create(self, validated_data):
-        print('create order: {}'.format(**validated_data))
-        line_item_data = validated_data.pop('line_item')
-        order = Transaction.objects.create(**validated_data)
-        for line_item in line_item_data:
-            MenuLineItem.objects.create(transaction=order, **line_item)
+        order = helpers.create_order(validated_data)
+        if order:
+            helpers.process_transaction(order)
         return order
-    
-    def update(self, instance, validated_data):
-        print('update order: {}'.format(**validated_data))
-        return instance
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    grade = serializers.SerializerMethodField()
+
+    def get_grade(self, obj):
+        if obj.role != Profile.STUDENT:
+            return "Staff"
+        return str(obj.grade)
+
+    class Meta:
+        model = Profile
+        fields = ['current_balance', 'grade', 'id', 'lunch_uuid', 'name', 'user_number']
+
 
 class UserSearchSerializer(serializers.ModelSerializer):
     text = serializers.SerializerMethodField()
