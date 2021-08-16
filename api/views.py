@@ -18,10 +18,8 @@ from transactions.models import Transaction
 class TodaysMenuItems(generics.ListAPIView):
     permission_classes = [AllowAny]
 
-    queryset = MenuItem.objects.filter(days_available__name="Wednesday").filter(
-    Q(category=MenuItem.ENTREE) | Q(app_only=True))
-    # queryset = MenuItem.objects.filter(days_available__name=timezone.localdate(timezone.now()).strftime("%A")).filter(
-    #     Q(category=MenuItem.ENTREE) | Q(app_only=True))
+    queryset = MenuItem.objects.filter(days_available__name=timezone.localdate(timezone.now()).strftime("%A")).filter(
+        Q(category=MenuItem.ENTREE) | Q(app_only=True))
     serializer_class = serializers.MenuItemSerializer
 
 
@@ -65,7 +63,7 @@ def user_order_lookup(request, id):
     try:
         order = Transaction.objects.filter(transactee=profile) \
             .filter(submitted__date=timezone.localdate(timezone.now())) \
-            .filter(transaction_type=Transaction.DEBIT)
+            .filter(transaction_type=Transaction.DEBIT).exclude(status='Complete')
     except Transaction.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
