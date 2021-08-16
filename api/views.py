@@ -63,7 +63,7 @@ def user_order_lookup(request, id):
     try:
         order = Transaction.objects.filter(transactee=profile) \
             .filter(submitted__date=timezone.localdate(timezone.now())) \
-            .filter(transaction_type=Transaction.DEBIT).exclude(status='Complete')
+            .filter(transaction_type=Transaction.DEBIT).filter(completed__isnull=True)
     except Transaction.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
