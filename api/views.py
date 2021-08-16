@@ -6,7 +6,7 @@ from rest_framework import filters
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.decorators import api_view
-from rest_framework.views import APIView
+from rest_framework.permissions import AllowsAny
 from rest_framework.response import Response
 
 from api import serializers
@@ -16,12 +16,17 @@ from transactions.models import Transaction
 
 
 class TodaysMenuItems(generics.ListAPIView):
-    queryset = MenuItem.objects.filter(days_available__name=timezone.localdate(timezone.now()).strftime("%A")).filter(
-        Q(category=MenuItem.ENTREE) | Q(app_only=True))
+    permission_classes = [AllowsAny]
+
+    queryset = MenuItem.objects.filter(days_available__name="Wednesday").filter(
+    Q(category=MenuItem.ENTREE) | Q(app_only=True))
+    # queryset = MenuItem.objects.filter(days_available__name=timezone.localdate(timezone.now()).strftime("%A")).filter(
+    #     Q(category=MenuItem.ENTREE) | Q(app_only=True))
     serializer_class = serializers.MenuItemSerializer
 
 
 class UserSearch(generics.ListCreateAPIView):
+    permission_classes = [AllowsAny]
     search_fields = ['first_name', 'last_name']
     filter_backends = [filters.SearchFilter]
     queryset = User.objects.filter(is_active=True).exclude(profile__pending=True)\
@@ -30,6 +35,7 @@ class UserSearch(generics.ListCreateAPIView):
 
 
 class ProfileSearch(generics.ListCreateAPIView):
+    permission_classes = [AllowsAny]
     search_fields = ['user__first_name', 'user__last_name']
     filter_backends = [filters.SearchFilter]
     queryset = Profile.objects.filter(active=True).exclude(pending=True)\
@@ -38,6 +44,7 @@ class ProfileSearch(generics.ListCreateAPIView):
 
 
 @api_view(['GET'])
+@permission_classes([AllowsAny])
 def user_lookup(request, id):
     try:
         profile = Profile.objects.get(lunch_uuid=id)
@@ -49,6 +56,7 @@ def user_lookup(request, id):
 
 
 @api_view(['GET'])
+@permission_classes([AllowsAny])
 def user_order_lookup(request, id):
     try:
         profile = Profile.objects.get(lunch_uuid=id)
@@ -73,6 +81,7 @@ def user_order_lookup(request, id):
 
 
 @api_view(['POST'])
+@permission_classes([AllowsAny])
 def user_order_submit(request):
     print(request.data)
     serializer = serializers.OrderSubmissionSerializer(data=request.data)
