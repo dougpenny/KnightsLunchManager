@@ -65,8 +65,13 @@ def create_order(order: dict) -> Transaction:
         new_order.save()
 
         if 'temp_trans' in order:
-            old_order = Transaction.objects.get(id=order['temp_trans'])
-            old_order.delete()
+            try:
+                old_order = Transaction.objects.get(id=order['temp_trans'])
+                old_order.delete()
+            except:
+                # A previous transaction matching this ID was not found.
+                # Why would we recevie a transaction ID for an order that doesn't exist?
+                pass
         return new_order
     except:
         raise Exception
