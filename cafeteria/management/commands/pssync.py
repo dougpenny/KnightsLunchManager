@@ -108,6 +108,7 @@ class Command(BaseCommand):
                     user.last_name = member['last_name']
                     user.email = email_address
                     user.username = email_address
+                    user.is_active = True
                     user.save()
                 else:
                     user, created = User.objects.get_or_create(
@@ -185,6 +186,7 @@ class Command(BaseCommand):
                         user.last_name = member['name']['last_name']
                         user.email = email_address
                         user.username = email_address
+                        user.is_active = True
                         user.save()
                     else:
                         user, created = User.objects.get_or_create(
