@@ -134,6 +134,9 @@ def home(request):
                             description = description + ', '
                         description = description + '({}) {}'.format(counted_items[item], item.name)
                         cost = cost + (item.cost * counted_items[item])
+                    if todays_transaction(request.user.profile):
+                        messages.warning(request, 'Your have already placed an order today.')
+                        return redirect('todays-order')
                     try:
                         transaction = Transaction(
                             amount=cost,

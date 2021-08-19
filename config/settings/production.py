@@ -19,17 +19,6 @@ DATABASES = {
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 
-
-# Django REST Framework Settings
-# https://www.django-rest-framework.org/api-guide/settings/
-
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ]
-}
-
-
 # setup Django to log to a file
 LOGGING = {
     'version': 1,

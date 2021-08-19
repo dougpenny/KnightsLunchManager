@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'django_auth_adfs',
     'mozilla_django_oidc',
     'rest_framework',
+    'rest_framework.authtoken',
     'constance',
     'constance.backends.database',
 
@@ -84,7 +85,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # Password validation
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -147,10 +147,8 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 LOGIN_URL = 'django_auth_adfs:login'
 LOGIN_REDIRECT_URL = '/'
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/dev/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'America/New_York'
@@ -161,17 +159,26 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/dev/howto/static-files/
-
 # STATIC_ROOT = BASE_DIR / 'static/'
 STATIC_URL = '/static/'
 
 # MEDIA_ROOT = BASE_DIR / 'resources/'
 MEDIA_URL = '/resources/'
 
+# Django REST Framework Settings
+# https://www.django-rest-framework.org/api-guide/settings/
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
 
 # Constance Configuration
 # https://django-constance.readthedocs.io/en/latest/index.html
-
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 
 CONSTANCE_CONFIG = {

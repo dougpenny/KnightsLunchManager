@@ -1,7 +1,11 @@
 from django.contrib import admin
 
+from rest_framework.authtoken.admin import TokenAdmin
+
 from cafeteria.models import GradeLevel, LunchPeriod, School, Weekday
 
+
+TokenAdmin.raw_id_fields = ['user']
 
 @admin.register(GradeLevel)
 class GradeLevelAdmin(admin.ModelAdmin):
