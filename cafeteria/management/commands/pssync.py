@@ -4,7 +4,6 @@ from django.db.utils import IntegrityError
 from django.utils import timezone
 
 import logging
-import requests
 
 from cafeteria.models import GradeLevel, School
 from powerschool.powerschool import Powerschool
