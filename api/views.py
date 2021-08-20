@@ -14,9 +14,9 @@ from profiles.models import Profile
 from transactions.models import Transaction
 
 
-class TodaysMenuItems(generics.ListAPIView):
-    queryset = MenuItem.objects.filter(days_available__name=timezone.localdate(timezone.now()).strftime("%A")).filter(Q(category=MenuItem.ENTREE) | Q(app_only=True))
-    serializer_class = serializers.MenuItemSerializer
+# class TodaysMenuItems(generics.ListAPIView):
+#     queryset = MenuItem.objects.filter(days_available__name=timezone.localdate(timezone.now()).strftime("%A")).filter(Q(category=MenuItem.ENTREE) | Q(app_only=True))
+#     serializer_class = serializers.MenuItemSerializer
 
 
 class UserSearch(generics.ListAPIView):
@@ -31,6 +31,17 @@ class ProfileSearch(generics.ListAPIView):
     filter_backends = [filters.SearchFilter]
     queryset = Profile.objects.filter(active=True).exclude(pending=True).filter(Q(role=Profile.STUDENT) | Q(role=Profile.STAFF))
     serializer_class = serializers.ProfileSerializer
+
+
+@api_view(['GET'])
+def todays_menu_items(request):
+    try:
+        items = MenuItem.objects.filter(days_available__name=timezone.localdate(timezone.now()).strftime("%A")).filter(Q(category=MenuItem.ENTREE) | Q(app_only=True))
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    serializer = serializers.MenuItemSerializer(items, many=True)
+    return Response(serializer.data)
 
 
 @api_view(['GET'])
