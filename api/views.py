@@ -14,11 +14,6 @@ from profiles.models import Profile
 from transactions.models import Transaction
 
 
-# class TodaysMenuItems(generics.ListAPIView):
-#     queryset = MenuItem.objects.filter(days_available__name=timezone.localdate(timezone.now()).strftime("%A")).filter(Q(category=MenuItem.ENTREE) | Q(app_only=True))
-#     serializer_class = serializers.MenuItemSerializer
-
-
 class UserSearch(generics.ListAPIView):
     search_fields = ['first_name', 'last_name']
     filter_backends = [filters.SearchFilter]
