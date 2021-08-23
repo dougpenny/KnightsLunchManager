@@ -30,18 +30,18 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               {% for profile in object_list %}
-                <tr>
+                <tr {% if not profile.active %}class="bg-gray-100"{% endif %}>
                   <td class="px-6 py-4 whitespace-nowrap text-left border-b border-gray-200">
-                    <a class="text-indigo-700 hover:underline" href="{% url 'profile-detail' profile.pk %}">{{ profile.name }}</a>
+                    <a class="{% if not profile.active %}text-gray-500{% else %}text-indigo-700 hover:underline{% endif %}" href="{% url 'profile-detail' profile.pk %}">{{ profile.name }}</a>
                   </td>
-                  <td class="px-6 py-4 text-left border-b border-gray-200 text-sm leading-5 text-gray-900">
+                  <td class="{% if not profile.active %}text-gray-500{% else %}text-gray-900{% endif %} px-6 py-4 text-left border-b border-gray-200 text-sm leading-5">
                     {% if profile.role == 2 %}
                       {{ profile.grade.value }}
                     {% else %}
                       Staff
                     {% endif %}
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-left border-b border-gray-200 text-sm leading-5 {% if profile.current_balance < 0 %}text-red-600{% else %}text-gray-900{% endif %}">
+                  <td class="{% if not profile.active %}text-gray-500{% else %}{% if profile.current_balance < 0 %}text-red-600{% else %}text-gray-900{% endif %}{% endif %} px-6 py-4 whitespace-nowrap text-left border-b border-gray-200 text-sm leading-5">
                     ${{ profile.current_balance }}
                   </td>
                 </tr>

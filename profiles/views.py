@@ -40,12 +40,18 @@ class ProfileMixin:
             queryset = Profile.objects.filter(active=True).filter(current_balance__lt=0)
         elif self.filter == 'search':
             query = self.request.GET.get('q')
+            include_inactive = False
             if query:
+                if query[0] == '/':
+                    include_inactive = True
+                    query = query[1:]
                 query_list = query.split()
-                queryset = Profile.objects.filter(active=True).filter(
+                queryset = Profile.objects.filter(
                     reduce(operator.or_, (Q(user__first_name__icontains=q) for q in query_list)) |
                     reduce(operator.or_, (Q(user__last_name__icontains=q) for q in query_list))
                 )
+                if not include_inactive:
+                    queryset = queryset.filter(active=True)
             else:
                 queryset = Profile.objects.none()
         else:
