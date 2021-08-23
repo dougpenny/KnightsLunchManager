@@ -113,6 +113,44 @@ def pending_inactive_students(request):
 
     return render(request, 'admin/profiles_list.html', context=context)
 
+
+@login_required
+@admin_access_allowed
+def make_inactive(request, pk):
+    try:
+        profile = Profile.objects.get(id=pk)
+        # Zero out the balance
+        balance = profile.current_balance
+        description = "Balance transferred to the Business Office"
+        transaction_type = Transaction.DEBIT
+        if balance < 0:
+            description = "Balance settled by the Business Office"
+            transaction_type = Transaction.CREDIT
+        transaction = Transaction(
+            amount=abs(balance),
+            description=description,
+            transaction_type=transaction_type,
+            transactee=profile
+        )
+        transaction.save()
+        helpers.process_transaction(transaction)
+
+        # Reset lunch card ID and make user inactive
+        profile.lunch_uuid = uuid.uuid4()
+        profile.cards_printed = 0
+        profile.active = False
+        profile.save()
+        profile.user.is_active = False
+        profile.user.save()
+        messages.info(request, 'Successfully set {} as inactive.'.format(profile.name()))
+        return redirect('admin')
+    except:
+        logger.info('An error occured when trying to set {} as inactive'.format(profile.name()))
+        messages.error(request, 'An error occured trying to set {} as inactive'.format(profile.name()))
+    
+    return redirect('profile-detail', args=[pk])
+
+
 @login_required
 @admin_access_allowed
 def new_individual_card(request, pk):

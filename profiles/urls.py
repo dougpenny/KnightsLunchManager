@@ -5,6 +5,7 @@ from profiles import views
 urlpatterns = [
     path('', views.ProfileListView.as_view(), name='profile-list'),
     path('<int:pk>/', views.ProfileDetailView.as_view(), name='profile-detail'),
+    path('<int:pk>/make-inactive', views.make_inactive, name='profile-make-inactive'),
     path('<int:pk>/new-card', views.new_individual_card, name='profile-new-card'),
     path('debtors/', views.ProfileListView.as_view(filter='debt'),
          name='profile-debt-list'),
