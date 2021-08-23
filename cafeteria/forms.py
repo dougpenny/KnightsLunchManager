@@ -23,6 +23,11 @@ class GeneralForm(forms.Form):
         'placeholder': '0.00'}), decimal_places=2)
 
 
+class MenuItemChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return '{} - ${}'.format(obj.name, obj.cost)
+
+
 class SchoolsModelForm(forms.ModelForm):
     class Meta:
         model = School
@@ -36,11 +41,6 @@ class SchoolsModelForm(forms.ModelForm):
             }),
             'name': forms.HiddenInput(attrs={'readonly': 'True'})
         }
-
-
-class MenuItemChoiceField(forms.ModelChoiceField):
-    def label_from_instance(self, obj):
-        return '{} - ${}'.format(obj.name, obj.cost)
 
 
 class UserOrderForm(forms.Form):
