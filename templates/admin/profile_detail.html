@@ -26,6 +26,7 @@
         Current balance: <span class="ml-1 font-extrabold {% if object.current_balance < 0 %}text-red-700{% else %}text-gray-900{% endif %}">${{ object.current_balance }}</span>
       </div>
     </div>
+    {% if object.active %}
     <div>
       <form form action="/admin/profiles/{{ object.id }}/new-card" method="post">
         {% csrf_token %}
@@ -43,6 +44,13 @@
         </div>
       </form>
     </div>
+    {% else %}
+    <div>
+      <h1 class="text-2xl font-bold leading-7 text-red-700 sm:text-4xl sm:leading-9 sm:truncate">
+        Inactive
+      </h2>
+    </div>
+    {% endif %}
   </div>
 </div>
 
