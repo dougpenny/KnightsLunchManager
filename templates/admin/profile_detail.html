@@ -225,6 +225,7 @@
     </div>
   </div>
 {% endif %}
+{% if object.active %}
 <div class="mx-8 mt-12 px-8 flex items-center justify-between">
   <span class="inline-flex"></span>
   <div class="mt-8 flex flex-shrink-0 sm:mt-0">
@@ -244,4 +245,5 @@
     </div>
   </div>
 </div>
+{% endif %}
 {% endblock %}
