@@ -129,7 +129,7 @@ def orders_report_by_homeroom(todays_orders: List) -> FileResponse:
     normal_style.leading = 14
     entree_count_style = copy.copy(styles['Normal'])
     entree_count_style.fontSize = 18
-    entree_count_style.leading = 20
+    entree_count_style.leading = 24
     item_count_style = copy.copy(styles['Normal'])
     item_count_style.fontSize = 14
     item_count_style.leading = 16
