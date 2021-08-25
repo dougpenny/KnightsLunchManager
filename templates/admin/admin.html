@@ -24,6 +24,24 @@
       <h2 class="text-lg leading-6 font-medium text-gray-900">
         Today's Entree Orders
       </h2>
+      <div class="flex space-x-3">
+        <a href="{% url 'entrees-report' %}">
+          <span class="shadow-sm rounded-md">
+            <button type="button"
+              class="inline-flex items-center px-6 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-blue-800 hover:bg-blue-600 focus:outline-none focus:border-blue-700 active:bg-blue-700 transition ease-in-out duration-150">
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-download mr-3" width="24"
+                height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" />
+                <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
+                <polyline points="7 11 12 16 17 11" />
+                <line x1="12" y1="4" x2="12" y2="16" />
+              </svg>
+              Lunch Period Reports
+            </button>
+          </span>
+        </a>
+      </div>
     </div>
     <div class="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2" x-max="1">
       {% for menu_item, count in total_item_counts.items %}

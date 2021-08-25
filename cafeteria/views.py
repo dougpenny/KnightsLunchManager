@@ -32,7 +32,7 @@ from cafeteria.decorators import admin_access_allowed
 from cafeteria.forms import GeneralForm, SchoolsModelForm, UserOrderForm
 from cafeteria.models import LunchPeriod, School
 from cafeteria.operations import end_of_year_process
-from cafeteria.pdfgenerators import lunch_card_for_users, orders_report_by_homeroom
+from cafeteria.pdfgenerators import entree_report_by_period, lunch_card_for_users, orders_report_by_homeroom
 from menu.models import MenuItem
 from profiles.models import Profile
 from transactions.models import MenuLineItem
@@ -479,6 +479,22 @@ def homeroom_orders_report(request):
     else:
         messages.warning(request, 'No orders were found for today.')
         return redirect('admin')
+
+
+@login_required
+@admin_access_allowed
+def entree_orders_report(request):
+    time = timezone.localtime(timezone.now())
+    orders = Transaction.objects.filter(submitted__date=time.date())
+    lunch_period_counts = {}
+    for lunch_period in LunchPeriod.objects.all():
+        lunch_period_counts[lunch_period] = get_item_counts(orders.filter(transactee__grade__lunch_period=lunch_period))
+    if lunch_period_counts:
+        return entree_report_by_period(lunch_period_counts)
+    else:
+        messages.warning(request, 'No orders were found for today.')
+        return redirect('admin')
+
 
 @login_required
 @admin_access_allowed

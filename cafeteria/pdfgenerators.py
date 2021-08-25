@@ -3,7 +3,7 @@ import copy
 import io
 
 from pathlib import Path
-from typing import List
+from typing import Dict, List
 
 from reportlab import platypus
 from reportlab.graphics.barcode import qr
@@ -17,6 +17,47 @@ from django.utils import timezone
 
 from menu.models import MenuItem
 from profiles.models import Profile
+
+
+def entree_report_by_period(lunch_periods: Dict) -> FileResponse:
+    buffer = io.BytesIO()
+    styles = getSampleStyleSheet()
+    
+    # create some styles and the base document
+    title_style = copy.copy(styles['Title'])
+    title_style.fontSize = 26
+    entree_style = copy.copy(styles['Normal'])
+    entree_style.fontSize = 22
+    entree_style.spaceAfter = 56
+    entree_style.alignment = TA_CENTER
+    margin = 0.5*inch
+    document = platypus.BaseDocTemplate(buffer, pagesize=letter, rightMargin=margin, leftMargin=margin, topMargin=margin, bottomMargin=margin)
+
+    # create the title frame
+    title_frame_height = 0.5*inch
+    title_frame_bottom = document.height + document.bottomMargin - title_frame_height
+    title_frame = platypus.Frame(document.leftMargin, title_frame_bottom, document.width, title_frame_height)
+    frames = [title_frame]
+    
+    # create a frame to hold entree counts
+    frame = platypus.Frame(document.leftMargin, document.bottomMargin, document.width, document.height - title_frame_height - 1.0*inch, id='entree-frame')
+    frames.append(frame)
+
+    template = platypus.PageTemplate(frames=frames)
+    document.addPageTemplates(template)
+
+    data = []
+    for period in lunch_periods:
+        title = period.display_name
+        data.append(platypus.Paragraph('<u>{}</u>'.format(title), title_style))
+        for item in lunch_periods[period]:
+            data.append(platypus.Paragraph('{} - <b>{}</b>'.format(item, lunch_periods[period][item]), entree_style))
+        data.append(platypus.PageBreak())
+    document.build(data)
+    buffer.seek(0)
+    today = timezone.now()
+    report_name = 'lunch_periods_{}-{}-{}.pdf'.format(today.year, today.month, today.day)
+    return FileResponse(buffer, as_attachment=True, filename=report_name)
 
 
 def lunch_card_for_users(profiles: List[Profile]) -> FileResponse:
@@ -152,7 +193,7 @@ def orders_report_by_homeroom(todays_orders: List) -> FileResponse:
         item_orders = collections.OrderedDict(sorted(item_orders.items(), key=lambda menu_item: menu_item[0].sequence))
         item_counts = collections.OrderedDict(sorted(item_counts.items(), key=lambda menu_item: menu_item[0].sequence))
         title = teacher.user.last_name
-        data.append(platypus.Paragraph(title, title_style))
+        data.append(platypus.Paragraph('<u>{}</u>'.format(title), title_style))
         data.append(platypus.FrameBreak('student-frame-0'))
         for item in item_orders:
             content = [platypus.Paragraph('<b><u>{}</u></b>'.format(item.name), normal_style)]

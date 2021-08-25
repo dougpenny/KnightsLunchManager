@@ -19,6 +19,7 @@ urlpatterns = [
      # Admin dashboard pages
     path('admin/', views.admin_dashboard, name='admin'),
     path('admin/class-orders-report/<int:lunch_period_id>/', views.lunch_period_order_report, name='class-orders-report'),
+    path('admin/entree-orders-report/', views.entree_orders_report, name='entrees-report'),
     path('admin/homeroom-orders-report/', views.homeroom_orders_report, name='homerooms-report'),
     path('admin/profiles/', include('profiles.urls')),
     path('admin/operations', views.operations, name='operations'),
