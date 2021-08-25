@@ -28,7 +28,7 @@
         <a href="{% url 'entrees-report' %}">
           <span class="shadow-sm rounded-md">
             <button type="button"
-              class="inline-flex items-center px-6 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-blue-800 hover:bg-blue-600 focus:outline-none focus:border-blue-700 active:bg-blue-700 transition ease-in-out duration-150">
+              class="inline-flex items-center px-4 py-2 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-blue-800 hover:bg-blue-600 focus:outline-none focus:border-blue-700 active:bg-blue-700 transition ease-in-out duration-150">
               <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-download mr-3" width="24"
                 height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                 stroke-linecap="round" stroke-linejoin="round">
@@ -37,7 +37,7 @@
                 <polyline points="7 11 12 16 17 11" />
                 <line x1="12" y1="4" x2="12" y2="16" />
               </svg>
-              Lunch Period Reports
+              Lunch Period Report
             </button>
           </span>
         </a>
@@ -65,7 +65,7 @@
 </div>
 
 <div class="mt-4">
-  <div x-data="{ tab: 1 }" class="max-w-6xl pb-12 mx-auto px-4 sm:px-6 lg:px-8 border-b border-gray-300">
+  <div x-data="{ tab: {{ first_lunch.id }} }" class="max-w-6xl pb-12 mx-auto px-4 sm:px-6 lg:px-8 border-b border-gray-300">
     <div class="sm:hidden">
       <label for="selected-tab" class="sr-only">Select a tab</label>
       <select id="selected-tab" name="selected-tab" x-model="tab" class="block w-full focus:ring-blue-500 focus:border-blue-500 border-gray-300 rounded-md">
@@ -124,7 +124,7 @@
                     <polyline points="7 11 12 16 17 11" />
                     <line x1="12" y1="4" x2="12" y2="16" />
                   </svg>
-                  Classroom Reports
+                  Teacher Report
                 </button>
               </span>
             </a>

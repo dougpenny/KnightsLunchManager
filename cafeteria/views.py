@@ -314,8 +314,9 @@ def admin_dashboard(request):
         lunch_period_counts[lunch_period] = get_item_counts(orders.filter(transactee__grade__lunch_period=lunch_period))
     context['period_item_counts'] = lunch_period_counts
     context['orders'] = orders
-    context['debtors'] = Profile.objects.filter(active=True).filter(current_balance__lt=0).order_by(
-        'current_balance', 'user__last_name')[:5]
+    context['debtors'] = Profile.objects.filter(active=True).filter(current_balance__lt=0).order_by('current_balance', 'user__last_name')[:5]
+    first_lunch = LunchPeriod.objects.filter(sort_order=0).first()
+    context['first_lunch'] = first_lunch
     return render(request, 'admin/admin.html', context=context)
 
 @login_required

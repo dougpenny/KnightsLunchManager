@@ -31,7 +31,7 @@ class LunchPeriod(models.Model):
         return self.display_name
 
     class Meta:
-        ordering = ['sort_order']
+        ordering = ['sort_order', 'start_time']
         verbose_name_plural = 'Lunch Periods'
 
 
