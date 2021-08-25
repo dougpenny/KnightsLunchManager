@@ -24,13 +24,14 @@ class GradeLevel(models.Model):
 class LunchPeriod(models.Model):
     display_name = models.CharField(blank=True, max_length=24)
     start_time = models.TimeField(blank=True, null=True)
+    sort_order = models.SmallIntegerField(default=0, help_text='Order in which the lunch period will be displayed')
     teacher_distributes = models.BooleanField(default=False, help_text='Does the teacher distribute orders for their class?')
 
     def __str__(self):
         return self.display_name
 
     class Meta:
-        ordering = ['start_time']
+        ordering = ['sort_order']
         verbose_name_plural = 'Lunch Periods'
 
 
