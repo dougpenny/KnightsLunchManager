@@ -211,7 +211,8 @@ def orders_report_by_homeroom(todays_orders: List) -> FileResponse:
             else:
                 item_content.append(platypus.Paragraph('{} - <b>{}</b>'.format(item.name, item_counts[item]), item_count_style))
         data.append(platypus.FrameBreak('item-frame'))
-        data.append(platypus.BalancedColumns(item_content, nCols = 2))
+        if item_content:
+            data.append(platypus.BalancedColumns(item_content, nCols = 2))
         data.append(platypus.PageBreak())
     document.build(data)
     buffer.seek(0)
