@@ -1,3 +1,4 @@
+import collections
 import copy
 import io
 
@@ -14,6 +15,7 @@ from reportlab.lib.units import inch, mm
 from django.http import FileResponse
 from django.utils import timezone
 
+from menu.models import MenuItem
 from profiles.models import Profile
 
 
@@ -75,6 +77,7 @@ def lunch_card_for_users(profiles: List[Profile]) -> FileResponse:
     buffer.seek(0)
     return FileResponse(buffer, as_attachment=True, filename='lunch_cards.pdf')
 
+
 def orders_report_by_homeroom(todays_orders: List) -> FileResponse:
     buffer = io.BytesIO()
     styles = getSampleStyleSheet()
@@ -83,32 +86,48 @@ def orders_report_by_homeroom(todays_orders: List) -> FileResponse:
     normal_style = copy.copy(styles['Normal'])
     normal_style.fontSize = 12
     normal_style.leading = 14
+    entree_count_style = copy.copy(styles['Normal'])
+    entree_count_style.fontSize = 18
+    entree_count_style.leading = 20
     item_count_style = copy.copy(styles['Normal'])
     item_count_style.fontSize = 14
     item_count_style.leading = 16
     title_style = copy.copy(styles['Title'])
     title_style.fontSize = 26
     margin = 0.5*inch
-    document = platypus.BaseDocTemplate(buffer, pagesize=letter, rightMargin=margin, leftMargin=margin, topMargin=margin, bottomMargin=margin)
+    bottom_margin = 0.25*inch
+    document = platypus.BaseDocTemplate(buffer, pagesize=letter, rightMargin=margin, leftMargin=margin, topMargin=margin, bottomMargin=bottom_margin)
     
     # create the title frame
     title_frame_height = 0.5*inch
     title_frame_bottom = document.height + document.bottomMargin - title_frame_height
-    title_frame = platypus.Frame(document.leftMargin, title_frame_bottom, document.width - document.rightMargin, title_frame_height)
+    title_frame = platypus.Frame(document.leftMargin, title_frame_bottom, document.width, title_frame_height)
     frames = [title_frame]
     
     # create three frames to hold the list of orders for each item
-    item_frame_height = 2.0*inch
-    student_frame_height = title_frame_bottom - (2.25*inch) - document.bottomMargin
+    entree_frame_height = 1.0*inch
+    item_frame_height = 1.5*inch
+    student_frame_height = title_frame_bottom - entree_frame_height - item_frame_height - document.bottomMargin
     frame_width = document.width / 3.0
     for frame in range(3):
         left_margin = document.leftMargin + (frame * frame_width)
-        column = platypus.Frame(left_margin, document.bottomMargin + item_frame_height, frame_width, student_frame_height, id='student-frame-{}'.format(frame))
+        column = platypus.Frame(left_margin, document.bottomMargin + item_frame_height + entree_frame_height, frame_width, student_frame_height, id='student-frame-{}'.format(frame))
         frames.append(column)
     
+     # create a frame for a horizontal divider
+    frame = platypus.Frame(document.leftMargin, document.bottomMargin + item_frame_height + entree_frame_height, document.width, 0.25*inch, id='divider-frame')
+    frames.append(frame)
+
+    # create two frames to hold the entree item totals
+    frame_width = document.width / 2.0
+    for frame in range(2):
+        left_margin = document.leftMargin + (frame * frame_width)
+        column = platypus.Frame(left_margin, item_frame_height + document.bottomMargin, frame_width, entree_frame_height, id='entree-frame-{}'.format(frame))
+        frames.append(column)
+
     # create a frame to hold the list of item totals
-    column = platypus.Frame(document.leftMargin, document.bottomMargin, document.width, item_frame_height, id='item-frame')
-    frames.append(column)
+    frame = platypus.Frame(document.leftMargin, document.bottomMargin, document.width, item_frame_height, id='item-frame')
+    frames.append(frame)
 
     template = platypus.PageTemplate(frames=frames)
     document.addPageTemplates(template)
@@ -130,21 +149,28 @@ def orders_report_by_homeroom(todays_orders: List) -> FileResponse:
                 item_counts[item.menu_item] = item_counts[item.menu_item] + item.quantity
             else:
                 item_counts[item.menu_item] = item.quantity
+        item_orders = collections.OrderedDict(sorted(item_orders.items(), key=lambda menu_item: menu_item[0].sequence))
+        item_counts = collections.OrderedDict(sorted(item_counts.items(), key=lambda menu_item: menu_item[0].sequence))
         title = teacher.user.last_name
         data.append(platypus.Paragraph(title, title_style))
-        data.append(platypus.FrameBreak())
+        data.append(platypus.FrameBreak('student-frame-0'))
         for item in item_orders:
             content = [platypus.Paragraph('<b><u>{}</u></b>'.format(item.name), normal_style)]
             for student in item_orders[item]:
                 content.append(platypus.Paragraph(student, normal_style))
             content.append(platypus.Paragraph('<br/><br/>', normal_style))
             data.append(platypus.KeepTogether(content))
-        data.append(platypus.FrameBreak('item-frame'))
+        data.append(platypus.FrameBreak('divider-frame'))
         data.append(platypus.HRFlowable())
-        content = []
+        data.append(platypus.FrameBreak('entree-frame-0'))
+        item_content = []
         for item in item_counts:
-            content.append(platypus.Paragraph('{} - <b>{}</b>'.format(item.name, item_counts[item]), item_count_style))
-        data.append(platypus.BalancedColumns(content, nCols = 2, topPadding=(0.25 * inch)))
+            if item.category == MenuItem.ENTREE:
+                data.append(platypus.Paragraph('{} - <b>{}</b>'.format(item.short_name, item_counts[item]), entree_count_style))
+            else:
+                item_content.append(platypus.Paragraph('{} - <b>{}</b>'.format(item.name, item_counts[item]), item_count_style))
+        data.append(platypus.FrameBreak('item-frame'))
+        data.append(platypus.BalancedColumns(item_content, nCols = 2))
         data.append(platypus.PageBreak())
     document.build(data)
     buffer.seek(0)
