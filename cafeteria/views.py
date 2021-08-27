@@ -293,10 +293,10 @@ def get_item_counts(orders: QuerySet[MenuItem]) -> Dict:
     for order in orders:
         for line_item in order.line_item.all():
             if line_item.menu_item.category == MenuItem.ENTREE:
-                if line_item.menu_item.name in count:
-                    count[line_item.menu_item.name] = count[line_item.menu_item.name] + line_item.quantity
+                if line_item.menu_item in count:
+                    count[line_item.menu_item] = count[line_item.menu_item] + line_item.quantity
                 else:
-                    count[line_item.menu_item.name] = line_item.quantity
+                    count[line_item.menu_item] = line_item.quantity
     return count
 
 # Admin dashboard views
@@ -313,6 +313,7 @@ def admin_dashboard(request):
     for lunch_period in LunchPeriod.objects.all():
         lunch_period_counts[lunch_period] = get_item_counts(orders.filter(transactee__grade__lunch_period=lunch_period))
     context['period_item_counts'] = lunch_period_counts
+    print('Lunch Period Counts: {}'.format(lunch_period_counts))
     context['orders'] = orders
     context['debtors'] = Profile.objects.filter(active=True).filter(current_balance__lt=0).order_by('current_balance', 'user__last_name')[:5]
     first_lunch = LunchPeriod.objects.filter(sort_order=0).first()

@@ -49,12 +49,29 @@
         <div class="p-5">
           <div class="flex items-center">
             <div class="w-0 flex-1">
-              <h2 class="text-lg leading-7 font-medium text-center text-gray-500 truncate">
-                {{ menu_item }}
-              </h2>
-              <h2 class="mt-6 mb-12 text-5xl leading-9 font-medium text-center text-gray-900">
-                {{ count }}
-              </h2>
+              {% if menu_item.pizza %}
+                {% load mathfilters %}
+                <h2 class="text-lg leading-7 font-medium text-center text-gray-500 truncate">
+                  {{ menu_item.name }}
+                </h2>
+                <h2 class="mt-6 mb-4 text-5xl leading-9 font-medium text-center text-gray-900">
+                  {% if count|mod:menu_item.slices_per  == 0 %}
+                    {{ count|intdiv:menu_item.slices_per }} Pizza{{ count|div:menu_item.slices_per|pluralize }}
+                  {% else %}
+                    {{ count|intdiv:menu_item.slices_per|add:1 }} Pizza{{ count|intdiv:menu_item.slices_per|add:1|pluralize }}
+                  {% endif %}
+                </h2>
+                <h2 class="text-2xl leading-7 font-medium text-center text-gray-500 truncate">
+                  {{ count }} Slice{{ count|pluralize }}
+                </h2>
+              {% else %}
+                <h2 class="text-lg leading-7 font-medium text-center text-gray-500 truncate">
+                  {{ menu_item.name }}
+                </h2>
+                <h2 class="mt-6 mb-12 text-5xl leading-9 font-medium text-center text-gray-900">
+                  {{ count }}
+                </h2>
+              {% endif %}
             </div>
           </div>
         </div>
@@ -98,10 +115,10 @@
             <div class="p-5">
               <div class="flex items-center">
                 <div class="w-0 flex-1">
-                  <h2 class="text-md font-medium leading-none text-center text-gray-500">
-                    {{ menu_item }}
+                  <h2 class="text-lg leading-7 font-medium text-center text-gray-500 truncate">
+                    {{ menu_item.name }}
                   </h2>
-                  <h2 class="mt-4 mb-8 text-3xl font-medium leading-none text-center text-gray-900">
+                  <h2 class="mt-6 mb-12 text-5xl leading-9 font-medium text-center text-gray-900">
                     {{ count }}
                   </h2>
                 </div>

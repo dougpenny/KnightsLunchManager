@@ -33,6 +33,8 @@ class MenuItem(models.Model):
         help_text='Will be displayed to students',
         max_length=100
     )
+    pizza = models.BooleanField(default=False, verbose_name='Pizza?')
+    slices_per = models.SmallIntegerField(default=0, verbose_name='Slices per pizza')
     sequence = models.SmallIntegerField(
         help_text='Order item will appear in menu')
     short_name = models.CharField(

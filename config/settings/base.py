@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'constance',
     'constance.backends.database',
+    'mathfilters',
 
     'api.apps.ApiConfig',
     'cafeteria.apps.CafeteriaConfig',
