@@ -53,12 +53,11 @@ def entree_report_by_period(lunch_periods: Dict) -> FileResponse:
         for item in lunch_periods[period]:
             if item.pizza:
                 left_over_slices = lunch_periods[period][item] % item.slices_per
+                pizzas = lunch_periods[period][item] // item.slices_per
                 if left_over_slices == 0:
-                    pizzas = lunch_periods[period][item] / item.slices_per
-                    data.append(platypus.Paragraph('<u>{}</u><br/><b>{}</b> pizzas'.format(item, pizzas), entree_style))
+                    data.append(platypus.Paragraph('<u>{}</u><br/><br/><b>{}</b> pizzas'.format(item, pizzas), entree_style))
                 else:
-                    pizzas = (lunch_periods[period][item] - left_over_slices) / item.slices_per
-                    data.append(platypus.Paragraph('<u>{}</u><br/><b>{}</b> pizzas<br/><b>{}</b> slices'.format(item, pizzas, left_over_slices), entree_style))
+                    data.append(platypus.Paragraph('<u>{}</u><br/><br/><b>{}</b> pizzas<br/><br/><b>{}</b> slices'.format(item, pizzas, left_over_slices), entree_style))
             else:
                 data.append(platypus.Paragraph('{} - <b>{}</b>'.format(item, lunch_periods[period][item]), entree_style))
         data.append(platypus.PageBreak())
