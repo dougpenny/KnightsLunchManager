@@ -78,11 +78,6 @@ def lunch_card_for_users(profiles: List[Profile]) -> FileResponse:
     document = platypus.BaseDocTemplate(buffer, pagesize=(card_width, card_height), rightMargin=margin, leftMargin=margin, topMargin=margin, bottomMargin=margin)
 
     styles = getSampleStyleSheet()
-    title_style = copy.copy(styles['Title'])
-    title_style.fontSize = 20
-    title_style.leading = 20
-    title_style.spaceBefore = 0
-    title_style.spaceAfter = 0
     normal_style = copy.copy(styles['Normal'])
     normal_style.fontSize = 16
     normal_style.leading = 18
@@ -92,6 +87,14 @@ def lunch_card_for_users(profiles: List[Profile]) -> FileResponse:
     role_style.leading = 8
     role_style.textTransform = 'uppercase'
     role_style.alignment = TA_CENTER
+    small_style = copy.copy(styles['Normal'])
+    small_style.fontSize = 6
+    small_style.leading = 6
+    title_style = copy.copy(styles['Title'])
+    title_style.fontSize = 20
+    title_style.leading = 20
+    title_style.spaceBefore = 0
+    title_style.spaceAfter = 0
 
     qr_size = 37*mm
     top_offset = 4*mm
@@ -101,8 +104,8 @@ def lunch_card_for_users(profiles: List[Profile]) -> FileResponse:
     frames = [platypus.Frame(document.leftMargin, card_height - title_height - top_offset, document.width, title_height, id="title-frame")]
     frames.append(platypus.Frame(document.leftMargin, document.bottomMargin, document.width - qr_size, qr_size, id="image-frame"))
     frames.append(platypus.Frame(document.leftMargin, document.bottomMargin, document.width - qr_size, qr_size, id="misc-frame"))
+    frames.append(platypus.Frame(document.leftMargin, 0, 9*mm, 7*mm, id="number-frame"))
     frames.append(platypus.Frame(document.leftMargin, 0, document.width - qr_size, role_height, id="role-frame"))
-    frames.append(platypus.Frame(document.leftMargin, 0, 0.25*inch, 0.25*inch, id="number-frame"))
     frames.append(platypus.Frame(card_width - qr_size, document.bottomMargin - margin, qr_size, qr_size, id="qr-frame"))
     template = platypus.PageTemplate(frames=frames)
     document.addPageTemplates(template)
@@ -120,9 +123,11 @@ def lunch_card_for_users(profiles: List[Profile]) -> FileResponse:
         data.append(image)
         data.append(platypus.FrameBreak('misc-frame'))
         data.append(platypus.Paragraph('NRCA Cafeteria<br/>Lunch Card', normal_style))
+        if profile.cards_printed > 1:
+            data.append(platypus.FrameBreak('number-frame'))
+            data.append(platypus.Paragraph('R{}'.format(profile.cards_printed), small_style))
         data.append(platypus.FrameBreak('role-frame'))
         data.append(platypus.Paragraph(profile.get_role_display(), role_style))
-        data.append(platypus.Paragraph('R{}'.format(profile.cards_printed), normal_style))
         data.append(platypus.FrameBreak('qr-frame'))
         data.append(qr.QrCode(str(profile.lunch_uuid), qrBorder=0))
         data.append(platypus.PageBreak())

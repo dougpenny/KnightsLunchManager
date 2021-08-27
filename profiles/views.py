@@ -177,8 +177,10 @@ def new_individual_card(request, pk):
             profile.lunch_uuid = uuid.uuid4()
             profile.save()
             return lunch_card_for_users([profile])
-        except:
-            logger.info('An error occured trying to print a new lunch card.')
+        except Exception as e:
+            if transaction:
+                transaction.delete()
+            logger.info('An error occured trying to print a new lunch card: {}'.format(e))
             messages.error(request, 'An error occured trying to print the new lunch card.')
 
     return HttpResponseRedirect(reverse_lazy('profile-detail', args=[pk]))
