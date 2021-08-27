@@ -5,7 +5,7 @@ psycopg2-binary==2.9.1
 gunicorn==20.1.0
 python-dotenv==0.19.0
 reportlab==3.6.1
-XlsxWriter==1.4.5
+XlsxWriter==3.0.1
 django-constance[database]==2.8.0
 mozilla-django-oidc==2.0.0
 django-mathfilters==1.0.0

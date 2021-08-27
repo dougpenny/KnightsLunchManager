@@ -4,7 +4,7 @@ from django.urls import path
 from transactions.views import DeleteTransactionView, ExportChecksView
 from transactions.views import OrderProcessView, TransactionsDateArchiveView, TransactionDetailView
 from transactions.views import TransactionListView, TransactionsTodayArchiveView
-from transactions.views import batch_deposit, new_single_deposit, new_single_order
+from transactions.views import batch_deposit, deposit_checklist, new_single_deposit, new_single_order
 
 
 urlpatterns = [
@@ -17,19 +17,15 @@ urlpatterns = [
 
     path('delete/', DeleteTransactionView.as_view(), name='admin-delete'),
 
-    path('deposits/', TransactionListView.as_view(filter='deposits'),
-         name='transaction-deposits'),
-    path('deposit/<int:pk>/', TransactionDetailView.as_view(filter='deposits'),
-         name='transaction-deposit-detail'),
-    path('deposits/export-checks/', ExportChecksView.as_view(),
-         name='transaction-export-checks'),
-    path('deposits/<int:year>/<int:month>/<int:day>/', TransactionsDateArchiveView.as_view(
-        filter='deposits', month_format='%m'), name='transaction-date-deposits'),
-    path('deposits/export-checks/<int:year>/<int:month>/<int:day>/',
-         ExportChecksView.as_view(), name='transaction-date-export-checks'),
+    path('deposits/', TransactionListView.as_view(filter='deposits'), name='transaction-deposits'),
+    path('deposit/<int:pk>/', TransactionDetailView.as_view(filter='deposits'), name='transaction-deposit-detail'),
+    path('deposits/checklist/', deposit_checklist, name='deposit-checklist'),
+    path('deposits/export-checks/', ExportChecksView.as_view(), name='misc-receipts-report'),
+    path('deposits/<int:year>/<int:month>/<int:day>/', TransactionsDateArchiveView.as_view(filter='deposits', month_format='%m'), name='transaction-date-deposits'),
+    path('deposits/checklist/<int:year>/<int:month>/<int:day>/', deposit_checklist, name='deposit-checklist-day'),
+    path('deposits/export-checks/<int:year>/<int:month>/<int:day>/', ExportChecksView.as_view(), name='misc-receipts-report-day'),
     path('deposit/new/', new_single_deposit, name='transaction-deposit-create'),
-    path('deposits/today/', TransactionsTodayArchiveView.as_view(filter='deposits'),
-         name='transaction-today-deposits'),
+    path('deposits/today/', TransactionsTodayArchiveView.as_view(filter='deposits'), name='transaction-today-deposits'),
     path('deposits/batch/', batch_deposit, name='transaction-deposits-batch'),
 
     path('orders/', TransactionListView.as_view(filter='orders'),

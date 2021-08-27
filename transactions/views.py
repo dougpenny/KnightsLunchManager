@@ -148,12 +148,12 @@ class ExportChecksView(LoginRequiredMixin, UserIsStaffMixin, View):
             | Q(description__icontains='Cash')
         )
         deposits = deposits.filter(transaction_type=Transaction.CREDIT)
-        workbook_name = 'check-reconciliation.xlsx'
+        workbook_name = 'misc-receipts-form.xlsx'
         if ('year' in self.kwargs) and ('month' in self.kwargs) and ('day' in self.kwargs):
             day = date(self.kwargs['year'],
                        self.kwargs['month'], self.kwargs['day'])
             deposits = deposits.filter(completed__date=day)
-            workbook_name = 'check-reconciliation_{}-{}-{}.xlsx'.format(
+            workbook_name = 'misc-receipts-form_{}-{}-{}.xlsx'.format(
                 self.kwargs['year'], self.kwargs['month'], self.kwargs['day'])
         else:
             day = 'All Deposits'
@@ -176,7 +176,7 @@ class ExportChecksView(LoginRequiredMixin, UserIsStaffMixin, View):
             worksheet.merge_range(
                 0, 0, 0, 5, 'NORTH RALEIGH CHRISTIAN ACADEMY', center_bold_title)
             worksheet.merge_range(
-                1, 0, 1, 5, 'CAFETERIA RECEIPT FORM', center_bold_title)
+                1, 0, 1, 5, 'MISCELLANEOUS CAFETERIA RECEIPTS FORM', center_bold_title)
 
             date_bold_title = workbook.add_format(
                 {'align': 'center', 'bold': True, 'num_format': '[$-en-US]mmmm d, yyyy;@', 'font_size': 12})
@@ -389,6 +389,88 @@ def batch_deposit(request):
         context['form'] = DepositFormSet(prefix='deposit')
     return render(request, 'admin/transaction_batch_deposit.html', context=context)
 
+
+@login_required
+@admin_access_allowed
+def deposit_checklist(request, *args, **kwargs):
+    deposits = Transaction.objects.filter(transaction_type=Transaction.CREDIT)
+    workbook_name = 'misc-deposit-form.xlsx'
+    if ('year' in kwargs) and ('month' in kwargs) and ('day' in kwargs):
+        day = date(kwargs['year'], kwargs['month'], kwargs['day'])
+        deposits = deposits.filter(completed__date=day)
+        workbook_name = 'check-reconciliation_{}-{}-{}.xlsx'.format(kwargs['year'], kwargs['month'], kwargs['day'])
+    else:
+        day = 'All Deposits'
+    if deposits:
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output)
+        worksheet = workbook.add_worksheet()
+        worksheet.center_horizontally()
+        worksheet.fit_to_pages(1, 0)
+        worksheet.set_column('A:A', 12)
+        worksheet.set_column('B:B', 12)
+        worksheet.set_column('C:C', 32)
+        worksheet.set_column('D:D', 12)
+        worksheet.set_column('E:E', 38)
+        worksheet.set_column('F:F', 12)
+
+        general_row_format = workbook.add_format({'font_size': 12})
+        center_bold_title = workbook.add_format(
+            {'align': 'center', 'bold': True, 'font_size': 14})
+        worksheet.merge_range(
+            0, 0, 0, 5, 'NORTH RALEIGH CHRISTIAN ACADEMY', center_bold_title)
+        worksheet.merge_range(
+            1, 0, 1, 5, 'CAFETERIA DEPOSITS CHECKLIST', center_bold_title)
+
+        date_bold_title = workbook.add_format(
+            {'align': 'center', 'bold': True, 'num_format': '[$-en-US]mmmm d, yyyy;@', 'font_size': 12})
+        worksheet.merge_range(2, 0, 2, 5, day, date_bold_title)
+        worksheet.set_row(2, 18)
+
+        center_bold_header = workbook.add_format(
+            {'align': 'center', 'bold': True, 'bottom': 1, 'font_size': 12, 'left': 1, 'right': 1})
+        worksheet.write(4, 0, 'Confirmed', center_bold_header)
+        worksheet.write(4, 1, 'Date', center_bold_header)
+        worksheet.write(4, 2, 'Student', center_bold_header)
+        worksheet.write(4, 3, 'Grade', center_bold_header)
+        worksheet.write(4, 4, 'Description', center_bold_header)
+        worksheet.write(4, 5, 'Amount', center_bold_header)
+        worksheet.set_row(4, 18)
+
+        row = 5
+        col = 1
+        basic_currency = workbook.add_format(
+            {'font_size': 12, 'num_format': '[$$-409]#,##0.00', 'left': 1, 'right': 1})
+        basic_date = workbook.add_format(
+            {'align': 'center', 'font_size': 12, 'num_format': 'yyyy-m-d', 'left': 1, 'right': 1})
+        center = workbook.add_format(
+            {'align': 'center', 'font_size': 12, 'left': 1, 'right': 1})
+        side_border = workbook.add_format({'left': 1, 'right': 1})
+        for deposit in deposits:
+            worksheet.set_row(row, 18, general_row_format)
+            worksheet.write(row, col, deposit.completed.date(), basic_date)
+            worksheet.write(row, col + 1, deposit.transactee.name(), side_border)
+            if deposit.transactee.role == Profile.STAFF:
+                worksheet.write(row, col + 2, 'Staff', center)
+            else:
+                worksheet.write(row, col + 2, deposit.transactee.grade.value, center)
+            worksheet.write(row, col + 3, deposit.description, side_border)
+            worksheet.write(row, col + 4, deposit.amount, basic_currency)
+            row += 1
+
+        bold = workbook.add_format({'align': 'right', 'bold': True, 'font_size': 12})
+        worksheet.write(row + 1, 4, 'Total', bold)
+
+        grade_total_format = workbook.add_format({'align': 'center', 'bold': True, 'font_size': 12, 'num_format': '[$$-409]#,##0.00', 'top': 6})
+        worksheet.write(row + 1, 5, '=SUM(F6:F{})'.format(deposits.count() + 5), grade_total_format)
+        worksheet.set_row(row + 1, 18, general_row_format)
+
+        workbook.close()
+        output.seek(0)
+        return FileResponse(output, as_attachment=True, filename=workbook_name)
+    else:
+        messages.warning(request, 'No depostis found to check.')
+        return redirect(request.path_info)
 
 @login_required
 @admin_access_allowed

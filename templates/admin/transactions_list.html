@@ -280,9 +280,22 @@
     <span class="inline-flex"></span>
     {% if view.filter == "deposits" %}
     <div class="mt-8 flex flex-shrink-0 sm:mt-0">
+      <div class="mr-8 inline-flex rounded-md shadow">
+        <a href="{% if day %}{% url 'deposit-checklist-day' day.year day.month day.day %}{% else %}{% url 'deposit-checklist' %}{% endif %}">
+          <button
+            class="inline-flex items-center justify-center pl-4 pr-5 py-2 border border-transparent text-base leading-6 rounded-md text-white bg-blue-600 hover:bg-blue-500 focus:outline-none transition duration-150 ease-in-out">
+            <svg xmlns="http://www.w3.org/2000/svg" class="mr-4" width="24" height="24" viewBox="0 0 24 24"
+              stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+              <polyline points="9 11 12 14 20 6"></polyline>
+              <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9"></path>
+            </svg>
+            <span>Deposit Checklist</span>
+          </button>
+        </a>
+      </div>
       <div class="inline-flex rounded-md shadow">
-        <a
-          href="{% if day %}{% url 'transaction-date-export-checks' day.year day.month day.day %}{% else %}{% url 'transaction-export-checks' %}{% endif %}">
+        <a href="{% if day %}{% url 'misc-receipts-report-day' day.year day.month day.day %}{% else %}{% url 'misc-receipts-report' %}{% endif %}">
           <button
             class="inline-flex items-center justify-center pl-4 pr-5 py-2 border border-transparent text-base leading-6 rounded-md text-white bg-green-600 hover:bg-green-500 focus:outline-none transition duration-150 ease-in-out">
             <svg xmlns="http://www.w3.org/2000/svg" class="mr-4" width="24" height="24" viewBox="0 0 24 24"
@@ -293,7 +306,7 @@
               <line x1="12" y1="11" x2="12" y2="17" />
               <polyline points="9 14 12 17 15 14" />
             </svg>
-            <span>Export Deposits</span>
+            <span>Misc Receipts Form</span>
           </button>
         </a>
       </div>
