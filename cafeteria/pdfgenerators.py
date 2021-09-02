@@ -87,9 +87,11 @@ def lunch_card_for_users(profiles: List[Profile]) -> FileResponse:
     role_style.leading = 8
     role_style.textTransform = 'uppercase'
     role_style.alignment = TA_CENTER
-    small_style = copy.copy(styles['Normal'])
-    small_style.fontSize = 6
-    small_style.leading = 6
+    small_style = copy.copy(styles['Heading2'])
+    small_style.fontSize = 10
+    small_style.leading = 10
+    small_style.spaceBefore = 0
+    small_style.spaceAfter = 0
     title_style = copy.copy(styles['Title'])
     title_style.fontSize = 20
     title_style.leading = 20
@@ -104,7 +106,7 @@ def lunch_card_for_users(profiles: List[Profile]) -> FileResponse:
     frames = [platypus.Frame(document.leftMargin, card_height - title_height - top_offset, document.width, title_height, id="title-frame")]
     frames.append(platypus.Frame(document.leftMargin, document.bottomMargin, document.width - qr_size, qr_size, id="image-frame"))
     frames.append(platypus.Frame(document.leftMargin, document.bottomMargin, document.width - qr_size, qr_size, id="misc-frame"))
-    frames.append(platypus.Frame(document.leftMargin, 0, 9*mm, 7*mm, id="number-frame"))
+    frames.append(platypus.Frame(document.leftMargin, 0, 12*mm, 9*mm, id="number-frame"))
     frames.append(platypus.Frame(document.leftMargin, 0, document.width - qr_size, role_height, id="role-frame"))
     frames.append(platypus.Frame(card_width - qr_size, document.bottomMargin - margin, qr_size, qr_size, id="qr-frame"))
     template = platypus.PageTemplate(frames=frames)
