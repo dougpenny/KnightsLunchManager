@@ -452,7 +452,7 @@ def deposit_checklist(request, *args, **kwargs):
             worksheet.write(row, col + 1, deposit.transactee.name(), side_border)
             if deposit.transactee.role == Profile.STAFF:
                 worksheet.write(row, col + 2, 'Staff', center)
-            else:
+            elif deposit.transactee.grade:
                 worksheet.write(row, col + 2, deposit.transactee.grade.value, center)
             worksheet.write(row, col + 3, deposit.description, side_border)
             worksheet.write(row, col + 4, deposit.amount, basic_currency)
