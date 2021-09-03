@@ -123,9 +123,15 @@ class Command(BaseCommand):
                 staff.user_dcid)
             if homeroom_roster:
                 try:
-                    staff.grade = GradeLevel.objects.get(value=int(homeroom_roster[0]['grade_level']))
+                    grade_level = homeroom_roster[0]['grade_level']
+                    count = 1
+                    while grade_level == "" and count < len(homeroom_roster):
+                        grade_level = homeroom_roster[count]['grade_level']
+                        count = count + 1
+                    staff.grade = GradeLevel.objects.get(value=int(grade_level))
                 except:
                     staff.grade = None
+                    logger.error('No grade level assigned to homeroom teacher: {}'.format(staff.name()))
                 staff.students.clear()
                 for student in homeroom_roster:
                     try:
