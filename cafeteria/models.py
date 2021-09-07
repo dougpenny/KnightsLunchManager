@@ -23,6 +23,7 @@ class GradeLevel(models.Model):
 
 class LunchPeriod(models.Model):
     display_name = models.CharField(blank=True, max_length=24)
+    floating_staff = models.BooleanField(default=False, help_text='Floating period for staff without a homeroom.', verbose_name='floating staff period')
     start_time = models.TimeField(blank=True, null=True)
     sort_order = models.SmallIntegerField(default=0, help_text='Order in which the lunch period will be displayed')
     teacher_distributes = models.BooleanField(default=False, help_text='Does the teacher distribute orders for their class?')

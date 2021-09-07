@@ -17,6 +17,7 @@ from django.utils import timezone
 
 from menu.models import MenuItem
 from profiles.models import Profile
+from transactions.models import MenuLineItem
 
 
 def entree_report_by_period(lunch_periods: Dict) -> FileResponse:
@@ -30,6 +31,10 @@ def entree_report_by_period(lunch_periods: Dict) -> FileResponse:
     entree_style.fontSize = 22
     entree_style.spaceAfter = 56
     entree_style.alignment = TA_CENTER
+    staff_style = copy.copy(styles['Normal'])
+    staff_style.fontSize = 22
+    staff_style.spaceAfter = 24
+    staff_style.alignment = TA_CENTER
     margin = 0.5*inch
     document = platypus.BaseDocTemplate(buffer, pagesize=letter, rightMargin=margin, leftMargin=margin, topMargin=margin, bottomMargin=margin)
 
@@ -48,21 +53,42 @@ def entree_report_by_period(lunch_periods: Dict) -> FileResponse:
 
     data = []
     for period in lunch_periods:
-        title = period.display_name
-        data.append(platypus.Paragraph('<u>{}</u>'.format(title), title_style))
-        for item in lunch_periods[period]:
-            if item.pizza:
-                left_over_slices = lunch_periods[period][item] % item.slices_per
-                pizzas = lunch_periods[period][item] // item.slices_per
-                pizza_string = 'pizzas' if pizzas > 1 else 'pizza'
-                slice_string = 'slices' if left_over_slices > 1 else 'slice'
-                if left_over_slices == 0:
-                    data.append(platypus.Paragraph('<u>{}</u><br/><br/><b>{}</b> {}'.format(item, pizzas, pizza_string), entree_style))
-                else:
-                    data.append(platypus.Paragraph('<u>{}</u><br/><br/><b>{}</b> {}<br/><br/><b>{}</b> {}'.format(item, pizzas, pizza_string, left_over_slices, slice_string), entree_style))
+        if len(lunch_periods[period]) > 0:
+            title = period.display_name
+            data.append(platypus.Paragraph('<u>{}</u>'.format(title), title_style))
+            if not period.floating_staff:
+                for item in lunch_periods[period]:
+                    if item.pizza:
+                        left_over_slices = lunch_periods[period][item] % item.slices_per
+                        pizzas = lunch_periods[period][item] // item.slices_per
+                        pizza_string = 'pizzas' if pizzas > 1 else 'pizza'
+                        slice_string = 'slices' if left_over_slices > 1 else 'slice'
+                        if left_over_slices == 0:
+                            data.append(platypus.Paragraph('<u>{}</u><br/><br/><b>{}</b> {}'.format(item, pizzas, pizza_string), entree_style))
+                        else:
+                            data.append(platypus.Paragraph('<u>{}</u><br/><br/><b>{}</b> {}<br/><br/><b>{}</b> {}'.format(item, pizzas, pizza_string, left_over_slices, slice_string), entree_style))
+                    else:
+                        data.append(platypus.Paragraph('{} - <b>{}</b>'.format(item, lunch_periods[period][item]), entree_style))
+                data.append(platypus.PageBreak())
             else:
-                data.append(platypus.Paragraph('{} - <b>{}</b>'.format(item, lunch_periods[period][item]), entree_style))
-        data.append(platypus.PageBreak())
+                item_orders = {}
+                for order in lunch_periods[period]:
+                    staff = order.transactee.name()
+                    line_item = MenuLineItem.objects.filter(transaction=order)
+                    for item in line_item:
+                        if item.quantity > 1:
+                            staff = staff + ' ({})'.format(item.quantity)
+                        if item.menu_item in item_orders:
+                            item_orders[item.menu_item].append(staff)
+                        else:
+                            item_orders[item.menu_item] = [staff]
+                item_orders = collections.OrderedDict(sorted(item_orders.items(), key=lambda menu_item: menu_item[0].sequence))
+                for item in item_orders:
+                    content = [platypus.Paragraph('<b><u>{}</u></b>'.format(item.name), staff_style)]
+                    for staff in item_orders[item]:
+                        content.append(platypus.Paragraph(staff, staff_style))
+                    content.append(platypus.Paragraph('<br/><br/>', staff_style))
+                    data.append(platypus.KeepTogether(content))
     document.build(data)
     buffer.seek(0)
     today = timezone.now()

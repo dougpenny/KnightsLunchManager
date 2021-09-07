@@ -491,6 +491,10 @@ def entree_orders_report(request):
     lunch_period_counts = {}
     for lunch_period in LunchPeriod.objects.all():
         lunch_period_counts[lunch_period] = get_item_counts(orders.filter(transactee__grade__lunch_period=lunch_period))
+    staff_orders = orders.filter(transactee__grade=None).filter(transactee__role=Profile.STAFF)
+    staff_period = LunchPeriod.objects.get(floating_staff=True)
+    if staff_orders and staff_period:
+        lunch_period_counts[staff_period] = staff_orders
     if lunch_period_counts:
         return entree_report_by_period(lunch_period_counts)
     else:
