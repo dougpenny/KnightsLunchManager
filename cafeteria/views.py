@@ -312,8 +312,11 @@ def admin_dashboard(request):
     lunch_period_counts = {}
     for lunch_period in LunchPeriod.objects.all():
         lunch_period_counts[lunch_period] = get_item_counts(orders.filter(transactee__grade__lunch_period=lunch_period))
+    staff_orders = orders.filter(transactee__grade=None).filter(transactee__role=Profile.STAFF)
+    staff_period = LunchPeriod.objects.get(floating_staff=True)
+    if staff_orders and staff_period:
+        lunch_period_counts[staff_period] = staff_orders
     context['period_item_counts'] = lunch_period_counts
-    print('Lunch Period Counts: {}'.format(lunch_period_counts))
     context['orders'] = orders
     context['debtors'] = Profile.objects.filter(active=True).filter(current_balance__lt=0).order_by('current_balance', 'user__last_name')[:5]
     first_lunch = LunchPeriod.objects.filter(sort_order=0).first()

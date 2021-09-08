@@ -83,6 +83,7 @@
 
 <div class="mt-4">
   <div x-data="{ tab: {{ first_lunch.id }} }" class="max-w-6xl pb-12 mx-auto px-4 sm:px-6 lg:px-8 border-b border-gray-300">
+    {% load cafeteria_extras %}
     <div class="sm:hidden">
       <label for="selected-tab" class="sr-only">Select a tab</label>
       <select id="selected-tab" name="selected-tab" x-model="tab" class="block w-full focus:ring-blue-500 focus:border-blue-500 border-gray-300 rounded-md">
@@ -95,9 +96,11 @@
       <div class="border-b border-gray-200">
         <nav class="-mb-px flex" aria-label="Tabs">
         {% for lunch_period in period_item_counts %}
+          {% if period_item_counts|forKey:lunch_period %}
           <a href="#" :class="{ 'border-blue-600 text-blue-700': tab === {{ lunch_period.id }}, 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': tab != {{ lunch_period.id }} }" @click="tab = {{ lunch_period.id }}" class="w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm">
             {{ lunch_period }}
           </a>
+          {% endif %}
         {% endfor %}
         </nav>
       </div>
@@ -109,24 +112,155 @@
             Entree Orders for {{ lunch_period }}
           </h2>
         </div>
-        <div class="grid grid-cols-2 gap-5">
-          {% for menu_item, count in counts.items %}
-          <div class="bg-white overflow-hidden shadow rounded-lg">
-            <div class="p-5">
-              <div class="flex items-center">
-                <div class="w-0 flex-1">
-                  <h2 class="text-lg leading-7 font-medium text-center text-gray-500 truncate">
-                    {{ menu_item.name }}
-                  </h2>
-                  <h2 class="mt-6 mb-12 text-5xl leading-9 font-medium text-center text-gray-900">
-                    {{ count }}
-                  </h2>
+        {% if lunch_period.floating_staff %}
+          {% if period_item_counts|forKey:lunch_period %}
+            <div x-data="confirmAction()" class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+              <div
+                class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
+                <table class="min-w-full divide-y divide-gray-200">
+                  <thead>
+                    <tr>
+                      <th
+                        class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                        Name
+                      </th>
+                      <th
+                        class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                        Description
+                      </th>
+                      <th
+                        class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                        Amount
+                      </th>
+                      <th
+                        class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th
+                        class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                        Submitted
+                      </th>
+                      {% if orders_open %}
+                      <th class="px-6 py-3 border-b border-gray-200 bg-gray-50"></th>
+                      {% endif %}
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-gray-200">
+                    {% for transaction in period_item_counts|forKey:lunch_period %}
+                    <tr>
+                      <td class="px-6 py-4 text-left border-b border-gray-200 text-sm leading-5 text-gray-900">
+                        {{ transaction.transactee }}
+                      </td>
+                      <td class="px-6 py-4 text-left border-b border-gray-200 text-sm leading-5 text-gray-900">
+                        {{ transaction.description }}
+                      </td>
+                      <td
+                        class="px-6 py-4 whitespace-nowrap text-center border-b border-gray-200 text-sm leading-5 text-gray-900">
+                        ${{ transaction.amount }}
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                        <span
+                          class="px-2 inline-flex text-center text-xs leading-5 font-semibold rounded-full {% if transaction.status == 'Complete' %}bg-green-100 text-green-800 {% elif transaction.status == 'Processing' %}bg-yellow-100 text-yellow-800 {% elif transaction.status == 'Submitted' %}bg-indigo-100 text-indigo-800 {% else %}bg-gray-100 text-gray-800{% endif %}">
+                          {{ transaction.status }}
+                        </span>
+                      </td>
+                      <td
+                        class="px-6 py-4 whitespace-nowrap text-center border-b border-gray-200 text-sm leading-5 text-gray-900">
+                        {{ transaction.submitted|date:'g:i a' }}
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-20 w-20 sm:mx-0 sm:h-10 sm:w-10">
+                          <button @click="open({{ transaction.id }}, '{{ transaction.transactee.name|addslashes }}')">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-600" viewBox="-8 -8 40 40"
+                              stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                              <path stroke="none" d="M0 0h24v24H0z" />
+                              <line x1="4" y1="7" x2="20" y2="7" />
+                              <line x1="10" y1="11" x2="10" y2="17" />
+                              <line x1="14" y1="11" x2="14" y2="17" />
+                              <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                              <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <div class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center"
+                style="background-color: rgba(0,0,0,.75);" x-show.transition.opacity.duration.300ms="isOpen()">
+                <div
+                  class="text-left bg-white h-auto p-4 md:max-w-xl md:p-6 lg:p-8 shadow-xl rounded-lg mx-2 md:mx-0 sm:max-w-lg sm:w-full"
+                  @click.away="cancel()">
+                  <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                      <div class="mx-auto flex-shrink-0 flex items-center justify-center h-24 w-24 sm:mx-0 sm:h-10 sm:w-10">
+                        <svg class="h-24 w-24 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </div>
+                      <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                        <h3 class="text-xl leading-6 font-medium text-gray-900" id="modal-headline">
+                          Confirm Deletion
+                        </h3>
+                        <div class="mt-2">
+                          <p class="text-md leading-5 text-gray-600">
+                            Please confirm that you would like to delete <strong><span id="item-name"></span>'s</strong>
+                            transaction.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <form action="{% url 'admin-delete' %}" method="post">
+                      <span class="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto">
+                        {% csrf_token %}
+                        <input type="hidden" name="itemID" value="" id="item-id">
+                        <input type="hidden" name="path" value="{{ request.path }}">
+                        <input type="submit" @click="confirm()" value="Delete"
+                          class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-red-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-red-500 focus:outline-none focus:border-red-700 transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+                      </span>
+                    </form>
+                    <span class="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
+                      <button @click="cancel()" type="button"
+                        class="inline-flex justify-center w-full rounded-md border border-gray-300 px-4 py-2 bg-white text-base leading-6 font-medium text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+                        Cancel
+                      </button>
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
+          {% else %}
+            <h3 class="mt-2 text-l leading-8 font-extrabold tracking-tight text-gray-900 sm:text-xl sm:leading-10">
+              There are no staff orders today.
+            </h3>
+          {% endif %}
+        {% else %}
+          <div class="grid grid-cols-2 gap-5">
+            {% for menu_item, count in counts.items %}
+              <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                  <div class="flex items-center">
+                    <div class="w-0 flex-1">
+                      <h2 class="text-lg leading-7 font-medium text-center text-gray-500 truncate">
+                        {{ menu_item.name }}
+                      </h2>
+                      <h2 class="mt-6 mb-12 text-5xl leading-9 font-medium text-center text-gray-900">
+                        {{ count }}
+                      </h2>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
           </div>
-          {% endfor %}
-        </div>
+        {% endif %}
+        
         {% if lunch_period.teacher_distributes %}
           <div class="mt-6">
             <a href="{% url 'class-orders-report' lunch_period.id %}">
