@@ -123,36 +123,39 @@ def home(request):
                         try:
                             ordered_items_list.append(item['menu_item'])
                         except Exception as e:
-                            messages.error(request, 'You must select at least one item.')
-                            return redirect('home')
-                    
-                    counted_items = Counter(ordered_items_list)
-                    description = ''
-                    cost = 0
-                    for item in counted_items:
-                        if description:
-                            description = description + ', '
-                        description = description + '({}) {}'.format(counted_items[item], item.name)
-                        cost = cost + (item.cost * counted_items[item])
-                    if todays_transaction(request.user.profile):
-                        messages.warning(request, 'Your have already placed an order today.')
-                        return redirect('todays-order')
-                    try:
-                        transaction = Transaction(
-                            amount=cost,
-                            description=description,
-                            transaction_type=Transaction.DEBIT,
-                            transactee=request.user.profile
-                        )
-                        transaction.save()
-                        for item in counted_items:
-                            transaction.menu_items.add(item, through_defaults={'quantity': counted_items[item]})
-                        messages.success(request, 'Your order was successfully submitted.')
-                        return redirect('todays-order')
-                    except Exception as e:
-                        logger.exception('An exception occured when trying to create a transaction: {}'.format(e))
-                        messages.error(request, 'There was a problem submitting your order.')
+                            pass
+
+                    if len(ordered_items_list) < 1:
+                        messages.error(request, 'You must select at least one item.')
                         return redirect('home')
+                    else:
+                        counted_items = Counter(ordered_items_list)
+                        description = ''
+                        cost = 0
+                        for item in counted_items:
+                            if description:
+                                description = description + ', '
+                            description = description + '({}) {}'.format(counted_items[item], item.name)
+                            cost = cost + (item.cost * counted_items[item])
+                        if todays_transaction(request.user.profile):
+                            messages.warning(request, 'Your have already placed an order today.')
+                            return redirect('todays-order')
+                        try:
+                            transaction = Transaction(
+                                amount=cost,
+                                description=description,
+                                transaction_type=Transaction.DEBIT,
+                                transactee=request.user.profile
+                            )
+                            transaction.save()
+                            for item in counted_items:
+                                transaction.menu_items.add(item, through_defaults={'quantity': counted_items[item]})
+                            messages.success(request, 'Your order was successfully submitted.')
+                            return redirect('todays-order')
+                        except Exception as e:
+                            logger.exception('An exception occured when trying to create a transaction: {}'.format(e))
+                            messages.error(request, 'There was a problem submitting your order.')
+                            return redirect('home')
 
         else:
             if request.user.profile.role == Profile.STAFF:

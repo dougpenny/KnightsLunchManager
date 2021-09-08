@@ -507,35 +507,37 @@ def new_single_order(request):
                 try:
                     ordered_items_list.append(item['menu_item'])
                 except Exception as e:
-                    messages.error(request, 'You must select at least one item.')
-                    return redirect('transaction-order-create')
-            
-            transactee = User.objects.get(id=request.POST['transactee']).profile
-            counted_items = Counter(ordered_items_list)
-            description = ''
-            cost = 0
-            for item in counted_items:
-                if description:
-                    description = description + ', '
-                description = description + '({}) {}'.format(counted_items[item], item.name)
-                cost = cost + (item.cost * counted_items[item])
-            try:
-                transaction = Transaction(
-                    amount=cost,
-                    description=description,
-                    transaction_type=Transaction.DEBIT,
-                    transactee=transactee
-                )
-                transaction.save()
-                for item in counted_items:
-                    transaction.menu_items.add(item, through_defaults={'quantity': counted_items[item]})
-                messages.success(request, 'Successfully created an order for {}.'.format(transactee.name()))
-                return redirect('profile-detail', transactee.id)
-            
-            except Exception as e:
-                logger.exception('An exception occured when trying to create a transaction: {}'.format(e))
-                messages.error(request, 'An error occured creating the order.')
+                    pass
+
+            if len(ordered_items_list) < 1:
+                messages.error(request, 'You must select at least one item.')
                 return redirect('transaction-order-create')
+            else:
+                transactee = User.objects.get(id=request.POST['transactee']).profile
+                counted_items = Counter(ordered_items_list)
+                description = ''
+                cost = 0
+                for item in counted_items:
+                    if description:
+                        description = description + ', '
+                    description = description + '({}) {}'.format(counted_items[item], item.name)
+                    cost = cost + (item.cost * counted_items[item])
+                try:
+                    transaction = Transaction(
+                        amount=cost,
+                        description=description,
+                        transaction_type=Transaction.DEBIT,
+                        transactee=transactee
+                    )
+                    transaction.save()
+                    for item in counted_items:
+                        transaction.menu_items.add(item, through_defaults={'quantity': counted_items[item]})
+                    messages.success(request, 'Successfully created an order for {}.'.format(transactee.name()))
+                    return redirect('profile-detail', transactee.id)
+                except Exception as e:
+                    logger.exception('An exception occured when trying to create a transaction: {}'.format(e))
+                    messages.error(request, 'An error occured creating the order.')
+                    return redirect('transaction-order-create')
 
     else:
         ItemFormSet = formset_factory(ItemOrderForm)
