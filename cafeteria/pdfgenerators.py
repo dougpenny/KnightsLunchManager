@@ -190,6 +190,10 @@ def orders_report_by_homeroom(todays_orders: List) -> FileResponse:
     title_frame = platypus.Frame(document.leftMargin, title_frame_bottom, document.width, title_frame_height)
     frames = [title_frame]
     
+    # create a frame for a message when there are no orders
+    no_orders_frame = platypus.Frame(document.leftMargin, document.height / 2.0, document.width, 1.0*inch, id='no-orders-frame')
+    frames.append(no_orders_frame)
+
     # create three frames to hold the list of orders for each item
     entree_frame_height = 1.0*inch
     item_frame_height = 1.5*inch
@@ -239,25 +243,29 @@ def orders_report_by_homeroom(todays_orders: List) -> FileResponse:
         item_counts = collections.OrderedDict(sorted(item_counts.items(), key=lambda menu_item: menu_item[0].sequence))
         title = teacher.user.last_name
         data.append(platypus.Paragraph('<u>{}</u>'.format(title), title_style))
-        data.append(platypus.FrameBreak('student-frame-0'))
-        for item in item_orders:
-            content = [platypus.Paragraph('<b><u>{}</u></b>'.format(item.name), normal_style)]
-            for student in item_orders[item]:
-                content.append(platypus.Paragraph(student, normal_style))
-            content.append(platypus.Paragraph('<br/><br/>', normal_style))
-            data.append(platypus.KeepTogether(content))
-        data.append(platypus.FrameBreak('divider-frame'))
-        data.append(platypus.HRFlowable())
-        data.append(platypus.FrameBreak('entree-frame-0'))
-        item_content = []
-        for item in item_counts:
-            if item.category == MenuItem.ENTREE:
-                data.append(platypus.Paragraph('{} - <b>{}</b>'.format(item.short_name, item_counts[item]), entree_count_style))
-            else:
-                item_content.append(platypus.Paragraph('{} - <b>{}</b>'.format(item.name, item_counts[item]), item_count_style))
-        data.append(platypus.FrameBreak('item-frame'))
-        if item_content:
-            data.append(platypus.BalancedColumns(item_content, nCols = 2))
+        if len(item_orders) > 0:
+            data.append(platypus.FrameBreak('student-frame-0'))
+            for item in item_orders:
+                content = [platypus.Paragraph('<b><u>{}</u></b>'.format(item.name), normal_style)]
+                for student in item_orders[item]:
+                    content.append(platypus.Paragraph(student, normal_style))
+                content.append(platypus.Paragraph('<br/><br/>', normal_style))
+                data.append(platypus.KeepTogether(content))
+            data.append(platypus.FrameBreak('divider-frame'))
+            data.append(platypus.HRFlowable())
+            data.append(platypus.FrameBreak('entree-frame-0'))
+            item_content = []
+            for item in item_counts:
+                if item.category == MenuItem.ENTREE:
+                    data.append(platypus.Paragraph('{} - <b>{}</b>'.format(item.short_name, item_counts[item]), entree_count_style))
+                else:
+                    item_content.append(platypus.Paragraph('{} - <b>{}</b>'.format(item.name, item_counts[item]), item_count_style))
+            data.append(platypus.FrameBreak('item-frame'))
+            if item_content:
+                data.append(platypus.BalancedColumns(item_content, nCols = 2))
+        else:
+            data.append(platypus.FrameBreak('no-orders-frame'))
+            data.append(platypus.Paragraph('No Orders Today', title_style))
         data.append(platypus.PageBreak())
     document.build(data)
     buffer.seek(0)

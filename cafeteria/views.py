@@ -48,14 +48,11 @@ def orders_for_homeroom(staff: Profile):
         Q(transaction__transactee__in=staff.students.all())
         | Q(transaction__transactee=staff)
     ).filter(transaction__submitted__date=timezone.localdate(timezone.now()))
-    if orders.count() == 0:
-        return None
-    else:
-        homeroom_orders = {
-            'teacher': staff,
-            'orders': orders
-        }
-        return homeroom_orders
+    homeroom_orders = {
+        'teacher': staff,
+        'orders': orders
+    }
+    return homeroom_orders
 
 def todays_transaction(profile: Profile) -> Transaction:
     try:
