@@ -8,6 +8,14 @@
         <h3 class="mt-8 mb-16 text-xl leading-7 font-bold text-gray-900 sm:text-2xl lg:mx-auto">
           Sorry, the cafeteria is no longer accepting<br/>orders today.
         </h3>
+      {% elif debt_exceeded %}
+        <h3 class="mt-8 text-xl leading-7 font-bold text-gray-900 sm:text-2xl lg:mx-auto">
+          Your lunch account balance has exceeded the debt limit of <span class="text-red-700">$-{{ debt_limit }}</span>. You will not be able to place an order until funds have been added<br />to your account.
+        </h3>
+        <p class="text-l mt-6 mb-8 leading-7 text-gray-900 sm:text-xl lg:mx-auto">
+          You may add funds to your lunch account by either sending a check or cash to the cafeteria or using <a class="text-indigo-700 underline" href="https://pay.cornerstone.cc/nrcaknights+lunch" target="_blank">this online form</a> to pay by credit card.
+          Please allow up to 24 hours for funds to be added to the account.
+        </p>
     </div>
       {% elif not user %}
           <svg xmlns="http://www.w3.org/2000/svg" class="text-md text-center text-gray-300" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -53,7 +61,7 @@
             <span>Add Item</span>
           </button>
           <div>
-            <button type="submit" class="mt-6 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <button type="submit" class="mt-6 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
               Submit Order
             </button>
           </div>

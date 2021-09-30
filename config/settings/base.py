@@ -187,11 +187,12 @@ CONSTANCE_CONFIG = {
     'CLOSED_FOR_SUMMER': (False, 'The cafeteria is closed for the summer.'),
     'CLOSE_TIME': (time(23,15), 'The time orders should stop being accepted.', time),
     'CURRENT_YEAR': ('', 'Current school year.'),
+    'DEBT_LIMIT': (0.00, 'Debt limit when users are prevented from ordering.'),
     'NEW_CARD_FEE': (0.00, 'Fee charged for a new lunch card.'),
     'OPEN_TIME': (time(0,0), 'The time orders should start being accepted.', time),
     'REPORTS_EMAIL': ('', 'Email addresses, comma seperated, to which system reports should be sent.'),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
-    'General Settings': ('OPEN_TIME', 'CLOSE_TIME', 'CLOSED_FOR_SUMMER', 'NEW_CARD_FEE', 'REPORTS_EMAIL', 'BALANCE_EXPORT_PATH', 'CURRENT_YEAR'),
+    'General Settings': ('OPEN_TIME', 'CLOSE_TIME', 'CLOSED_FOR_SUMMER', 'DEBT_LIMIT', 'NEW_CARD_FEE', 'REPORTS_EMAIL', 'BALANCE_EXPORT_PATH', 'CURRENT_YEAR'),
 }

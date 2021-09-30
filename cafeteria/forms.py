@@ -12,6 +12,9 @@ class GeneralForm(forms.Form):
         'class': 'shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md',
         'type': 'time'}))
     closed_for_summer = forms.NullBooleanField(widget=forms.RadioSelect(choices=[(True, 'Yes'), (False, 'No'),]))
+    debt_limit = forms.DecimalField(required=False, widget=forms.NumberInput(attrs={'type': 'number',
+        'class': 'shadow-sm pl-7 focus:ring-blue-500 focus:border-blue-500 block sm:text-sm border-gray-300 rounded-md',
+        'placeholder': '0.00'}), decimal_places=2)
     reports_email = forms.CharField(required=False, widget=forms.TextInput(attrs={'type': 'text',
         'class': 'shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md'}))
     balance_export_path = forms.CharField(widget=forms.TextInput(attrs={'type': 'text',

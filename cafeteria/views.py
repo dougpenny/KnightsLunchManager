@@ -109,7 +109,11 @@ def home(request):
             return redirect('todays-order')
 
         context['user'] = request.user
-        context['balance'] = request.user.profile.current_balance
+        current_balance = request.user.profile.current_balance
+        if current_balance <= -(config.DEBT_LIMIT):
+            context['debt_exceeded'] = True
+            context['debt_limit'] = config.DEBT_LIMIT
+        context['balance'] = current_balance
         if request.method == 'POST':
             if context['orders_open']:
                 OrderFormSet = formset_factory(UserOrderForm)
@@ -337,6 +341,7 @@ def general_settings(request):
             config.REPORTS_EMAIL = form_data['reports_email']
             config.BALANCE_EXPORT_PATH = form_data['balance_export_path']
             config.NEW_CARD_FEE = form_data['new_card_fee']
+            config.DEBT_LIMIT = form_data['debt_limit']
             messages.success(request, 'The general settings were successfully updated.')
         return redirect('general-settings')
     else:
@@ -349,6 +354,7 @@ def general_settings(request):
             'reports_email': config.REPORTS_EMAIL,
             'balance_export_path': config.BALANCE_EXPORT_PATH,
             'new_card_fee': config.NEW_CARD_FEE,
+            'debt_limit': config.DEBT_LIMIT,
         })
     return render(request, 'admin/general_settings.html', context=context)
 
