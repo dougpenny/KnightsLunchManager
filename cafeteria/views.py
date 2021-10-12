@@ -102,8 +102,13 @@ def home(request):
     
     context['orders_open'] = Transaction.accepting_orders()
     if request.user.is_authenticated:
-        if request.user.profile.role == Profile.GUARDIAN:
-            return redirect('guardian')
+        try:
+            if request.user.profile.role == Profile.GUARDIAN:
+                return redirect('guardian')
+        except Exception as e:
+            logger.exception('An exception occured: {}'.format(e))
+            logger.exception('Can not find profile for {}'.format(request.user))
+            return redirect('django_auth_adfs:logout')
         
         if todays_transaction(request.user.profile):
             return redirect('todays-order')
