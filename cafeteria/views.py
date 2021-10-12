@@ -106,8 +106,7 @@ def home(request):
             if request.user.profile.role == Profile.GUARDIAN:
                 return redirect('guardian')
         except Exception as e:
-            logger.exception('An exception occured: {}'.format(e))
-            logger.exception('Can not find profile for {}'.format(request.user))
+            logger.exception('An exception occured for user {}: {}'.format(request.user, e))
             return redirect('django_auth_adfs:logout')
         
         if todays_transaction(request.user.profile):
