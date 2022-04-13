@@ -1,3 +1,15 @@
+#
+# views.py
+#
+# Copyright (c) 2022 Doug Penny
+# Licensed under MIT
+#
+# See LICENSE.md for license information
+#
+# SPDX-License-Identifier: MIT
+#
+
+
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.utils import timezone

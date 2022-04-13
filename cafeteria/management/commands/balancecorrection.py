@@ -1,3 +1,15 @@
+#
+# balancecorrection.py
+#
+# Copyright (c) 2022 Doug Penny
+# Licensed under MIT
+#
+# See LICENSE.md for license information
+#
+# SPDX-License-Identifier: MIT
+#
+
+
 import logging
 from decimal import Decimal
 

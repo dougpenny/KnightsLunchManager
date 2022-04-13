@@ -1,3 +1,15 @@
+#
+# mark_inactive.py
+#
+# Copyright (c) 2022 Doug Penny
+# Licensed under MIT
+#
+# See LICENSE.md for license information
+#
+# SPDX-License-Identifier: MIT
+#
+
+
 from django.core.management.base import BaseCommand
 
 from cafeteria.operations import check_for_inactive

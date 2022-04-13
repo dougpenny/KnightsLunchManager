@@ -1,3 +1,15 @@
+#
+# admin.py
+#
+# Copyright (c) 2022 Doug Penny
+# Licensed under MIT
+#
+# See LICENSE.md for license information
+#
+# SPDX-License-Identifier: MIT
+#
+
+
 from django.contrib import admin
 
 from rest_framework.authtoken.admin import TokenAdmin
