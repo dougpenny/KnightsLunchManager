@@ -5,6 +5,7 @@ import io
 from pathlib import Path
 from typing import Dict, List
 
+from constance import config
 from reportlab import platypus
 from reportlab.graphics.barcode import qr
 from reportlab.lib.enums import TA_CENTER
@@ -23,7 +24,7 @@ from transactions.models import MenuLineItem
 def entree_report_by_period(lunch_periods: Dict) -> FileResponse:
     buffer = io.BytesIO()
     styles = getSampleStyleSheet()
-    
+
     # create some styles and the base document
     title_style = copy.copy(styles['Title'])
     title_style.fontSize = 26
@@ -35,17 +36,17 @@ def entree_report_by_period(lunch_periods: Dict) -> FileResponse:
     staff_style.fontSize = 22
     staff_style.spaceAfter = 24
     staff_style.alignment = TA_CENTER
-    margin = 0.5*inch
+    margin = 0.5 * inch
     document = platypus.BaseDocTemplate(buffer, pagesize=letter, rightMargin=margin, leftMargin=margin, topMargin=margin, bottomMargin=margin)
 
     # create the title frame
-    title_frame_height = 0.5*inch
+    title_frame_height = 0.5 * inch
     title_frame_bottom = document.height + document.bottomMargin - title_frame_height
     title_frame = platypus.Frame(document.leftMargin, title_frame_bottom, document.width, title_frame_height)
     frames = [title_frame]
-    
+
     # create a frame to hold entree counts
-    frame = platypus.Frame(document.leftMargin, document.bottomMargin, document.width, document.height - title_frame_height - 1.0*inch, id='entree-frame')
+    frame = platypus.Frame(document.leftMargin, document.bottomMargin, document.width, document.height - title_frame_height - 1.0 * inch, id='entree-frame')
     frames.append(frame)
 
     template = platypus.PageTemplate(frames=frames)
@@ -98,9 +99,9 @@ def entree_report_by_period(lunch_periods: Dict) -> FileResponse:
 
 def lunch_card_for_users(profiles: List[Profile]) -> FileResponse:
     buffer = io.BytesIO()
-    card_width = 86*mm
-    card_height = 54*mm
-    margin = 2*mm
+    card_width = 86 * mm
+    card_height = 54 * mm
+    margin = 2 * mm
     document = platypus.BaseDocTemplate(buffer, pagesize=(card_width, card_height), rightMargin=margin, leftMargin=margin, topMargin=margin, bottomMargin=margin)
 
     styles = getSampleStyleSheet()
@@ -124,22 +125,22 @@ def lunch_card_for_users(profiles: List[Profile]) -> FileResponse:
     title_style.spaceBefore = 0
     title_style.spaceAfter = 0
 
-    qr_size = 37*mm
-    top_offset = 4*mm
-    role_height = 8*mm
+    qr_size = 37 * mm
+    top_offset = 2 * mm
+    role_height = 16 * mm
     title_height = card_height - qr_size - top_offset
-    
+
     frames = [platypus.Frame(document.leftMargin, card_height - title_height - top_offset, document.width, title_height, id="title-frame")]
+    frames.append(platypus.Frame(document.leftMargin, card_height - title_height - (12 * mm), document.width, role_height, id="role-frame"))
     frames.append(platypus.Frame(document.leftMargin, document.bottomMargin, document.width - qr_size, qr_size, id="image-frame"))
     frames.append(platypus.Frame(document.leftMargin, document.bottomMargin, document.width - qr_size, qr_size, id="misc-frame"))
-    frames.append(platypus.Frame(document.leftMargin, 0, 12*mm, 9*mm, id="number-frame"))
-    frames.append(platypus.Frame(document.leftMargin, 0, document.width - qr_size, role_height, id="role-frame"))
+    frames.append(platypus.Frame(document.leftMargin, 0, 12 * mm, 9 * mm, id="number-frame"))
     frames.append(platypus.Frame(card_width - qr_size, document.bottomMargin - margin, qr_size, qr_size, id="qr-frame"))
     template = platypus.PageTemplate(frames=frames)
     document.addPageTemplates(template)
 
     image_path = Path(__file__).resolve(strict=True).parent / 'report_images/knights-head.jpg'
-    image = platypus.Image(image_path, width=30*mm, height=30*mm)
+    image = platypus.Image(image_path, width=30 * mm, height=30 * mm)
 
     data = []
     for profile in profiles:
@@ -150,12 +151,16 @@ def lunch_card_for_users(profiles: List[Profile]) -> FileResponse:
         data.append(platypus.FrameBreak('image-frame'))
         data.append(image)
         data.append(platypus.FrameBreak('misc-frame'))
-        data.append(platypus.Paragraph('NRCA Cafeteria<br/>Lunch Card', normal_style))
+        data.append(platypus.Paragraph('NRCA Cafeteria<br/>Lunch Card<br/><br/>{}'.format(config.CURRENT_YEAR), normal_style))
         if profile.cards_printed > 1:
             data.append(platypus.FrameBreak('number-frame'))
             data.append(platypus.Paragraph('R{}'.format(profile.cards_printed), small_style))
         data.append(platypus.FrameBreak('role-frame'))
-        data.append(platypus.Paragraph(profile.get_role_display(), role_style))
+        if profile.role == Profile.STUDENT:
+            homeroom_teacher = profile.homeroom_teacher.user
+            data.append(platypus.Paragraph('{} - {}'.format(homeroom_teacher.last_name, profile.grade), role_style))
+        else:
+            data.append(platypus.Paragraph(profile.get_role_display(), role_style))
         data.append(platypus.FrameBreak('qr-frame'))
         data.append(qr.QrCode(str(profile.lunch_uuid), qrBorder=0))
         data.append(platypus.PageBreak())
@@ -167,7 +172,7 @@ def lunch_card_for_users(profiles: List[Profile]) -> FileResponse:
 def orders_report_by_homeroom(todays_orders: List) -> FileResponse:
     buffer = io.BytesIO()
     styles = getSampleStyleSheet()
-    
+
     # create some styles and the base document
     normal_style = copy.copy(styles['Normal'])
     normal_style.fontSize = 12
@@ -180,32 +185,32 @@ def orders_report_by_homeroom(todays_orders: List) -> FileResponse:
     item_count_style.leading = 16
     title_style = copy.copy(styles['Title'])
     title_style.fontSize = 26
-    margin = 0.5*inch
-    bottom_margin = 0.25*inch
+    margin = 0.5 * inch
+    bottom_margin = 0.25 * inch
     document = platypus.BaseDocTemplate(buffer, pagesize=letter, rightMargin=margin, leftMargin=margin, topMargin=margin, bottomMargin=bottom_margin)
-    
+
     # create the title frame
-    title_frame_height = 0.5*inch
+    title_frame_height = 0.5 * inch
     title_frame_bottom = document.height + document.bottomMargin - title_frame_height
     title_frame = platypus.Frame(document.leftMargin, title_frame_bottom, document.width, title_frame_height)
     frames = [title_frame]
-    
+
     # create a frame for a message when there are no orders
-    no_orders_frame = platypus.Frame(document.leftMargin, document.height / 2.0, document.width, 1.0*inch, id='no-orders-frame')
+    no_orders_frame = platypus.Frame(document.leftMargin, document.height / 2.0, document.width, 1.0 * inch, id='no-orders-frame')
     frames.append(no_orders_frame)
 
     # create three frames to hold the list of orders for each item
-    entree_frame_height = 1.0*inch
-    item_frame_height = 1.5*inch
+    entree_frame_height = 1.0 * inch
+    item_frame_height = 1.5 * inch
     student_frame_height = title_frame_bottom - entree_frame_height - item_frame_height - document.bottomMargin
     frame_width = document.width / 3.0
     for frame in range(3):
         left_margin = document.leftMargin + (frame * frame_width)
         column = platypus.Frame(left_margin, document.bottomMargin + item_frame_height + entree_frame_height, frame_width, student_frame_height, id='student-frame-{}'.format(frame))
         frames.append(column)
-    
-     # create a frame for a horizontal divider
-    frame = platypus.Frame(document.leftMargin, document.bottomMargin + item_frame_height + entree_frame_height, document.width, 0.25*inch, id='divider-frame')
+
+    # create a frame for a horizontal divider
+    frame = platypus.Frame(document.leftMargin, document.bottomMargin + item_frame_height + entree_frame_height, document.width, 0.25 * inch, id='divider-frame')
     frames.append(frame)
 
     # create two frames to hold the entree item totals
@@ -221,7 +226,7 @@ def orders_report_by_homeroom(todays_orders: List) -> FileResponse:
 
     template = platypus.PageTemplate(frames=frames)
     document.addPageTemplates(template)
-    
+
     data = []
     for orders in todays_orders:
         item_orders = {}
@@ -262,7 +267,7 @@ def orders_report_by_homeroom(todays_orders: List) -> FileResponse:
                     item_content.append(platypus.Paragraph('{} - <b>{}</b>'.format(item.name, item_counts[item]), item_count_style))
             data.append(platypus.FrameBreak('item-frame'))
             if item_content:
-                data.append(platypus.BalancedColumns(item_content, nCols = 2))
+                data.append(platypus.BalancedColumns(item_content, nCols=2))
         else:
             data.append(platypus.FrameBreak('no-orders-frame'))
             data.append(platypus.Paragraph('No Orders Today', title_style))

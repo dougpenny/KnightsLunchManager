@@ -1,10 +1,8 @@
 import logging
 
 from datetime import timedelta
-from typing import List
 from django.db.models.query import QuerySet
 
-from django.contrib.auth.models import User
 from django.utils import timezone
 
 from profiles.models import Profile
@@ -39,7 +37,9 @@ def end_of_year_process(year: str, profile: Profile = None):
             )
             transaction.save()
             user.current_balance = transaction.ending_balance
-            user.save()
+        user.cards_printed = 0
+        user.save()
+
 
 def check_for_inactive(profiles: QuerySet):
     for profile in profiles:
