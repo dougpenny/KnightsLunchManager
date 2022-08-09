@@ -1,7 +1,7 @@
 const colors = require('tailwindcss/colors')
 
 module.exports = {
-    purge: [
+    content: [
       'cafeteria/forms.py',
       'templates/**/*.html',
       'transactions/forms.py'
