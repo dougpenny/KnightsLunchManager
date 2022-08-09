@@ -15,7 +15,7 @@ class StudentsInline(admin.TabularInline):
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('last_first', 'role', 'current_balance')
+    list_display = ('last_first', 'role', 'current_balance', 'last_sync')
     list_filter = ['role', 'active', 'pending', 'grade', 'school']
     ordering = ['user__last_name']
     readonly_fields = ['cards_printed', 'children', 'grade', 'homeroom_teacher', 'last_sync', 'phone',
