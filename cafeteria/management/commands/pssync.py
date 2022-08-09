@@ -162,11 +162,13 @@ class Command(BaseCommand):
             active_students = client.powerquery("ws/schema/query/com.nrcaknights.knightslunch.students.student_info", {'school_dcid': school.id})
             newly_created = 0
             for member in active_students:
-                email_address = member.get('email') or member.get('student_number')
+                email_address = member.get('email')
+                if not email_address:
+                    student_number = member.get('student_number')
+                    email_address = f'{student_number}@nrcaknigihts.com'
+
                 # if the student does not have an email address, they are skipped
                 if email_address:
-                    email_address = f'{email_address}@nrcaknigihts.com'
-
                     # look for an existing student and create a new one if not found
                     grade = GradeLevel.objects.get(value=int(member['grade_level']))
                     student, created = Profile.objects.update_or_create(student_dcid=member['student_dcid'], defaults={
