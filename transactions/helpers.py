@@ -16,6 +16,10 @@ def create_deposit(deposit: dict) -> Transaction:
             description = 'Cash Deposit'
         elif deposit['deposit_type'] == TransactionDepositForm.CHECK:
             description = 'Check #' + deposit['ref']
+        elif deposit['deposit_type'] == TransactionDepositForm.NRCA:
+            description = 'NRCA Provided Funds'
+        elif deposit['deposit_type'] == TransactionDepositForm.NRCA_TRANS:
+            description = 'Transfer of NRCA Funds'
         elif deposit['deposit_type'] == TransactionDepositForm.ONLINE:
             description = 'Online Transaction #' + deposit['ref']
         elif deposit['deposit_type'] == TransactionDepositForm.TRANS:

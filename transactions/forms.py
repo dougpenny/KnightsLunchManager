@@ -27,14 +27,18 @@ class TransacteeSelectField(forms.Field):
 class TransactionDepositForm(forms.Form):
     CASH = 'CASH'
     CHECK = 'CHECK'
+    NRCA = 'NRCA'
+    NRCA_TRANS = 'NRCA_TRANS'
     ONLINE = 'ONLINE'
     TRANS = 'TRANS'
     DEPOSIT_TYPE_CHOICES = [
         (None, '--------'),
         (CASH, 'Cash'),
         (CHECK, 'Check'),
+        (NRCA, 'NRCA Funds'),
+        (NRCA_TRANS, 'NRCA Transfer'),
         (ONLINE, 'Online'),
-        (TRANS, 'Transfer'),
+        (TRANS, 'Sibling Transfer'),
     ]
     transactee = TransacteeSelectField(
         widget=forms.Select(attrs={'class': 'transactee-select-ajax', 'style': 'width: 100%'})

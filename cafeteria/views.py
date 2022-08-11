@@ -411,7 +411,7 @@ def operations(request):
             else:
                 school = School.objects.get(id=request.POST['group'])
                 staff = staff.filter(grade__in=school.grades.all())
-                profiles = students_grouped_by_homeroom(staff)
+                profiles = students_grouped_by_homeroom(staff, 2)
             if profiles:
                 return lunch_card_for_users(profiles)
             else:
