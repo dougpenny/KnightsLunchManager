@@ -10,7 +10,6 @@
 #
 
 
-from asgiref.sync import async_to_sync
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
@@ -59,7 +58,7 @@ class Command(BaseCommand):
 
     def sync_schools_using_client(self, client):
         logger.info('Synchronizing schools...')
-        schools = async_to_sync(client.schools_in_district)()
+        schools = client.schools_in_district()
         for item in schools:
             school, created = School.objects.update_or_create(id=item['id'], defaults={
                 'name': item['name'],
@@ -179,7 +178,7 @@ class Command(BaseCommand):
                         'active': True,
                         'user_number': member['student_number'],
                     })
-      
+
                     # if a new student is created, create the corresponding user
                     if created:
                         user, created = User.objects.get_or_create(
