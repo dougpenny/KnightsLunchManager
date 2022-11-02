@@ -77,12 +77,13 @@ def entree_report_by_period(lunch_periods: Dict) -> FileResponse:
                     staff = order.transactee.name()
                     line_item = MenuLineItem.objects.filter(transaction=order)
                     for item in line_item:
+                        staff_display = staff
                         if item.quantity > 1:
-                            staff = staff + ' ({})'.format(item.quantity)
+                            staff_display = staff + ' ({})'.format(item.quantity)
                         if item.menu_item in item_orders:
-                            item_orders[item.menu_item].append(staff)
+                            item_orders[item.menu_item].append(staff_display)
                         else:
-                            item_orders[item.menu_item] = [staff]
+                            item_orders[item.menu_item] = [staff_display]
                 item_orders = collections.OrderedDict(sorted(item_orders.items(), key=lambda menu_item: menu_item[0].sequence))
                 for item in item_orders:
                     content = [platypus.Paragraph('<b><u>{}</u></b>'.format(item.name), staff_style)]
