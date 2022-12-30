@@ -8,11 +8,8 @@ import dj_database_url
 
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
-if len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
-    if os.getenv('DATABASE_URL', None) is None:
-        raise Exception('DATABASE_URL environment variable not defined')
-    DATABASES = {
-        'default': dj_database_url.parse(os.getenv('DATABASE_URL')),
+DATABASES = {
+    'default': dj_database_url.parse(os.getenv('DATABASE_URL')),
     }
 
 CSRF_COOKIE_SECURE = True
