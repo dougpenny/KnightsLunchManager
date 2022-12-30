@@ -17,8 +17,7 @@ from pathlib import Path
 from django.core.management.utils import get_random_secret_key
 
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', get_random_secret_key())
 
 SITE_ID = 1
@@ -163,7 +162,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/dev/howto/static-files/
-# STATIC_ROOT = BASE_DIR / 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 
 # MEDIA_ROOT = BASE_DIR / 'resources/'
