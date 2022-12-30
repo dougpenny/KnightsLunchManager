@@ -89,6 +89,9 @@ venv.bak/
 # pytype static type analyzer
 .pytype/
 
-# npm files
+# npm and tailwind files
 node_modules/
 package-lock.json
+package.json
+postcss.config.js
+tailwind.config.js
