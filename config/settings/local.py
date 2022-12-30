@@ -3,7 +3,6 @@ from .base import *
 
 ALLOWED_HOSTS = ['*']
 
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -18,8 +17,6 @@ DATABASES = {
 DEBUG = True
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-INSTALLED_APPS += []
 
 LOGGING = {
     'version': 1,

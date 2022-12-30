@@ -14,9 +14,12 @@ import os
 from datetime import time
 from pathlib import Path
 
+from django.core.management.utils import get_random_secret_key
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', get_random_secret_key())
 
 SITE_ID = 1
 
@@ -133,7 +136,7 @@ OIDC_RP_SIGN_ALGO = 'RS512'
 OIDC_RP_SCOPES = 'openid email profile'
 OIDC_USERNAME_ALGO = 'cafeteria.auth.generate_username'
 OIDC_OP_LOGOUT_URL_METHOD = 'cafeteria.auth.powerschool_logout'
-#OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 30
+# OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 30
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Email settings
@@ -185,11 +188,11 @@ CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 CONSTANCE_CONFIG = {
     'BALANCE_EXPORT_PATH': ('/', 'File path where current balance export files should be saved.'),
     'CLOSED_FOR_SUMMER': (False, 'The cafeteria is closed for the summer.'),
-    'CLOSE_TIME': (time(23,15), 'The time orders should stop being accepted.', time),
+    'CLOSE_TIME': (time(23, 15), 'The time orders should stop being accepted.', time),
     'CURRENT_YEAR': ('', 'Current school year.'),
     'DEBT_LIMIT': (0.00, 'Debt limit when users are prevented from ordering.'),
     'NEW_CARD_FEE': (0.00, 'Fee charged for a new lunch card.'),
-    'OPEN_TIME': (time(0,0), 'The time orders should start being accepted.', time),
+    'OPEN_TIME': (time(0, 0), 'The time orders should start being accepted.', time),
     'REPORTS_EMAIL': ('', 'Email addresses, comma seperated, to which system reports should be sent.'),
 }
 

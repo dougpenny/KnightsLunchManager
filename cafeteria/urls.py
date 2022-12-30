@@ -4,7 +4,7 @@ from cafeteria import views
 from transactions.views import HomeroomOrdersArchiveView, UsersTodayArchiveView, UsersTransactionsArchiveView
 
 urlpatterns = [
-     # Student/Staff pages
+    # Student/Staff pages
     path('', views.home, name='home'),
     path('delete-order/', views.delete_order, name='delete'),
     path('homeroom-orders/', HomeroomOrdersArchiveView.as_view(), name='homeroom-orders'),
@@ -16,7 +16,7 @@ urlpatterns = [
     path('guardian/', views.guardian_home, name='guardian'),
     path('guardian-submit-order/', views.guardian_submit_order, name='guardian-submit'),
 
-     # Admin dashboard pages
+    # Admin dashboard pages
     path('admin/', views.admin_dashboard, name='admin'),
     path('admin/class-orders-report/<int:lunch_period_id>/', views.lunch_period_order_report, name='class-orders-report'),
     path('admin/entree-orders-report/', views.entree_orders_report, name='entrees-report'),
