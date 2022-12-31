@@ -111,10 +111,10 @@ AUTHENTICATION_BACKENDS = (
 )
 
 AUTH_ADFS = {
-    'AUDIENCE': os.getenv('AZURE_APP_ID'),
-    'CLIENT_ID': os.getenv('AZURE_APP_ID'),
-    'RELYING_PARTY_ID': os.getenv('AZURE_APP_ID'),
-    'TENANT_ID': os.getenv('AZURE_TENANT_ID'),
+    'AUDIENCE': os.getenv('AZURE_APP_ID', ''),
+    'CLIENT_ID': os.getenv('AZURE_APP_ID', ''),
+    'RELYING_PARTY_ID': os.getenv('AZURE_APP_ID', ''),
+    'TENANT_ID': os.getenv('AZURE_TENANT_ID', ''),
     'CLAIM_MAPPING': {
         'first_name': 'given_name',
         'last_name': 'family_name',
@@ -126,12 +126,12 @@ AUTH_ADFS = {
     },
 }
 
-OIDC_RP_CLIENT_ID = os.getenv('POWERSCHOOL_CLIENT_ID')
-OIDC_RP_CLIENT_SECRET = os.getenv('POWERSCHOOL_CLIENT_SECRET')
-OIDC_OP_AUTHORIZATION_ENDPOINT = os.getenv('POWERSCHOOL_URL') + 'oauth2/authorize.action'
-OIDC_OP_TOKEN_ENDPOINT = os.getenv('POWERSCHOOL_URL') + 'oauth2/token.action'
-OIDC_OP_USER_ENDPOINT = os.getenv('POWERSCHOOL_URL') + 'oauth2/userinfo.action'
-OIDC_OP_JWKS_ENDPOINT = os.getenv('POWERSCHOOL_URL') + 'ws/unifiedclassroom/jwks'
+OIDC_RP_CLIENT_ID = os.getenv('POWERSCHOOL_CLIENT_ID', '')
+OIDC_RP_CLIENT_SECRET = os.getenv('POWERSCHOOL_CLIENT_SECRET', '')
+OIDC_OP_AUTHORIZATION_ENDPOINT = os.getenv('POWERSCHOOL_URL', '') + 'oauth2/authorize.action'
+OIDC_OP_TOKEN_ENDPOINT = os.getenv('POWERSCHOOL_URL', '') + 'oauth2/token.action'
+OIDC_OP_USER_ENDPOINT = os.getenv('POWERSCHOOL_URL', '') + 'oauth2/userinfo.action'
+OIDC_OP_JWKS_ENDPOINT = os.getenv('POWERSCHOOL_URL', '') + 'ws/unifiedclassroom/jwks'
 OIDC_RP_SIGN_ALGO = 'RS512'
 OIDC_RP_SCOPES = 'openid email profile'
 OIDC_USERNAME_ALGO = 'cafeteria.auth.generate_username'
@@ -140,13 +140,13 @@ OIDC_OP_LOGOUT_URL_METHOD = 'cafeteria.auth.powerschool_logout'
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Email settings
-EMAIL_HOST = os.getenv('EMAIL_HOST')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_PORT = os.getenv('EMAIL_PORT')
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
-SERVER_EMAIL = os.getenv('SERVER_EMAIL')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
+EMAIL_HOST = os.getenv('EMAIL_HOST', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_PORT = os.getenv('EMAIL_PORT', '')
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', '')
+SERVER_EMAIL = os.getenv('SERVER_EMAIL', '')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', '')
 
 LOGIN_URL = 'django_auth_adfs:login'
 LOGIN_REDIRECT_URL = '/'
