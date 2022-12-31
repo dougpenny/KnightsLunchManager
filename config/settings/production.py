@@ -18,30 +18,30 @@ if len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'root': {'level': 'INFO', 'handlers': ['console']},
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'app'
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': True
-        },
-    },
-    'formatters': {
-        'app': {
-            'format': (
-                u'%(asctime)s [%(levelname)-8s] '
-                '(%(module)s.%(funcName)s) %(message)s'
-            ),
-            'datefmt': '%Y-%m-%d %H:%M:%S',
-        },
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'root': {'level': 'INFO', 'handlers': ['console']},
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'app'
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#             'level': 'INFO',
+#             'propagate': True
+#         },
+#     },
+#     'formatters': {
+#         'app': {
+#             'format': (
+#                 u'%(asctime)s [%(levelname)-8s] '
+#                 '(%(module)s.%(funcName)s) %(message)s'
+#             ),
+#             'datefmt': '%Y-%m-%d %H:%M:%S',
+#         },
+#     },
+# }
