@@ -3,6 +3,8 @@ from .base import *
 import os
 import sys
 
+from logtail import LogtailHandler
+
 import dj_database_url
 
 
@@ -18,30 +20,31 @@ if len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'root': {'level': 'INFO', 'handlers': ['console']},
-#     'handlers': {
-#         'console': {
-#             'class': 'logging.StreamHandler',
-#             'formatter': 'app'
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['console'],
-#             'level': 'INFO',
-#             'propagate': True
-#         },
-#     },
-#     'formatters': {
-#         'app': {
-#             'format': (
-#                 u'%(asctime)s [%(levelname)-8s] '
-#                 '(%(module)s.%(funcName)s) %(message)s'
-#             ),
-#             'datefmt': '%Y-%m-%d %H:%M:%S',
-#         },
-#     },
-# }
+LOGGING_CONFIG = None
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'root': {'level': 'INFO', 'handlers': ['logtail']},
+    'logtail': {
+        'class': 'logtail.LogtailHandler',
+        'formatter': 'base',
+        'source_token': os.getenv('LOGTAIL_SOURCE_TOKEN', '')
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['logtail'],
+            'level': 'INFO',
+            'propagate': True
+        },
+    },
+    'formatters': {
+        'app': {
+            'format': (
+                u'%(asctime)s [%(levelname)-8s] '
+                '(%(module)s.%(funcName)s) %(message)s'
+            ),
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+    },
+}

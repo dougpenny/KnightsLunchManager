@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'constance',
     'constance.backends.database',
     'mathfilters',
+    "django_apscheduler",
 
     'api.apps.ApiConfig',
     'cafeteria.apps.CafeteriaConfig',
