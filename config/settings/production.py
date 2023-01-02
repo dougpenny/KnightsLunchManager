@@ -28,7 +28,7 @@ LOGGING = {
     'root': {'level': 'INFO', 'handlers': ['logtail']},
     'logtail': {
         'class': 'logtail.LogtailHandler',
-        'formatter': 'base',
+        'formatter': 'app',
         'source_token': os.getenv('LOGTAIL_SOURCE_TOKEN', '')
     },
     'loggers': {
@@ -40,11 +40,8 @@ LOGGING = {
     },
     'formatters': {
         'app': {
-            'format': (
-                u'%(asctime)s [%(levelname)-8s] '
-                '(%(module)s.%(funcName)s) %(message)s'
-            ),
-            'datefmt': '%Y-%m-%d %H:%M:%S',
+            'format': '{name} at {asctime} ({levelname}) :: {message}',
+            'style': '{'
         },
     },
 }

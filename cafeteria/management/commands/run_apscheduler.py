@@ -47,9 +47,8 @@ class Command(BaseCommand):
 
         scheduler.add_job(
             delete_old_job_executions,
-            trigger=CronTrigger(
-            day_of_week="mon", hour="00", minute="00"
-            ),  # Midnight on Monday, before start of the next work week.
+            # Midnight on Monday, before start of the next work week.
+            trigger=CronTrigger(day_of_week="mon", hour="00", minute="00"),
             id="delete_old_job_executions",
             max_instances=1,
             replace_existing=True,
