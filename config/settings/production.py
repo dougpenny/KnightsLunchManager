@@ -20,8 +20,6 @@ if len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 
-LOGGING_CONFIG = None
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
