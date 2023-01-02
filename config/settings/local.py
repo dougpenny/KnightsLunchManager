@@ -1,5 +1,8 @@
 from .base import *
 
+import os
+
+from logtail import LogtailHandler
 
 ALLOWED_HOSTS = ['*']
 
@@ -36,6 +39,11 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'app'
         },
+        'logtail': {
+            'class': 'logtail.LogtailHandler',
+            'formatter': 'app',
+            'source_token': os.getenv('LOGTAIL_SOURCE_TOKEN', '')
+        },
     },
     'loggers': {
         'django_auth_adfs': {
@@ -44,7 +52,7 @@ LOGGING = {
         },
         'django': {
             'handlers': ['console'],
-            'level': 'INFO',
+            'level': 'DEBUG',
             'propagate': True
         },
         'mozilla_django_oidc': {

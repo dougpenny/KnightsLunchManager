@@ -25,6 +25,10 @@ LOGGING = {
     'disable_existing_loggers': False,
     'root': {'level': 'INFO', 'handlers': ['logtail']},
     'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'app'
+        },
         'logtail': {
             'class': 'LogtailHandler',
             'formatter': 'app',
@@ -33,15 +37,18 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['logtail'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': True
         },
     },
     'formatters': {
         'app': {
-            'format': '{name} at {asctime} ({levelname}) :: {message}',
-            'style': '{'
+            'format': (
+                u'%(asctime)s [%(levelname)-8s] '
+                '(%(module)s.%(funcName)s) %(message)s'
+            ),
+            'datefmt': '%Y-%m-%d %H:%M:%S',
         },
     },
 }
