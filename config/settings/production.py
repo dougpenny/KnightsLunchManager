@@ -23,7 +23,7 @@ SESSION_COOKIE_SECURE = True
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'root': {'level': 'INFO', 'handlers': ['logtail']},
+    'root': {'level': 'INFO', 'handlers': ['console']},
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
