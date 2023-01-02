@@ -26,7 +26,7 @@ LOGGING = {
     'root': {'level': 'INFO', 'handlers': ['logtail']},
     'handlers': {
         'logtail': {
-            'class': 'logtail.LogtailHandler',
+            'class': 'LogtailHandler',
             'formatter': 'app',
             'source_token': os.getenv('LOGTAIL_SOURCE_TOKEN', '')
         },
