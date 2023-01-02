@@ -24,10 +24,12 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'root': {'level': 'INFO', 'handlers': ['logtail']},
-    'logtail': {
-        'class': 'logtail.LogtailHandler',
-        'formatter': 'app',
-        'source_token': os.getenv('LOGTAIL_SOURCE_TOKEN', '')
+    'handlers': {
+        'logtail': {
+            'class': 'logtail.LogtailHandler',
+            'formatter': 'app',
+            'source_token': os.getenv('LOGTAIL_SOURCE_TOKEN', '')
+        },
     },
     'loggers': {
         'django': {
