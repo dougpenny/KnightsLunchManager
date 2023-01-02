@@ -30,7 +30,7 @@ LOGGING = {
             'formatter': 'app'
         },
         'logtail': {
-            'class': 'LogtailHandler',
+            'class': 'logtail.LogtailHandler',
             'formatter': 'app',
             'source_token': os.getenv('LOGTAIL_SOURCE_TOKEN', '')
         },
