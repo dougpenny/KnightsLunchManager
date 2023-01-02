@@ -3,8 +3,6 @@ from .base import *
 import os
 import sys
 
-from logtail import LogtailHandler
-
 import dj_database_url
 
 
@@ -28,11 +26,6 @@ LOGGING = {
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'app'
-        },
-        'logtail': {
-            'class': 'logtail.LogtailHandler',
-            'formatter': 'app',
-            'source_token': os.getenv('LOGTAIL_SOURCE_TOKEN', '')
         },
     },
     'loggers': {
