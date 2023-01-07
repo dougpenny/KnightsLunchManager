@@ -204,6 +204,7 @@ CONSTANCE_CONFIG_FIELDSETS = {
 
 Q_CLUSTER = {
     'name': 'cafeteria',
+    'workers': 1,
     'orm': 'default',
     'timeout': 300,  # 5 minutes
     'retry': 600,    # 10 minutes
