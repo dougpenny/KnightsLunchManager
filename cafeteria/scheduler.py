@@ -3,10 +3,11 @@ from datetime import datetime
 
 from django.conf import settings
 
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.date import DateTrigger
 from django_apscheduler import util
+from django_apscheduler.jobstores import DjangoJobStore
 from django_apscheduler.models import DjangoJobExecution
 
 from cafeteria import pssync
@@ -14,8 +15,8 @@ from cafeteria import pssync
 
 logger = logging.getLogger(__name__)
 
-# Create scheduler to run in a thread inside the application process
-scheduler = BackgroundScheduler(settings.SCHEDULER_CONFIG)
+scheduler = BlockingScheduler(timezone=settings.TIME_ZONE)
+scheduler.add_jobstore(DjangoJobStore(), "default")
 
 # The `close_old_connections` decorator ensures that database connections, that have become
 # unusable or are obsolete, are closed before and after your job has run. You should use it

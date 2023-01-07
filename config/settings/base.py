@@ -202,13 +202,4 @@ CONSTANCE_CONFIG_FIELDSETS = {
     'General Settings': ('OPEN_TIME', 'CLOSE_TIME', 'CLOSED_FOR_SUMMER', 'DEBT_LIMIT', 'NEW_CARD_FEE', 'REPORTS_EMAIL', 'BALANCE_EXPORT_PATH', 'CURRENT_YEAR'),
 }
 
-SCHEDULER_CONFIG = {
-    "apscheduler.jobstores.default": {
-        "class": "django_apscheduler.jobstores:DjangoJobStore"
-    },
-    'apscheduler.executors.processpool': {
-        "type": "threadpool"
-    },
-}
-
 SCHEDULER_AUTOSTART = True
