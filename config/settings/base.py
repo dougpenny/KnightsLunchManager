@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'constance',
     'constance.backends.database',
     'mathfilters',
-    'django_q',
+    'django_apscheduler',
 
     'api.apps.ApiConfig',
     'cafeteria.apps.CafeteriaConfig',
@@ -202,11 +202,13 @@ CONSTANCE_CONFIG_FIELDSETS = {
     'General Settings': ('OPEN_TIME', 'CLOSE_TIME', 'CLOSED_FOR_SUMMER', 'DEBT_LIMIT', 'NEW_CARD_FEE', 'REPORTS_EMAIL', 'BALANCE_EXPORT_PATH', 'CURRENT_YEAR'),
 }
 
-Q_CLUSTER = {
-    'name': 'cafeteria',
-    'workers': 1,
-    'daemonize_workers': False,
-    'orm': 'default',
-    'timeout': 300,  # 5 minutes
-    'retry': 600,    # 10 minutes
+SCHEDULER_CONFIG = {
+    "apscheduler.jobstores.default": {
+        "class": "django_apscheduler.jobstores:DjangoJobStore"
+    },
+    'apscheduler.executors.processpool': {
+        "type": "threadpool"
+    },
 }
+
+SCHEDULER_AUTOSTART = True
