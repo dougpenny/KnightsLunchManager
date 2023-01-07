@@ -40,7 +40,7 @@ def start():
 
     scheduler.add_job(
       pssync.sync_powerschool,
-      trigger=DateTrigger(run_date=datetime(2023, 1, 7, 16, 35)),
+      trigger=DateTrigger(run_date=datetime(2023, 1, 7, 17, 15)),
       id="sync_powerschool",
       max_instances=1,
       replace_existing=True,
