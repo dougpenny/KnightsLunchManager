@@ -30,7 +30,7 @@ LOGGING = {
         'papertrail': {
             'class': 'logging.handlers.SysLogHandler',
             'formatter': 'app',
-            'address': (os.getenv('LOGGING_URL', ''), os.getenv('LOGGING_PORT', ''))
+            'address': (os.getenv('LOGGING_URL', ''), int(os.getenv('LOGGING_PORT', '')))
         },
     },
     'loggers': {
