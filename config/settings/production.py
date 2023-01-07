@@ -9,7 +9,7 @@ import dj_database_url
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
 if len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
-    if os.getenv('DATABASE_URL', None) is None:
+    if os.getenv('DATABASE_URL') is None:
         raise Exception('DATABASE_URL environment variable not defined')
     DATABASES = {
         'default': dj_database_url.parse(os.getenv('DATABASE_URL')),
@@ -21,16 +21,21 @@ SESSION_COOKIE_SECURE = True
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'root': {'level': 'INFO', 'handlers': ['console']},
+    'root': {'level': 'INFO', 'handlers': ['papertrail']},
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'app'
         },
+        'papertrail': {
+            'class': 'logging.handlers.SysLogHandler',
+            'formatter': 'simple',
+            'address': (os.getenv('LOGGING_URL', ''), os.getenv('LOGGING_PORT', ''))
+        },
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
+            'handlers': ['papertrail'],
             'level': 'INFO',
             'propagate': True
         },
@@ -41,7 +46,7 @@ LOGGING = {
                 u'%(asctime)s [%(levelname)-8s] '
                 '(%(module)s.%(funcName)s) %(message)s'
             ),
-            'datefmt': '%Y-%m-%d %H:%M:%S',
+            'datefmt': '%Y-%m-%dT%H:%M:%S',
         },
     },
 }
