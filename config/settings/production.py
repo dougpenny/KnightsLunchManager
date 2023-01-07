@@ -29,7 +29,7 @@ LOGGING = {
         },
         'papertrail': {
             'class': 'logging.handlers.SysLogHandler',
-            'formatter': 'simple',
+            'formatter': 'app',
             'address': (os.getenv('LOGGING_URL', ''), os.getenv('LOGGING_PORT', ''))
         },
     },
