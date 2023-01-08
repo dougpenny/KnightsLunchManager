@@ -3,7 +3,7 @@ from datetime import datetime
 
 from django.conf import settings
 
-from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.date import DateTrigger
 from django_apscheduler import util
@@ -15,7 +15,7 @@ from cafeteria import pssync
 
 logger = logging.getLogger(__name__)
 
-scheduler = BlockingScheduler(timezone=settings.TIME_ZONE)
+scheduler = BackgroundScheduler(timezone=settings.TIME_ZONE)
 scheduler.add_jobstore(DjangoJobStore(), "default")
 
 # The `close_old_connections` decorator ensures that database connections, that have become
@@ -40,11 +40,11 @@ def start():
         logging.getLogger('apscheduler').setLevel(logging.DEBUG)
 
     scheduler.add_job(
-      pssync.sync_powerschool,
-      trigger=DateTrigger(run_date=datetime(2023, 1, 7, 17, 15)),
-      id="sync_powerschool",
-      max_instances=1,
-      replace_existing=True,
+        pssync.sync_powerschool,
+        trigger=DateTrigger(run_date=datetime(2023, 1, 8, 14, 15)),
+        id="sync_powerschool",
+        max_instances=1,
+        replace_existing=True,
     )
     logger.info("Added daily job: 'sync_powerschool'.")
 
@@ -65,3 +65,9 @@ def start():
         logger.info("Stopping scheduler...")
         scheduler.shutdown()
         logger.info("Scheduler shut down successfully!")
+
+
+def start_scheduler(sender, connection, **kwargs):
+    print(f'start_scheduler called with sender, {sender}, and connection {connection}')
+    if settings.SCHEDULER_AUTOSTART:
+        start()

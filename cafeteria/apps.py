@@ -1,5 +1,5 @@
 from django.apps import AppConfig
-from django.conf import settings
+from django.db.backends.signals import connection_created
 
 
 class CafeteriaConfig(AppConfig):
@@ -7,6 +7,5 @@ class CafeteriaConfig(AppConfig):
     verbose_name = 'Cafeteria Administration'
 
     def ready(self):
-        from cafeteria import scheduler
-        if settings.SCHEDULER_AUTOSTART:
-            scheduler.start()
+        from cafeteria.scheduler import start_scheduler
+        connection_created.connect(start_scheduler, sender=self)
