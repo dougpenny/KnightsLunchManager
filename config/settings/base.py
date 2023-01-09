@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'constance',
     'constance.backends.database',
     'mathfilters',
-    'django_apscheduler',
 
     'api.apps.ApiConfig',
     'cafeteria.apps.CafeteriaConfig',
@@ -201,5 +200,3 @@ CONSTANCE_CONFIG = {
 CONSTANCE_CONFIG_FIELDSETS = {
     'General Settings': ('OPEN_TIME', 'CLOSE_TIME', 'CLOSED_FOR_SUMMER', 'DEBT_LIMIT', 'NEW_CARD_FEE', 'REPORTS_EMAIL', 'BALANCE_EXPORT_PATH', 'CURRENT_YEAR'),
 }
-
-SCHEDULER_AUTOSTART = True
