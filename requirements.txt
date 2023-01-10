@@ -10,4 +10,3 @@ django-constance[database]==2.9.1
 mozilla-django-oidc==3.0.0
 django-mathfilters==1.0.0
 pypowerschool==0.2.0
-dj-database-url==1.2.0
