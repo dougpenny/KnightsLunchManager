@@ -34,21 +34,18 @@ SESSION_COOKIE_SECURE = True
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'root': {'level': 'INFO', 'handlers': ['papertrail']},
+    'root': {'level': 'INFO', 'handlers': ['file']},
     'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'app'
-        },
-        'papertrail': {
-            'class': 'logging.handlers.SysLogHandler',
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
             'formatter': 'app',
-            'address': (os.getenv('LOGGING_URL', ''), int(os.getenv('LOGGING_PORT', '')))
+            'filename': os.getenv('LOG_PATH', ''),
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['papertrail'],
+            'handlers': ['file'],
             'level': 'INFO',
             'propagate': True
         },
