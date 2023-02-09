@@ -120,6 +120,7 @@ AUTH_ADFS = {
         'last_name': 'family_name',
         'email': 'upn'
     },
+    'CREATE_NEW_USERS': False,
     'GROUP_TO_FLAG_MAPPING': {
         'is_staff': 'Cafeteria',
         'is_superuser': 'IT Department'
