@@ -54,6 +54,7 @@ def orders_for_homeroom(staff: Profile):
     }
     return homeroom_orders
 
+
 def todays_transaction(profile: Profile) -> Transaction:
     try:
         transactions = Transaction.objects.filter(
@@ -81,7 +82,7 @@ def delete_order(request):
                     return redirect('home')
                 except Exception as e:
                     logger.exception(
-                        'An exception occured when trying to delete a transaction.')
+                        'An exception occured when trying to delete a transaction. {}'.format(e))
                     messages.error(
                         request, 'There was a problem deleting your order.')
                     return redirect('todays-order')
@@ -94,12 +95,13 @@ def delete_order(request):
             return redirect('home')
     return redirect('home')
 
+
 def home(request):
     context = {}
     if config.CLOSED_FOR_SUMMER:
         context['closed'] = True
         return render(request, 'user/closed.html', context=context)
-    
+
     context['orders_open'] = Transaction.accepting_orders()
     if request.user.is_authenticated:
         try:
@@ -108,7 +110,7 @@ def home(request):
         except Exception as e:
             logger.exception('An exception occured for user {}: {}'.format(request.user, e))
             return redirect('django_auth_adfs:logout')
-        
+
         if todays_transaction(request.user.profile):
             return redirect('todays-order')
 
@@ -128,7 +130,7 @@ def home(request):
                         try:
                             ordered_items_list.append(item['menu_item'])
                         except Exception as e:
-                            pass
+                            logger.exception('An exception occured when an order was submitted: {}'.format(e))
 
                     if len(ordered_items_list) < 1:
                         messages.error(request, 'You must select at least one item.')
@@ -180,6 +182,7 @@ def home(request):
     else:
         context['user'] = None
     return render(request, 'user/new_order.html', context=context)
+
 
 @login_required
 def submit_order(request):
@@ -244,6 +247,7 @@ def guardian_home(request):
         context['children'] = None
     return render(request, 'guardian/guardian.html', context=context)
 
+
 @login_required(login_url=('/oidc' + reverse('oidc_authentication_init', urlconf='mozilla_django_oidc.urls')))
 def guardian_submit_order(request):
     if request.method == 'POST':
@@ -307,6 +311,7 @@ def get_item_counts(orders: QuerySet[MenuItem]) -> Dict:
                     count[line_item.menu_item] = line_item.quantity
     return count
 
+
 # Admin dashboard views
 @login_required
 @admin_access_allowed
@@ -330,6 +335,7 @@ def admin_dashboard(request):
     first_lunch = LunchPeriod.objects.filter(sort_order=0).first()
     context['first_lunch'] = first_lunch
     return render(request, 'admin/admin.html', context=context)
+
 
 @login_required
 @admin_access_allowed
@@ -362,6 +368,7 @@ def general_settings(request):
         })
     return render(request, 'admin/general_settings.html', context=context)
 
+
 @login_required
 @admin_access_allowed
 def schools_settings(request):
@@ -377,6 +384,7 @@ def schools_settings(request):
         context['schools_count'] = School.objects.count()
         context['schools_formset'] = SchoolsFormSet(prefix='schools')
     return render(request, 'admin/schools_settings.html', context=context)
+
 
 def students_grouped_by_homeroom(staff: QuerySet[Profile], above_grade: int = -1):
     grouped = []
@@ -394,6 +402,7 @@ def students_grouped_by_homeroom(staff: QuerySet[Profile], above_grade: int = -1
                 no_homeroom.append(teacher)
     grouped.extend(no_homeroom)
     return grouped
+
 
 @login_required
 @admin_access_allowed
@@ -422,6 +431,7 @@ def operations(request):
         context['pending_count'] = Profile.objects.filter(pending=True).count()
         context['schools'] = School.objects.filter(active=True)
     return render(request, 'admin/operations.html', context=context)
+
 
 @login_required
 @admin_access_allowed
