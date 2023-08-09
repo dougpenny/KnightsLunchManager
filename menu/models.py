@@ -22,6 +22,7 @@ class MenuItem(models.Model):
         related_name='menu_items'
     )
     description = models.TextField(blank=True, default='')
+    limited = models.BooleanField(default=False, verbose_name='Limited availability?')
     lunch_period = models.ManyToManyField(
         'cafeteria.LunchPeriod',
         blank=True,
@@ -29,6 +30,7 @@ class MenuItem(models.Model):
         related_name='menu_items',
         verbose_name='lunch periods available'
     )
+    max_num = models.SmallIntegerField(default=0, verbose_name='Maximum number available')
     name = models.CharField(
         help_text='Will be displayed to students',
         max_length=100
