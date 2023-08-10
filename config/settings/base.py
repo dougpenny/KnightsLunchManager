@@ -60,6 +60,14 @@ MIDDLEWARE = [
     'mozilla_django_oidc.middleware.SessionRefresh',
 ]
 
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "daily_cache_table",
+        "TIMEOUT": None,
+    }
+}
+
 ROOT_URLCONF = 'config.urls'
 
 # Templates Directory

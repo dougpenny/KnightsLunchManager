@@ -15,13 +15,13 @@ def create_deposit(deposit: dict) -> Transaction:
         if deposit['deposit_type'] == TransactionDepositForm.CASH:
             description = 'Cash Deposit'
         elif deposit['deposit_type'] == TransactionDepositForm.CHECK:
-            description = 'Check #' + deposit['ref']
+            description = 'Check #' + deposit['ref'] if deposit['ref'] else ''
         elif deposit['deposit_type'] == TransactionDepositForm.NRCA:
             description = 'NRCA Provided Funds'
         elif deposit['deposit_type'] == TransactionDepositForm.NRCA_TRANS:
             description = 'Transfer of NRCA Funds'
         elif deposit['deposit_type'] == TransactionDepositForm.ONLINE:
-            description = 'Online Transaction #' + deposit['ref']
+            description = 'Online Transaction #' + deposit['ref'] if deposit['ref'] else ''
         elif deposit['deposit_type'] == TransactionDepositForm.TRANS:
             description = 'Sibling Transfer'
         transaction_type = Transaction.CREDIT

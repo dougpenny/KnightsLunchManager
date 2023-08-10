@@ -1,21 +1,17 @@
-import ast
 import copy
 import io
 import logging
 import os
 
 from collections import Counter
-from decimal import Decimal
-from typing import Dict, List
-
+from typing import Dict
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.db.models import Q, Sum
 from django.db.models.query import QuerySet
 from django.forms import formset_factory, modelformset_factory
-from django.forms.models import modelform_factory
-from django.http import FileResponse, HttpResponse, HttpRequest
+from django.http import FileResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -23,7 +19,6 @@ from django.utils import timezone
 from constance import config
 
 from reportlab import platypus
-from reportlab.lib import enums
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
@@ -31,7 +26,6 @@ from reportlab.lib.units import inch
 from cafeteria.decorators import admin_access_allowed
 from cafeteria.forms import GeneralForm, SchoolsModelForm, UserOrderForm
 from cafeteria.models import LunchPeriod, School
-from cafeteria.operations import end_of_year_process
 from cafeteria.pdfgenerators import entree_report_by_period, lunch_card_for_users, orders_report_by_homeroom
 from menu.models import MenuItem
 from profiles.models import Profile
@@ -40,6 +34,7 @@ from transactions.models import Transaction
 
 
 logger = logging.getLogger(__file__)
+LIMITED_ITEMS_KEY = f'{timezone.localdate()}'
 
 
 # Helper functions
@@ -47,7 +42,7 @@ def orders_for_homeroom(staff: Profile):
     orders = MenuLineItem.objects.filter(
         Q(transaction__transactee__in=staff.students.all())
         | Q(transaction__transactee=staff)
-    ).filter(transaction__submitted__date=timezone.localdate(timezone.now()))
+    ).filter(transaction__submitted__date=timezone.localdate())
     homeroom_orders = {
         'teacher': staff,
         'orders': orders
@@ -55,16 +50,35 @@ def orders_for_homeroom(staff: Profile):
     return homeroom_orders
 
 
+def remove_soldout_items(items_count: Dict, queryset: QuerySet) -> QuerySet:
+    filtered_queryset = queryset
+    for item in queryset:
+        if items_count.get(item.name, -1) >= item.max_num:
+            filtered_queryset = filtered_queryset.exclude(name=item.name)
+    return filtered_queryset
+
+
 def todays_transaction(profile: Profile) -> Transaction:
     try:
         transactions = Transaction.objects.filter(
             transactee=profile,
             transaction_type=Transaction.DEBIT,
-            submitted__date=timezone.now().date(),
+            submitted__date=timezone.localdate(),
         )
         return transactions.latest('submitted')
     except:
         return None
+
+
+def item_limit_reached(item: MenuItem) -> bool:
+    if item.limited:
+        todays_orders = cache.get(f'{timezone.localdate()}')
+        if not todays_orders:
+            return False
+        num_item_orders = todays_orders.get(item.name, -1)
+        if num_item_orders >= item.max_num:
+            return True
+    return False
 
 
 # Student/Staff views
@@ -76,13 +90,21 @@ def delete_order(request):
             if transaction_id:
                 transaction = Transaction.objects.get(id=transaction_id)
                 try:
+                    for menu_line_item in transaction.line_item.all():
+                        if menu_line_item.menu_item.limited:
+                            todays_limited_items = cache.get(f'{timezone.localdate()}')
+                            if todays_limited_items:
+                                limited_item_count = todays_limited_items.get(menu_line_item.menu_item.name)
+                                if limited_item_count:
+                                    todays_limited_items[menu_line_item.menu_item.name] = limited_item_count - menu_line_item.quantity
+                                    cache.set(f'{timezone.localdate()}', todays_limited_items, timeout=None)
                     transaction.delete()
                     messages.success(
                         request, 'Your order was successfully deleted.')
                     return redirect('home')
                 except Exception as e:
                     logger.exception(
-                        'An exception occured when trying to delete a transaction. {}'.format(e))
+                        f'An exception occured when trying to delete a transaction. {e}')
                     messages.error(
                         request, 'There was a problem deleting your order.')
                     return redirect('todays-order')
@@ -108,7 +130,7 @@ def home(request):
             if request.user.profile.role == Profile.GUARDIAN:
                 return redirect('guardian')
         except Exception as e:
-            logger.exception('An exception occured for user {}: {}'.format(request.user, e))
+            logger.exception(f'An exception occured for user {request.user}: {e}')
             return redirect('django_auth_adfs:logout')
 
         if todays_transaction(request.user.profile):
@@ -130,7 +152,7 @@ def home(request):
                         try:
                             ordered_items_list.append(item['menu_item'])
                         except Exception as e:
-                            logger.exception('An exception occured when an order was submitted: {}'.format(e))
+                            logger.exception(f'An exception occured when an order was submitted: {e}')
 
                     if len(ordered_items_list) < 1:
                         messages.error(request, 'You must select at least one item.')
@@ -140,10 +162,14 @@ def home(request):
                         description = ''
                         cost = 0
                         for item in counted_items:
-                            if description:
-                                description = description + ', '
-                            description = description + '({}) {}'.format(counted_items[item], item.name)
-                            cost = cost + (item.cost * counted_items[item])
+                            if not item_limit_reached(item):
+                                if description:
+                                    description = description + ', '
+                                description = description + f'({counted_items[item]}) {item.name}'
+                                cost = cost + (item.cost * counted_items[item])
+                            else:
+                                messages.warning(request, f'{item.name} has already sold out. Please select a different item.')
+                                return redirect('home')
                         if todays_transaction(request.user.profile):
                             messages.warning(request, 'Your have already placed an order today.')
                             return redirect('todays-order')
@@ -157,10 +183,16 @@ def home(request):
                             transaction.save()
                             for item in counted_items:
                                 transaction.menu_items.add(item, through_defaults={'quantity': counted_items[item]})
+                                todays_limited_items = cache.get(f'{timezone.localdate()}')
+                                if todays_limited_items:
+                                    todays_limited_items[item.name] = todays_limited_items.get(item.name, 0) + 1
+                                else:
+                                    todays_limited_items = {item.name: 1}
+                                cache.set(f'{timezone.localdate()}', todays_limited_items)
                             messages.success(request, 'Your order was successfully submitted.')
                             return redirect('todays-order')
                         except Exception as e:
-                            logger.exception('An exception occured when trying to create a transaction: {}'.format(e))
+                            logger.exception(f'An exception occured when trying to create a transaction: {e}')
                             messages.error(request, 'There was a problem submitting your order.')
                             return redirect('home')
 
@@ -169,7 +201,10 @@ def home(request):
                 if request.user.profile.students.all():
                     context['homeroom_teacher'] = True
 
-            queryset = MenuItem.objects.filter(days_available__name=timezone.localdate(timezone.now()).strftime("%A")).filter(app_only=False)
+            queryset = MenuItem.objects.filter(days_available__name=timezone.localdate().strftime("%A")).filter(app_only=False)
+            todays_limited_items = cache.get(f'{timezone.localdate()}')
+            if todays_limited_items:
+                queryset = remove_soldout_items(todays_limited_items, queryset)
             context['menu_items'] = queryset.count()
             if request.user.profile.role == Profile.STUDENT:
                 student_grade = request.user.profile.grade

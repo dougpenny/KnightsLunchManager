@@ -49,6 +49,7 @@ class SchoolsModelForm(forms.ModelForm):
 class UserOrderForm(forms.Form):
     menu_item = MenuItemChoiceField(queryset=MenuItem.objects.all(), widget=forms.Select(attrs={
         'class': 'block pl-3 pr-10 py-2 text-sm border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md'}))
+
     def __init__(self, *args, **kwargs):
         queryset = kwargs.pop('queryset', None)
         super(UserOrderForm, self).__init__(*args, **kwargs)
