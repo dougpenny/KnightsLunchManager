@@ -4,7 +4,7 @@ import logging
 import os
 
 from collections import Counter
-from typing import Dict
+from typing import Dict, Union
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
@@ -26,7 +26,8 @@ from reportlab.lib.units import inch
 from cafeteria.decorators import admin_access_allowed
 from cafeteria.forms import GeneralForm, SchoolsModelForm, UserOrderForm
 from cafeteria.models import LunchPeriod, School
-from cafeteria.pdfgenerators import entree_report_by_period, lunch_card_for_users, orders_report_by_homeroom
+from cafeteria.pdfgenerators import entree_report_by_period, lunch_card_for_users
+from cafeteria.pdfgenerators import orders_report_by_homeroom, order_report_for_limited_items
 from menu.models import MenuItem
 from profiles.models import Profile
 from transactions.models import MenuLineItem
@@ -335,7 +336,7 @@ def guardian_submit_order(request):
         return redirect('guardian')
 
 
-def get_item_counts(orders: QuerySet[MenuItem]) -> Dict:
+def get_item_counts(orders: QuerySet[Transaction]) -> Dict:
     count = {}
     for order in orders:
         for line_item in order.line_item.all():
@@ -347,15 +348,31 @@ def get_item_counts(orders: QuerySet[MenuItem]) -> Dict:
     return count
 
 
+def get_limited_item_orders(orders: QuerySet[Transaction]) -> Union[Dict, None]:
+    limited_order = {}
+    for order in orders:
+        for line_item in order.line_item.all():
+            if line_item.menu_item.limited:
+                current_orders = limited_order.get(line_item.menu_item, list())
+                current_orders.append(order.transactee)
+                limited_order[line_item.menu_item] = current_orders
+
+    if len(limited_order) == 0:
+        return None
+    else:
+        return limited_order
+
+
 # Admin dashboard views
 @login_required
 @admin_access_allowed
 def admin_dashboard(request):
     context = {}
-    time = timezone.localtime(timezone.now())
+    time = timezone.localtime()
     context['time'] = time
     context['user'] = request.user
     orders = Transaction.objects.filter(submitted__date=time.date())
+    context['limited_item_orders'] = get_limited_item_orders(orders)
     context['total_item_counts'] = get_item_counts(orders)
     lunch_period_counts = {}
     for lunch_period in LunchPeriod.objects.all():
@@ -557,6 +574,24 @@ def entree_orders_report(request):
         return entree_report_by_period(lunch_period_counts)
     else:
         messages.warning(request, 'No orders were found for today.')
+        return redirect('admin')
+
+
+@login_required
+@admin_access_allowed
+def limited_items_order_report(request, menu_item_id):
+    limited_orders = {}
+    orders = Transaction.objects.filter(submitted__date=timezone.localdate())
+    for order in orders:
+        for line_item in order.line_item.all():
+            if line_item.menu_item.id == menu_item_id:
+                current_orders = limited_orders.get(line_item.menu_item, list())
+                current_orders.append(order)
+                limited_orders[line_item.menu_item] = current_orders
+    if limited_orders:
+        return order_report_for_limited_items(limited_orders)
+    else:
+        messages.warning(request, 'No limited item orders were found for today.')
         return redirect('admin')
 
 

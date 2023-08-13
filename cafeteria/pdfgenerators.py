@@ -18,7 +18,7 @@ from django.utils import timezone
 
 from menu.models import MenuItem
 from profiles.models import Profile
-from transactions.models import MenuLineItem
+from transactions.models import MenuLineItem, Transaction
 
 
 def entree_report_by_period(lunch_periods: Dict) -> FileResponse:
@@ -95,6 +95,55 @@ def entree_report_by_period(lunch_periods: Dict) -> FileResponse:
     buffer.seek(0)
     today = timezone.now()
     report_name = 'lunch_periods_{}-{}-{}.pdf'.format(today.year, today.month, today.day)
+    return FileResponse(buffer, as_attachment=True, filename=report_name)
+
+
+def order_report_for_limited_items(limited_item_orders: Dict) -> FileResponse:
+    buffer = io.BytesIO()
+    styles = getSampleStyleSheet()
+
+    # create some styles and the base document
+    title_style = copy.copy(styles['Title'])
+    title_style.fontSize = 26
+    entree_style = copy.copy(styles['Normal'])
+    entree_style.fontSize = 22
+    entree_style.spaceAfter = 56
+    entree_style.alignment = TA_CENTER
+    customer_style = copy.copy(styles['Normal'])
+    customer_style.fontSize = 16
+    customer_style.spaceAfter = 18
+    customer_style.alignment = TA_CENTER
+    margin = 0.5 * inch
+    document = platypus.BaseDocTemplate(buffer, pagesize=letter, rightMargin=margin, leftMargin=margin, topMargin=margin, bottomMargin=margin)
+
+    # create the title frame
+    title_frame_height = 0.5 * inch
+    title_frame_bottom = document.height + document.bottomMargin - title_frame_height
+    title_frame = platypus.Frame(document.leftMargin, title_frame_bottom, document.width, title_frame_height)
+    frames = [title_frame]
+
+    # create a frame to hold entree counts
+    frame = platypus.Frame(document.leftMargin, document.bottomMargin, document.width, document.height - title_frame_height - 1.0 * inch, id='entree-frame')
+    frames.append(frame)
+
+    template = platypus.PageTemplate(frames=frames)
+    document.addPageTemplates(template)
+
+    data = []
+    for menu_item, orders in limited_item_orders.items():
+        data.append(platypus.Paragraph('<u>{}</u>'.format(menu_item), title_style))
+        for order in orders:
+            customer = order.transactee.name()
+            line_item = MenuLineItem.objects.filter(transaction=order)
+            for item in line_item:
+                if item.quantity > 1:
+                    customer = customer + f' ({item.quantity})'
+            customer = customer + f' - {order.transactee.grade if order.transactee.grade else "Staff"}'
+            data.append(platypus.Paragraph(customer, customer_style))
+    document.build(data)
+    buffer.seek(0)
+    today = timezone.now()
+    report_name = 'limited_items_{}-{}-{}.pdf'.format(today.year, today.month, today.day)
     return FileResponse(buffer, as_attachment=True, filename=report_name)
 
 
