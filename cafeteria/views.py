@@ -35,7 +35,6 @@ from transactions.models import Transaction
 
 
 logger = logging.getLogger(__file__)
-LIMITED_ITEMS_KEY = f'{timezone.localdate()}'
 
 
 # Helper functions
@@ -54,8 +53,8 @@ def orders_for_homeroom(staff: Profile):
 def remove_soldout_items(items_count: Dict, queryset: QuerySet) -> QuerySet:
     filtered_queryset = queryset
     for item in queryset:
-        if items_count.get(item.name, -1) >= item.max_num:
-            filtered_queryset = filtered_queryset.exclude(name=item.name)
+        if item.limited and items_count.get(item.id, -1) >= item.max_num:
+            filtered_queryset = filtered_queryset.exclude(id=item.id)
     return filtered_queryset
 
 
@@ -76,7 +75,7 @@ def item_limit_reached(item: MenuItem) -> bool:
         todays_orders = cache.get(f'{timezone.localdate()}')
         if not todays_orders:
             return False
-        num_item_orders = todays_orders.get(item.name, -1)
+        num_item_orders = todays_orders.get(item.id, -1)
         if num_item_orders >= item.max_num:
             return True
     return False
@@ -93,12 +92,13 @@ def delete_order(request):
                 try:
                     for menu_line_item in transaction.line_item.all():
                         if menu_line_item.menu_item.limited:
-                            todays_limited_items = cache.get(f'{timezone.localdate()}')
+                            today = f'{timezone.localdate()}'
+                            todays_limited_items = cache.get(today)
                             if todays_limited_items:
-                                limited_item_count = todays_limited_items.get(menu_line_item.menu_item.name)
+                                limited_item_count = todays_limited_items.get(menu_line_item.menu_item.id)
                                 if limited_item_count:
-                                    todays_limited_items[menu_line_item.menu_item.name] = limited_item_count - menu_line_item.quantity
-                                    cache.set(f'{timezone.localdate()}', todays_limited_items, timeout=None)
+                                    todays_limited_items[menu_line_item.menu_item.id] = limited_item_count - menu_line_item.quantity
+                                    cache.set(today, todays_limited_items)
                     transaction.delete()
                     messages.success(
                         request, 'Your order was successfully deleted.')
@@ -126,6 +126,7 @@ def home(request):
         return render(request, 'user/closed.html', context=context)
 
     context['orders_open'] = Transaction.accepting_orders()
+    today = timezone.localdate()
     if request.user.is_authenticated:
         try:
             if request.user.profile.role == Profile.GUARDIAN:
@@ -184,13 +185,10 @@ def home(request):
                             transaction.save()
                             for item in counted_items:
                                 transaction.menu_items.add(item, through_defaults={'quantity': counted_items[item]})
-                                todays_limited_items = cache.get(f'{timezone.localdate()}')
-                                if todays_limited_items:
-                                    todays_limited_items[item.name] = todays_limited_items.get(item.name, 0) + 1
-                                    cache.set(f'{timezone.localdate()}', todays_limited_items)
-                                else:
-                                    todays_limited_items = {item.name: 1}
-                                    cache.set(f'{timezone.localdate()}', todays_limited_items)
+                                if item.limited:
+                                    todays_limited_items = cache.get(f'{today}') if cache.get(f'{today}') else {}
+                                    todays_limited_items[item.id] = todays_limited_items.get(item.id, 0) + 1
+                                    cache.set(f'{today}', todays_limited_items)
                             messages.success(request, 'Your order was successfully submitted.')
                             return redirect('todays-order')
                         except Exception as e:
@@ -203,8 +201,8 @@ def home(request):
                 if request.user.profile.students.all():
                     context['homeroom_teacher'] = True
 
-            queryset = MenuItem.objects.filter(days_available__name=timezone.localdate().strftime("%A")).filter(app_only=False)
-            todays_limited_items = cache.get(f'{timezone.localdate()}')
+            queryset = MenuItem.objects.filter(days_available__name=today.strftime("%A")).filter(app_only=False)
+            todays_limited_items = cache.get(f'{today}')
             if todays_limited_items:
                 queryset = remove_soldout_items(todays_limited_items, queryset)
             context['menu_items'] = queryset.count()

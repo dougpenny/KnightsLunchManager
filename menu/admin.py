@@ -18,5 +18,5 @@ class MenuItemAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
-    list_display = ('name', 'short_name', 'sequence', 'cost')
-    list_filter = ['days_available', 'lunch_period']
+    list_display = ('name', 'short_name', 'sequence', 'cost', 'limited', 'max_num')
+    list_filter = ['days_available', 'lunch_period', 'limited']
