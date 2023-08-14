@@ -57,7 +57,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'cafeteria.middleware.ClearLimitedItemsCache',
+    #'cafeteria.middleware.ClearLimitedItemsCache',
     'mozilla_django_oidc.middleware.SessionRefresh',
 ]
 
