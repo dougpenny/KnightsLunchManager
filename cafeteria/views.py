@@ -187,9 +187,10 @@ def home(request):
                                 todays_limited_items = cache.get(f'{timezone.localdate()}')
                                 if todays_limited_items:
                                     todays_limited_items[item.name] = todays_limited_items.get(item.name, 0) + 1
+                                    cache.set(f'{timezone.localdate()}', todays_limited_items)
                                 else:
                                     todays_limited_items = {item.name: 1}
-                                cache.set(f'{timezone.localdate()}', todays_limited_items)
+                                    cache.set(f'{timezone.localdate()}', todays_limited_items)
                             messages.success(request, 'Your order was successfully submitted.')
                             return redirect('todays-order')
                         except Exception as e:
