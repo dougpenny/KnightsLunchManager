@@ -187,7 +187,7 @@ def home(request):
                                 transaction.menu_items.add(item, through_defaults={'quantity': counted_items[item]})
                                 if item.limited:
                                     todays_limited_items = cache.get(f'{today}') if cache.get(f'{today}') else {}
-                                    todays_limited_items[item.id] = todays_limited_items.get(item.id, 0) + 1
+                                    todays_limited_items[item.id] = todays_limited_items.get(item.id, 0) + counted_items[item]
                                     cache.set(f'{today}', todays_limited_items)
                             messages.success(request, 'Your order was successfully submitted.')
                             return redirect('todays-order')
