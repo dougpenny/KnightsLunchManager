@@ -86,7 +86,6 @@ def user_order_lookup(request, id):
 
 @api_view(['POST'])
 def user_order_submit(request):
-    print(request.data)
     serializer = serializers.OrderSubmissionSerializer(data=request.data)
     if serializer.is_valid():
         new_order = serializer.save()

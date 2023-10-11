@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'constance',
-    'constance.backends.database',
     'mathfilters',
 
     'api.apps.ApiConfig',
