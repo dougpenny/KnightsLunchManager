@@ -10,7 +10,6 @@ class ClearLimitedItemsCache:
         self.last_cache_clear = timezone.localdate()
 
     def __call__(self, request):
-        # cache.clear()
         if not Transaction.accepting_orders():
             cache.clear()
             self.last_cache_clear = timezone.localdate()

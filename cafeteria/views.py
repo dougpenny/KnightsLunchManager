@@ -59,15 +59,14 @@ def remove_soldout_items(items_count: Dict, queryset: QuerySet) -> QuerySet:
 
 
 def todays_transaction(profile: Profile) -> Transaction:
-    try:
-        transactions = Transaction.objects.filter(
-            transactee=profile,
-            transaction_type=Transaction.DEBIT,
-            submitted__date=timezone.localdate(),
-        )
-        return transactions.latest('submitted')
-    except:
+    transactions = Transaction.objects.filter(
+        transactee=profile,
+        transaction_type=Transaction.DEBIT,
+        submitted__date=timezone.localdate(),
+    )
+    if not transactions:
         return None
+    return transactions.latest('submitted')
 
 
 def item_limit_reached(item: MenuItem) -> bool:

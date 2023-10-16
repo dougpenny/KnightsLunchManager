@@ -1,6 +1,5 @@
 import io
 import logging
-import operator
 import xlsxwriter
 
 from collections import Counter
@@ -40,8 +39,7 @@ class OrderMixin:
         )
         new_order.save()
         menu_item = MenuItem.objects.get(id=order['menu_item'])
-        menu_line_item = MenuLineItem.objects.create(
-            menu_item=menu_item, transaction=new_order, quantity=1)
+        MenuLineItem.objects.create(menu_item=menu_item, transaction=new_order, quantity=1)
         new_order.description = menu_item.name
         new_order.amount = menu_item.cost
         new_order.save()
@@ -56,8 +54,8 @@ class OrderMixin:
             order.save()
             transactee.current_balance = order.ending_balance
             transactee.save()
-        except:
-            raise Exception
+        except Exception as e:
+            logger.error(f'An error occured attempting to process order: {order}\nError message: {e}')
 
     def process_daily_orders(self, day: date) -> (bool, str):
         try:
@@ -69,26 +67,26 @@ class OrderMixin:
             if orders:
                 for order in orders:
                     self.process_order(order)
-                return True, 'Successfully processed {} transactions for {}.'.format(orders.count(), day.strftime('%b %-d, %Y'))
+                return True, f'Successfully processed {orders.count()} transactions for {day.strftime("%b %-d, %Y")}.'
             else:
                 raise Exception
-        except:
-            logger.info(
-                'When processing transactions, no transactions found for: {}'.format(day))
-            return False, 'No transactions found on {} for processing.'.format(day.strftime('%b %-d, %Y'))
+        except Exception as e:
+            logger.error(
+                f'When processing transactions, no transactions found for: {day}\nError message: {e}')
+            return False, f'No transactions found on {day.strftime("%b %-d, %Y")} for processing.'
 
     def process_single_order(self, id: int) -> (bool, str):
         try:
             order = Transaction.objects.get(id=id)
             if not order.completed:
                 self.process_order(order)
-                return True, 'Successfully processed transaction #{}.'.format(id)
+                return True, f'Successfully processed transaction #{id}.'
             else:
                 raise Exception
-        except:
-            logger.info(
-                'When processing a transaction, no transaction found for id: {}'.format(id))
-            return False, 'Transaction #{} was either not found or does not need to be processed.'.format(id)
+        except Exception as e:
+            logger.error(
+                f'When processing a transaction, no transaction found for id: {id}\nError message: {e}')
+            return False, f'Transaction #{id} was either not found or does not need to be processed.'
 
 
 class TransactionMixin:
@@ -121,9 +119,8 @@ class TransactionMixin:
 
 
 class UserIsStaffMixin(UserPassesTestMixin):
-
     def test_func(self):
-            return self.request.user.is_staff
+        return self.request.user.is_staff
 
 
 class DeleteTransactionView(LoginRequiredMixin, View):
@@ -134,7 +131,7 @@ class DeleteTransactionView(LoginRequiredMixin, View):
             messages.success(
                 self.request, 'The transaction was successfully deleted.')
         except Exception as e:
-            logger.exception(
+            logger.error(
                 'An error occured when deleting a transaction: {}'.format(e))
             messages.error(
                 self.request, 'There was a problem deleting the transaction')
@@ -144,8 +141,7 @@ class DeleteTransactionView(LoginRequiredMixin, View):
 class ExportChecksView(LoginRequiredMixin, UserIsStaffMixin, View):
     def get(self, request, *args, **kwargs):
         deposits = Transaction.objects.filter(
-            Q(description__icontains='Check #')
-            | Q(description__icontains='Cash')
+            Q(description__icontains='Check #') | Q(description__icontains='Cash')
         )
         deposits = deposits.filter(transaction_type=Transaction.CREDIT)
         workbook_name = 'misc-receipts-form.xlsx'
@@ -153,8 +149,7 @@ class ExportChecksView(LoginRequiredMixin, UserIsStaffMixin, View):
             day = date(self.kwargs['year'],
                        self.kwargs['month'], self.kwargs['day'])
             deposits = deposits.filter(completed__date=day)
-            workbook_name = 'misc-receipts-form_{}-{}-{}.xlsx'.format(
-                self.kwargs['year'], self.kwargs['month'], self.kwargs['day'])
+            workbook_name = f'misc-receipts-form_{self.kwargs["year"]}-{self.kwargs["month"]}-{self.kwargs["day"]}.xlsx'
         else:
             day = 'All Deposits'
         if deposits:
@@ -461,7 +456,9 @@ def deposit_checklist(request, *args, **kwargs):
         bold = workbook.add_format({'align': 'right', 'bold': True, 'font_size': 12})
         worksheet.write(row + 1, 4, 'Total', bold)
 
-        grade_total_format = workbook.add_format({'align': 'center', 'bold': True, 'font_size': 12, 'num_format': '[$$-409]#,##0.00', 'top': 6})
+        grade_total_format = workbook.add_format(
+            {'align': 'center', 'bold': True, 'font_size': 12, 'num_format': '[$$-409]#,##0.00', 'top': 6}
+        )
         worksheet.write(row + 1, 5, '=SUM(F6:F{})'.format(deposits.count() + 5), grade_total_format)
         worksheet.set_row(row + 1, 18, general_row_format)
 
@@ -471,6 +468,7 @@ def deposit_checklist(request, *args, **kwargs):
     else:
         messages.warning(request, 'No depostis found to check.')
         return redirect(request.path_info)
+
 
 @login_required
 @admin_access_allowed
@@ -486,7 +484,7 @@ def new_single_deposit(request):
                 messages.success(request, 'Successfully processed deposit for {}.'.format(profile.name()))
                 return redirect('profile-detail', profile.id)
             except Exception as e:
-                logger.exception('An exception occured when trying to create a deposit: {}'.format(e))
+                logger.error(f'An exception occured when trying to create a deposit: {e}')
                 messages.error(request, 'An error occured creating the deposit, please try again.')
                 return redirect('transaction-deposit-create')
     else:
@@ -507,7 +505,7 @@ def new_single_order(request):
                 try:
                     ordered_items_list.append(item['menu_item'])
                 except Exception as e:
-                    pass
+                    logger.error(f'An error occurred attempting to append ordered items list with item {item}.\nError message: {e}')
 
             if len(ordered_items_list) < 1:
                 messages.error(request, 'You must select at least one item.')
@@ -542,5 +540,5 @@ def new_single_order(request):
     else:
         ItemFormSet = formset_factory(ItemOrderForm)
         context['formset'] = ItemFormSet(prefix='order_form')
-    
+
     return render(request, 'admin/transaction_single_order.html', context=context)
