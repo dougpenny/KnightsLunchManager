@@ -151,7 +151,9 @@ def home(request):
                     ordered_items_list = []
                     for item in formset.cleaned_data:
                         try:
-                            ordered_items_list.append(item['menu_item'])
+                            menu_item = item.get('menu_item')
+                            if menu_item is not None:
+                                ordered_items_list.append(menu_item)
                         except Exception as e:
                             logger.exception(f'An exception occured when an order was submitted: {e}')
 
