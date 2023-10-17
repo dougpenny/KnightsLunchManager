@@ -119,7 +119,7 @@ def delete_order(request):
 
 
 def home(request):
-    context = {}
+    context = {'closed': False, 'homeroom_teacher': False, 'debt_exceeded': False}
     if config.CLOSED_FOR_SUMMER:
         context['closed'] = True
         return render(request, 'user/closed.html', context=context)
