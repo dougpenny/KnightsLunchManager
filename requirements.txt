@@ -1,12 +1,12 @@
-django==4.2.6
+django==5.0.1
 djangorestframework==3.14
-django-auth-adfs==1.11.6
+django-auth-adfs==1.13
 psycopg2-binary==2.9.9
 gunicorn==21.2.0
-python-dotenv==1.0.0
-reportlab==4.0.6
+python-dotenv==1.0.1
+reportlab==4.0.9
 XlsxWriter==3.1.8
 django-constance[database]==3.1.0
-mozilla-django-oidc==3.0.0
+mozilla-django-oidc==4.0.0
 django-mathfilters==1.0.0
 pypowerschool==0.2.0
