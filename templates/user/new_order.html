@@ -30,12 +30,12 @@
           Lunch Order for {% now "l, F jS" %}
         </h3>
         <p class="text-sm">
-          Please select the item you would like to order from the drop-down menu below. Tap on the add item button to add more items to your order.
+          Please select the item you would like to order from the drop-down menu below. Tap on the add item button to add additional items to your order.
         </p>
     </div>
 
     {% if menu_items %}
-      <form method="POST" action="" class="mt-5">
+      <form method="POST" action="" class="mt-5" id="lunch-order-form">
         {% csrf_token %}
         {{ formset.management_form }}
           <div id="order-formset">
@@ -61,7 +61,7 @@
             <span>Add Item</span>
           </button>
           <div>
-            <button type="submit" class="mt-6 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <button type="submit" id="submit-button" class="mt-6 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
               Submit Order
             </button>
           </div>
@@ -102,6 +102,10 @@
 {% block end-scripts %}
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
 <script type='text/javascript'>
+  $('#lunch-order-form').submit(function(e) {
+    $('#submit-button').attr('disabled', true);
+  });
+
 $('#add-item').on('click', function(e){
   e.preventDefault()
   var form_index = $('#id_order_form-TOTAL_FORMS').val();
@@ -109,7 +113,7 @@ $('#add-item').on('click', function(e){
   $('#id_order_form-TOTAL_FORMS').val(parseInt(form_index) + 1);
 });
 
-$(document).on('click', '.remove-item', function(e){
+$(document).on('click', '.remove-item', function(e) {
   e.preventDefault()
   var form_index = $('#id_order_form-TOTAL_FORMS').val();
   $(this).closest('.menu-item-row').remove();
