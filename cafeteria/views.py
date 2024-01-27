@@ -44,8 +44,7 @@ logger = logging.getLogger(__file__)
 # Helper functions
 def orders_for_homeroom(staff: Profile):
     orders = MenuLineItem.objects.filter(
-        Q(transaction__transactee__in=staff.students.all())
-        | Q(transaction__transactee=staff)
+        Q(transaction__transactee__in=staff.students.all()) | Q(transaction__transactee=staff)
     ).filter(transaction__submitted__date=timezone.localdate())
     homeroom_orders = {"teacher": staff, "orders": orders}
     return homeroom_orders
@@ -99,9 +98,9 @@ def delete_order(request):
                                     menu_line_item.menu_item.id
                                 )
                                 if limited_item_count:
-                                    todays_limited_items[
-                                        menu_line_item.menu_item.id
-                                    ] = (limited_item_count - menu_line_item.quantity)
+                                    todays_limited_items[menu_line_item.menu_item.id] = (
+                                        limited_item_count - menu_line_item.quantity
+                                    )
                                     cache.set(today, todays_limited_items)
                     transaction.delete()
                     messages.success(request, "Your order was successfully deleted.")
@@ -203,18 +202,14 @@ def home(request):
                                 )
                                 if item.limited:
                                     todays_limited_items = (
-                                        cache.get(f"{today}")
-                                        if cache.get(f"{today}")
-                                        else {}
+                                        cache.get(f"{today}") if cache.get(f"{today}") else {}
                                     )
                                     todays_limited_items[item.id] = (
                                         todays_limited_items.get(item.id, 0)
                                         + counted_items[item]
                                     )
                                     cache.set(f"{today}", todays_limited_items)
-                            messages.success(
-                                request, "Your order was successfully submitted."
-                            )
+                            messages.success(request, "Your order was successfully submitted.")
                             return redirect("todays-order")
                         except Exception as e:
                             logger.exception(
@@ -252,74 +247,77 @@ def home(request):
     return render(request, "user/new_order.html", context=context)
 
 
-@login_required
-def submit_order(request):
-    if request.method == "POST":
-        if Transaction.accepting_orders():
-            if request.POST.__contains__("itemID"):
-                if not todays_transaction(request.user.profile):
-                    menu_item = MenuItem.objects.get(id=request.POST.get("itemID"))
-                    if menu_item not in MenuItem.objects.filter(
-                        days_available__name=timezone.localdate(
-                            timezone.now()
-                        ).strftime("%A")
-                    ):
-                        logger.warning(
-                            "{} attempted to order a {}, which is not available today.".format(
-                                request.user.profile.name, menu_item
-                            )
-                        )
-                        messages.error(
-                            request,
-                            "The {} is not available today. Please select from the available options.".format(
-                                menu_item
-                            ),
-                        )
-                        return redirect("home")
-                    try:
-                        transaction = Transaction(
-                            amount=menu_item.cost,
-                            description=menu_item.name,
-                            transaction_type=Transaction.DEBIT,
-                            transactee=request.user.profile,
-                        )
-                        transaction.save()
-                        transaction.menu_items.add(
-                            menu_item, through_defaults={"quantity": 1}
-                        )
-                        messages.success(
-                            request, "Your order was successfully submitted."
-                        )
-                        return redirect("todays-order")
-                    except Exception as e:
-                        logger.exception(
-                            "An exception occured when trying to create a transaction: {}".format(
-                                e
-                            )
-                        )
-                        messages.error(
-                            request, "There was a problem submitting your order."
-                        )
-                        return redirect("home")
-                else:
-                    messages.warning(
-                        request, "You have already submitted an order today."
-                    )
-                    return redirect("todays-order")
-        else:
-            messages.warning(
-                request, "Sorry, the cafeteria is no longer accepting orders today."
-            )
-            return redirect("home")
-    else:
-        return redirect("home")
+########
+# This seems to be a completely unused method from an early refactor.
+# Should be deleted soon!
+########
+# @login_required
+# def submit_order(request):
+#     if request.method == "POST":
+#         if Transaction.accepting_orders():
+#             if request.POST.__contains__("itemID"):
+#                 if not todays_transaction(request.user.profile):
+#                     menu_item = MenuItem.objects.get(id=request.POST.get("itemID"))
+#                     if menu_item not in MenuItem.objects.filter(
+#                         days_available__name=timezone.localdate(
+#                             timezone.now()
+#                         ).strftime("%A")
+#                     ):
+#                         logger.warning(
+#                             "{} attempted to order a {}, which is not available today.".format(
+#                                 request.user.profile.name, menu_item
+#                             )
+#                         )
+#                         messages.error(
+#                             request,
+#                             "The {} is not available today. Please select from the available options.".format(
+#                                 menu_item
+#                             ),
+#                         )
+#                         return redirect("home")
+#                     try:
+#                         transaction = Transaction(
+#                             amount=menu_item.cost,
+#                             description=menu_item.name,
+#                             transaction_type=Transaction.DEBIT,
+#                             transactee=request.user.profile,
+#                         )
+#                         transaction.save()
+#                         transaction.menu_items.add(
+#                             menu_item, through_defaults={"quantity": 1}
+#                         )
+#                         messages.success(
+#                             request, "Your order was successfully submitted."
+#                         )
+#                         return redirect("todays-order")
+#                     except Exception as e:
+#                         logger.exception(
+#                             "An exception occured when trying to create a transaction: {}".format(
+#                                 e
+#                             )
+#                         )
+#                         messages.error(
+#                             request, "There was a problem submitting your order."
+#                         )
+#                         return redirect("home")
+#                 else:
+#                     messages.warning(
+#                         request, "You have already submitted an order today."
+#                     )
+#                     return redirect("todays-order")
+#         else:
+#             messages.warning(
+#                 request, "Sorry, the cafeteria is no longer accepting orders today."
+#             )
+#             return redirect("home")
+#     else:
+#         return redirect("home")
 
 
 # Guardian specific views
 @login_required(
     login_url=(
-        "/oidc"
-        + reverse("oidc_authentication_init", urlconf="mozilla_django_oidc.urls")
+        "/oidc" + reverse("oidc_authentication_init", urlconf="mozilla_django_oidc.urls")
     )
 )
 def guardian_home(request):
@@ -342,8 +340,7 @@ def guardian_home(request):
 
 @login_required(
     login_url=(
-        "/oidc"
-        + reverse("oidc_authentication_init", urlconf="mozilla_django_oidc.urls")
+        "/oidc" + reverse("oidc_authentication_init", urlconf="mozilla_django_oidc.urls")
     )
 )
 def guardian_submit_order(request):
@@ -403,9 +400,7 @@ def get_item_counts(orders: QuerySet[Transaction]) -> Dict:
         for line_item in order.line_item.all():
             if line_item.menu_item.category == MenuItem.ENTREE:
                 if line_item.menu_item in count:
-                    count[line_item.menu_item] = (
-                        count[line_item.menu_item] + line_item.quantity
-                    )
+                    count[line_item.menu_item] = count[line_item.menu_item] + line_item.quantity
                 else:
                     count[line_item.menu_item] = line_item.quantity
     return count
@@ -442,9 +437,7 @@ def admin_dashboard(request):
         lunch_period_counts[lunch_period] = get_item_counts(
             orders.filter(transactee__grade__lunch_period=lunch_period)
         )
-    staff_orders = orders.filter(transactee__grade=None).filter(
-        transactee__role=Profile.STAFF
-    )
+    staff_orders = orders.filter(transactee__grade=None).filter(transactee__role=Profile.STAFF)
     staff_period = LunchPeriod.objects.get(floating_staff=True)
     if staff_orders and staff_period:
         lunch_period_counts[staff_period] = staff_orders
@@ -594,9 +587,7 @@ def homeroom_orders_report(request):
         frames = []
         frame_width = document.width / 2.0
         title_frame_height = 1.5 * inch
-        title_frame_bottom = (
-            document.height + document.bottomMargin - title_frame_height
-        )
+        title_frame_bottom = document.height + document.bottomMargin - title_frame_height
         title_frame = platypus.Frame(
             document.leftMargin, title_frame_bottom, document.width, title_frame_height
         )
@@ -627,15 +618,11 @@ def homeroom_orders_report(request):
             data.append(platypus.Paragraph(grade_level, grade_style))
             data.append(platypus.FrameBreak())
             order_groups = (
-                orders["orders"]
-                .values("menu_item__short_name")
-                .annotate(sum=Sum("quantity"))
+                orders["orders"].values("menu_item__short_name").annotate(sum=Sum("quantity"))
             )
             for group in order_groups:
                 data.append(
-                    platypus.Paragraph(
-                        group["menu_item__short_name"], group_title_style
-                    )
+                    platypus.Paragraph(group["menu_item__short_name"], group_title_style)
                 )
                 data.append(platypus.Paragraph(str(group["sum"]), group_count_style))
                 for student in orders["orders"].filter(
@@ -664,9 +651,7 @@ def entree_orders_report(request):
         lunch_period_counts[lunch_period] = get_item_counts(
             orders.filter(transactee__grade__lunch_period=lunch_period)
         )
-    staff_orders = orders.filter(transactee__grade=None).filter(
-        transactee__role=Profile.STAFF
-    )
+    staff_orders = orders.filter(transactee__grade=None).filter(transactee__role=Profile.STAFF)
     staff_period = LunchPeriod.objects.get(floating_staff=True)
     if staff_orders and staff_period:
         lunch_period_counts[staff_period] = staff_orders
