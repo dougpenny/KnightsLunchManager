@@ -32,7 +32,7 @@ logger = logging.getLogger(__file__)
 
 
 class UserSearch(generics.ListAPIView):
-    search_fields = ['first_name', 'last_name']
+    search_fields = ["first_name", "last_name"]
     filter_backends = [filters.SearchFilter]
     queryset = User.objects.filter(is_active=True).filter(
         Q(profile__role=Profile.STUDENT) | Q(profile__role=Profile.STAFF)
@@ -41,29 +41,33 @@ class UserSearch(generics.ListAPIView):
 
 
 class ProfileSearch(generics.ListAPIView):
-    search_fields = ['user__first_name', 'user__last_name']
+    search_fields = ["user__first_name", "user__last_name"]
     filter_backends = [filters.SearchFilter]
-    queryset = Profile.objects.filter(active=True).exclude(pending=True).filter(
-        Q(role=Profile.STUDENT) | Q(role=Profile.STAFF)
+    queryset = (
+        Profile.objects.filter(active=True)
+        .exclude(pending=True)
+        .filter(Q(role=Profile.STUDENT) | Q(role=Profile.STAFF))
     )
     serializer_class = serializers.ProfileSerializer
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 def todays_menu_items(request):
     try:
         items = MenuItem.objects.filter(
             days_available__name=timezone.localdate(timezone.now()).strftime("%A")
         ).filter(Q(category=MenuItem.ENTREE) | Q(app_only=True))
     except Exception as e:
-        logger.error(f"API: An error occurred while fetching today's menu items.\nError message {e}")
+        logger.error(
+            f"API: An error occurred while fetching today's menu items.\nError message {e}"
+        )
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     serializer = serializers.MenuItemSerializer(items, many=True)
     return Response(serializer.data)
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 def user_lookup(request, id):
     try:
         profile = Profile.objects.get(lunch_uuid=id)
@@ -75,7 +79,7 @@ def user_lookup(request, id):
     return Response(serializer.data)
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 def user_order_lookup(request, id):
     try:
         profile = Profile.objects.get(lunch_uuid=id)
@@ -83,29 +87,34 @@ def user_order_lookup(request, id):
         logger.error(f"API: Profile with id #{id} not found.\nError message: {e}")
         return Response(status=status.HTTP_404_NOT_FOUND)
     try:
-        order = Transaction.objects.filter(transactee=profile).filter(
-            submitted__date=timezone.localdate(timezone.now())
-        ).filter(transaction_type=Transaction.DEBIT).filter(completed__isnull=True)
+        order = (
+            Transaction.objects.filter(transactee=profile)
+            .filter(submitted__date=timezone.localdate(timezone.now()))
+            .filter(transaction_type=Transaction.DEBIT)
+            .filter(completed__isnull=True)
+        )
     except Transaction.DoesNotExist as e:
-        logger.error(f"API: No transaction found for profile with id #{id}.\nError message: {e}")
+        logger.error(
+            f"API: No transaction found for profile with id #{id}.\nError message: {e}"
+        )
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     profile = serializers.ProfileSerializer(profile).data
     order = serializers.OrderSerializer(order, many=True).data
     if len(order) == 0:
-        order = [{'profile': profile}]
+        order = [{"profile": profile}]
     elif len(order) == 1:
-        order[0]['profile'] = profile
+        order[0]["profile"] = profile
     else:
         logger.error(f"More than one order found for {profile}.\nOrders: {order}")
         return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return Response(order)
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 def user_order_submit(request):
     serializer = serializers.OrderSubmissionSerializer(data=request.data)
     if serializer.is_valid():
         new_order = serializer.save()
-        return Response({ 'order_id': new_order.id }, status=status.HTTP_201_CREATED)
+        return Response({"order_id": new_order.id}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
