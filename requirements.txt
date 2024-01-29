@@ -10,3 +10,4 @@ django-constance[database]==3.1.0
 mozilla-django-oidc==4.0.0
 django-mathfilters==1.0.0
 pypowerschool==0.2.0
+sentry-sdk[django]==1.39.2
