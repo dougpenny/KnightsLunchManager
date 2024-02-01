@@ -220,6 +220,6 @@ CONSTANCE_CONFIG_FIELDSETS = {
 # Sentry.io
 sentry_sdk.init(
     dsn="https://3b9e30470f1df096b1b2f68529dd4f72@o4506650567311360.ingest.sentry.io/4506651708751872",
-    traces_sample_rate=0.6,
-    profiles_sample_rate=0.6,
+    sample_rate=0.6,
+    release="lunch-manager@2.3.0",
 )
