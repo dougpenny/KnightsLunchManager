@@ -5,7 +5,6 @@ from django.utils import timezone
 
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
 
-from powerschool.powerschool import Powerschool
 from profiles.models import Profile
 
 
@@ -22,15 +21,15 @@ def powerschool_logout(request):
 
 
 class PowerSchoolGuardianOIDC(OIDCAuthenticationBackend):
-    def update_students(self, profile):
-        client = Powerschool()
-        students = client.students_for_guardian(profile.user_dcid)
-        profile.children.clear()
-        for student in students:
-            try:
-                profile.children.add(Profile.objects.get(student_dcid=student))
-            except:
-                pass
+    # def update_students(self, profile):
+    #     client = Powerschool()
+    #     students = client.students_for_guardian(profile.user_dcid)
+    #     profile.children.clear()
+    #     for student in students:
+    #         try:
+    #             profile.children.add(Profile.objects.get(student_dcid=student))
+    #         except:
+    #             pass
 
     def create_user(self, claims):
         user = super(PowerSchoolGuardianOIDC, self).create_user(claims)
