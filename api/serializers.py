@@ -24,7 +24,22 @@ class ExistingOrderMenuItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MenuItem
-        fields = ['cost', 'id', 'name']
+        fields = ["cost", "id", "name"]
+
+
+class LunchIdSearchSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+
+    def get_name(self, obj):
+        if obj.role == Profile.STAFF:
+            grade = "Staff"
+        else:
+            grade = str(obj.grade)
+        return f"{obj.name()} - {grade}"
+
+    class Meta:
+        model = Profile
+        fields = ["lunch_uuid", "name"]
 
 
 class MenuItemSerializer(serializers.ModelSerializer):
@@ -32,7 +47,7 @@ class MenuItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MenuItem
-        fields = ['app_only', 'category', 'cost', 'id', 'name', 'sequence', 'short_name']
+        fields = ["app_only", "category", "cost", "id", "name", "sequence", "short_name"]
 
 
 class MenuLineItemSerializer(serializers.ModelSerializer):
@@ -40,15 +55,15 @@ class MenuLineItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MenuLineItem
-        fields = ['menu_item', 'quantity']
+        fields = ["menu_item", "quantity"]
 
 
 class OrderSerializer(serializers.ModelSerializer):
     line_item = MenuLineItemSerializer(many=True)
-    
+
     class Meta:
         model = Transaction
-        fields = ['id', 'line_item']
+        fields = ["id", "line_item"]
 
 
 class OrderSubmissionSerializer(serializers.Serializer):
@@ -73,7 +88,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ['current_balance', 'grade', 'id', 'lunch_uuid', 'name', 'user_number']
+        fields = ["current_balance", "grade", "id", "lunch_uuid", "name", "user_number"]
 
 
 class UserSearchSerializer(serializers.ModelSerializer):
@@ -81,11 +96,11 @@ class UserSearchSerializer(serializers.ModelSerializer):
 
     def get_text(self, obj):
         if obj.profile.role == Profile.STAFF:
-            grade = 'Staff'
+            grade = "Staff"
         else:
             grade = str(obj.profile.grade)
-        return obj.first_name + ' ' + obj.last_name + ' - ' + grade
+        return f"{obj.first_name} {obj.last_name} - {grade}"
 
     class Meta:
         model = User
-        fields = ['id', 'text']
+        fields = ["id", "text"]

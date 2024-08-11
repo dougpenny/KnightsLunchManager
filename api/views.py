@@ -31,13 +31,15 @@ from transactions.models import Transaction
 logger = logging.getLogger(__file__)
 
 
-class UserSearch(generics.ListAPIView):
-    search_fields = ["first_name", "last_name"]
+class LunchIdSearch(generics.ListAPIView):
+    search_fields = ["user__first_name", "user__last_name"]
     filter_backends = [filters.SearchFilter]
-    queryset = User.objects.filter(is_active=True).filter(
-        Q(profile__role=Profile.STUDENT) | Q(profile__role=Profile.STAFF)
+    queryset = (
+        Profile.objects.filter(active=True)
+        .exclude(pending=True)
+        .filter(Q(role=Profile.STUDENT) | Q(role=Profile.STAFF))
     )
-    serializer_class = serializers.UserSearchSerializer
+    serializer_class = serializers.LunchIdSearchSerializer
 
 
 class ProfileSearch(generics.ListAPIView):
@@ -49,6 +51,15 @@ class ProfileSearch(generics.ListAPIView):
         .filter(Q(role=Profile.STUDENT) | Q(role=Profile.STAFF))
     )
     serializer_class = serializers.ProfileSerializer
+
+
+class UserSearch(generics.ListAPIView):
+    search_fields = ["first_name", "last_name"]
+    filter_backends = [filters.SearchFilter]
+    queryset = User.objects.filter(is_active=True).filter(
+        Q(profile__role=Profile.STUDENT) | Q(profile__role=Profile.STAFF)
+    )
+    serializer_class = serializers.UserSearchSerializer
 
 
 @api_view(["GET"])
@@ -85,19 +96,20 @@ def user_order_lookup(request, id):
         profile = Profile.objects.get(lunch_uuid=id)
     except Profile.DoesNotExist as e:
         logger.error(f"API: Profile with id #{id} not found.\nError message: {e}")
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_204_NO_CONTENT)
     try:
         order = (
             Transaction.objects.filter(transactee=profile)
             .filter(submitted__date=timezone.localdate(timezone.now()))
             .filter(transaction_type=Transaction.DEBIT)
             .filter(completed__isnull=True)
+            .order_by("-submitted")
         )
     except Transaction.DoesNotExist as e:
         logger.error(
             f"API: No transaction found for profile with id #{id}.\nError message: {e}"
         )
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     profile = serializers.ProfileSerializer(profile).data
     order = serializers.OrderSerializer(order, many=True).data
