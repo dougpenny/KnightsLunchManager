@@ -122,14 +122,20 @@ AUTH_ADFS = {
     "CLIENT_ID": os.getenv("AZURE_APP_ID", ""),
     "RELYING_PARTY_ID": os.getenv("AZURE_APP_ID", ""),
     "TENANT_ID": os.getenv("AZURE_TENANT_ID", ""),
-    "CLAIM_MAPPING": {"first_name": "given_name", "last_name": "family_name", "email": "upn"},
+    "CLAIM_MAPPING": {
+        "first_name": "given_name",
+        "last_name": "family_name",
+        "email": "upn",
+    },
     "CREATE_NEW_USERS": False,
     "GROUP_TO_FLAG_MAPPING": {"is_staff": "Cafeteria", "is_superuser": "IT Department"},
 }
 
 OIDC_RP_CLIENT_ID = os.getenv("POWERSCHOOL_CLIENT_ID", "")
 OIDC_RP_CLIENT_SECRET = os.getenv("POWERSCHOOL_CLIENT_SECRET", "")
-OIDC_OP_AUTHORIZATION_ENDPOINT = os.getenv("POWERSCHOOL_URL", "") + "oauth2/authorize.action"
+OIDC_OP_AUTHORIZATION_ENDPOINT = (
+    os.getenv("POWERSCHOOL_URL", "") + "oauth2/authorize.action"
+)
 OIDC_OP_TOKEN_ENDPOINT = os.getenv("POWERSCHOOL_URL", "") + "oauth2/token.action"
 OIDC_OP_USER_ENDPOINT = os.getenv("POWERSCHOOL_URL", "") + "oauth2/userinfo.action"
 OIDC_OP_JWKS_ENDPOINT = os.getenv("POWERSCHOOL_URL", "") + "ws/unifiedclassroom/jwks"

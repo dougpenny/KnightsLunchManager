@@ -1,55 +1,44 @@
-from .base import *
+from .base import *  # noqa: F403
 
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'postgres',
-        'PORT': '5432',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "postgres",
+        "USER": "postgres",
+        "PASSWORD": "postgres",
+        "HOST": "postgres",
+        "PORT": "5432",
     }
 }
 
 DEBUG = True
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'root': {'level': 'INFO', 'handlers': ['console']},
-    'formatters': {
-        'app': {
-            'format': (
-                u'%(asctime)s [%(levelname)-8s] '
-                '(%(module)s.%(funcName)s) %(message)s'
+    "version": 1,
+    "disable_existing_loggers": False,
+    "root": {"level": "INFO", "handlers": ["console"]},
+    "formatters": {
+        "app": {
+            "format": (
+                "%(asctime)s [%(levelname)-8s] " "(%(module)s.%(funcName)s) %(message)s"
             ),
-            'datefmt': '%Y-%m-%d %H:%M:%S',
+            "datefmt": "%Y-%m-%d %H:%M:%S",
         },
     },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'app'
-        },
+    "handlers": {
+        "console": {"class": "logging.StreamHandler", "formatter": "app"},
     },
-    'loggers': {
-        'django_auth_adfs': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
+    "loggers": {
+        "django_auth_adfs": {
+            "handlers": ["console"],
+            "level": "DEBUG",
         },
-        'django': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True
-        },
-        'mozilla_django_oidc': {
-            'handlers': ['console'],
-            'level': 'DEBUG'
-        },
+        "django": {"handlers": ["console"], "level": "DEBUG", "propagate": True},
+        "mozilla_django_oidc": {"handlers": ["console"], "level": "DEBUG"},
     },
 }

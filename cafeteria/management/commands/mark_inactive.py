@@ -17,20 +17,24 @@ from profiles.models import Profile
 
 
 class Command(BaseCommand):
-    help = 'Check for students who are no longer active in PowerSchool and mark them as inactive.'
+    help = "Check for students who are no longer active in PowerSchool and mark them as inactive."
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '-p',
-            '--profile',
+            "-p",
+            "--profile",
             type=int,
-            help='Profile ID of the user you would like to process. If this is left blank, all users will be processed.',
+            help="Profile ID of the user you would like to process. If this is left blank, all users will be processed.",
         )
 
     def handle(self, *args, **options):
-        if options['profile']:
-            profile = Profile.objects.filter(id=options['profile']).exclude(role=Profile.GUARDIAN)
+        if options["profile"]:
+            profile = Profile.objects.filter(id=options["profile"]).exclude(
+                role=Profile.GUARDIAN
+            )
             check_for_inactive(profile)
         else:
-            profiles = Profile.objects.filter(active=True).exclude(role=Profile.GUARDIAN)
+            profiles = Profile.objects.filter(active=True).exclude(
+                role=Profile.GUARDIAN
+            )
             check_for_inactive(profiles)

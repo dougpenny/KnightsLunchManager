@@ -12,13 +12,12 @@ from django.core.wsgi import get_wsgi_application
 
 # Read environment variables from a .env file
 from dotenv import load_dotenv, find_dotenv
+
 load_dotenv(find_dotenv())
 
-if os.getenv('PRODUCTION', False) == 'True':
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE',
-                          'config.settings.production')
+if os.getenv("PRODUCTION", False) == "True":
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.production")
 else:
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE',
-                          'config.settings.local')
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.local")
 
 application = get_wsgi_application()

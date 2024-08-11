@@ -18,7 +18,7 @@ def process_inactive(profile: Profile) -> Profile:
         amount=abs(balance),
         description=description,
         transaction_type=transaction_type,
-        transactee=profile
+        transactee=profile,
     )
     transaction.save()
     process_transaction(transaction)

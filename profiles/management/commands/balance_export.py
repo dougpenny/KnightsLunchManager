@@ -13,16 +13,15 @@ logger = logging.getLogger(__file__)
 
 
 class Command(BaseCommand):
-    help = 'Export student lunch balances for import into PowerSchool'
+    help = "Export student lunch balances for import into PowerSchool"
 
     def handle(self, *args, **options):
-        logger.info('Exporting lunch balances...')
+        logger.info("Exporting lunch balances...")
         file_path = config.BALANCE_EXPORT_PATH
         students = Profile.objects.filter(active=True).filter(role=Profile.STUDENT)
-        filename = os.path.join(file_path, 'lunch_balance.csv')
-        with open(filename, 'w') as csvfile:
+        filename = os.path.join(file_path, "lunch_balance.csv")
+        with open(filename, "w") as csvfile:
             csvwriter = csv.writer(csvfile)
             for student in students:
-                csvwriter.writerow(
-                    [student.user_number, student.current_balance])
-        logger.info('Finished exporting lunch balances.')
+                csvwriter.writerow([student.user_number, student.current_balance])
+        logger.info("Finished exporting lunch balances.")

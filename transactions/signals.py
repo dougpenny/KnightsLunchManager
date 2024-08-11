@@ -8,8 +8,7 @@ from transactions.models import Transaction
 def update_balances(sender, instance, **kwargs):
     if instance.completed:
         following_completed = Transaction.objects.filter(
-            transactee=instance.transactee,
-            completed__gte=instance.completed
+            transactee=instance.transactee, completed__gte=instance.completed
         )
         amount = 0
         if instance.transaction_type == Transaction.CREDIT:
@@ -18,11 +17,21 @@ def update_balances(sender, instance, **kwargs):
             amount = instance.amount
         for completed_transaction in following_completed:
             if not completed_transaction.completed == instance.completed:
-                completed_transaction.beginning_balance = completed_transaction.beginning_balance + amount
-                completed_transaction.ending_balance = completed_transaction.ending_balance + amount
+                completed_transaction.beginning_balance = (
+                    completed_transaction.beginning_balance + amount
+                )
+                completed_transaction.ending_balance = (
+                    completed_transaction.ending_balance + amount
+                )
             elif completed_transaction.beginning_balance < instance.beginning_balance:
-                completed_transaction.beginning_balance = completed_transaction.beginning_balance + amount
-                completed_transaction.ending_balance = completed_transaction.ending_balance + amount
+                completed_transaction.beginning_balance = (
+                    completed_transaction.beginning_balance + amount
+                )
+                completed_transaction.ending_balance = (
+                    completed_transaction.ending_balance + amount
+                )
             completed_transaction.save()
-        instance.transactee.current_balance = instance.transactee.current_balance + amount
+        instance.transactee.current_balance = (
+            instance.transactee.current_balance + amount
+        )
         instance.transactee.save()

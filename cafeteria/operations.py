@@ -29,7 +29,7 @@ def end_of_year_process(year: str, profile: Profile = None):
                 amount=temp_balance,
                 beginning_balance=user.current_balance,
                 completed=timezone.now(),
-                description='Ending balance from the {} school year.'.format(year),
+                description="Ending balance from the {} school year.".format(year),
                 ending_balance=user.current_balance + temp_balance,
                 submitted=timezone.now(),
                 transactee=user,
@@ -49,7 +49,11 @@ def check_for_inactive(profiles: QuerySet):
             if profile.current_balance != 0:
                 profile.pending = True
                 profile.save()
-                logger.info('{} has a current balance of {}; marked pending inactive.'.format(profile.name(), profile.current_balance))
+                logger.info(
+                    "{} has a current balance of {}; marked pending inactive.".format(
+                        profile.name(), profile.current_balance
+                    )
+                )
             else:
                 profile.active = False
                 profile.pending = False
@@ -57,4 +61,8 @@ def check_for_inactive(profiles: QuerySet):
                 account = profile.user
                 account.is_active = False
                 account.save()
-                logger.info('{} has not synced from PowerSchool in more than 2 days; marked inactive.'.format(profile.name()))
+                logger.info(
+                    "{} has not synced from PowerSchool in more than 2 days; marked inactive.".format(
+                        profile.name()
+                    )
+                )

@@ -20,7 +20,9 @@ from transactions.models import MenuLineItem, Transaction
 
 
 class ExistingOrderMenuItemSerializer(serializers.ModelSerializer):
-    cost = serializers.DecimalField(max_digits=None, decimal_places=2, coerce_to_string=False)
+    cost = serializers.DecimalField(
+        max_digits=None, decimal_places=2, coerce_to_string=False
+    )
 
     class Meta:
         model = MenuItem
@@ -43,11 +45,21 @@ class LunchIdSearchSerializer(serializers.ModelSerializer):
 
 
 class MenuItemSerializer(serializers.ModelSerializer):
-    cost = serializers.DecimalField(max_digits=None, decimal_places=2, coerce_to_string=False)
+    cost = serializers.DecimalField(
+        max_digits=None, decimal_places=2, coerce_to_string=False
+    )
 
     class Meta:
         model = MenuItem
-        fields = ["app_only", "category", "cost", "id", "name", "sequence", "short_name"]
+        fields = [
+            "app_only",
+            "category",
+            "cost",
+            "id",
+            "name",
+            "sequence",
+            "short_name",
+        ]
 
 
 class MenuLineItemSerializer(serializers.ModelSerializer):

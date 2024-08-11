@@ -21,25 +21,25 @@ logger = logging.getLogger(__file__)
 
 
 class Command(BaseCommand):
-    help = 'Synchronize resources from PowerSchool to Lunch Manager'
+    help = "Synchronize resources from PowerSchool to Lunch Manager"
 
     def add_arguments(self, parser):
         parser.add_argument(
-            'resource',
-            choices=['all', 'schools', 'staff', 'students'],
-            default='all',
-            help='Select the resource to sycn from PowerSchool. The default is to sync ALL resources.',
-            nargs='?'
+            "resource",
+            choices=["all", "schools", "staff", "students"],
+            default="all",
+            help="Select the resource to sycn from PowerSchool. The default is to sync ALL resources.",
+            nargs="?",
         )
 
     def handle(self, *args, **options):
         client = pssync.new_powerschool_client()
 
-        if options['resource'] == 'all':
+        if options["resource"] == "all":
             pssync.sync_powerschool(client)
-        elif options['resource'] == 'schools':
+        elif options["resource"] == "schools":
             pssync.sync_powerschool_schools(client)
-        elif options['resource'] == 'staff':
+        elif options["resource"] == "staff":
             pssync.sync_powerschool_staff(client)
-        elif options['resource'] == 'students':
+        elif options["resource"] == "students":
             pssync.sync_powerschool_students(client)
