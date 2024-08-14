@@ -454,11 +454,9 @@ def admin_dashboard(request):
         lunch_period_counts[staff_period] = staff_orders
     context["period_item_counts"] = lunch_period_counts
     context["orders"] = orders
-    context["debtors"] = (
-        Profile.objects.filter(active=True)
-        .filter(current_balance__lt=0)
-        .order_by("current_balance", "user__last_name")[:5]
-    )
+    context["debtors"] = Profile.objects.filter(
+        active=True, current_balance__lt=0
+    ).order_by("current_balance", "user__last_name")[:5]
     first_lunch = LunchPeriod.objects.filter(sort_order=0).first()
     context["first_lunch"] = first_lunch
     return render(request, "admin/admin.html", context=context)
@@ -539,14 +537,11 @@ def students_grouped_by_homeroom(staff: QuerySet[Profile], above_grade: int = -1
 def operations(request):
     if request.method == "POST":
         if request.POST["action"] == "print-cards":
-            staff = Profile.objects.filter(role=Profile.STAFF).filter(active=True)
+            staff = Profile.objects.filter(role=Profile.STAFF, active=True)
             if request.POST["group"] == "NEW":  # No lunch card previously printed
-                profiles = (
-                    Profile.objects.filter(active=True)
-                    .exclude(pending=True)
-                    .filter(cards_printed=0)
-                    .filter(grade__value__gt=2)
-                )
+                profiles = Profile.objects.filter(
+                    active=True, cards_printed=0, grade__value__gt=2
+                ).exclude(pending=True)
             elif request.POST["group"] == "STAFF":  # Staff without a Homeroom
                 profiles = staff.filter(grade=None)
             elif request.POST["group"] == "ALL":  # All Students & Staff
@@ -571,7 +566,7 @@ def operations(request):
 @admin_access_allowed
 def homeroom_orders_report(request):
     todays_orders = []
-    for staff in Profile.objects.filter(role=Profile.STAFF).order_by(
+    for staff in Profile.objects.filter(role=Profile.STAFF, active=True).order_by(
         "grade", "user__last_name"
     ):
         homeroom_order = orders_for_homeroom(staff)
@@ -704,8 +699,8 @@ def limited_items_order_report(request, menu_item_id):
 def lunch_period_order_report(request, lunch_period_id):
     todays_orders = []
     lunch_period = LunchPeriod.objects.get(id=lunch_period_id)
-    for staff in Profile.objects.filter(role=Profile.STAFF).filter(
-        grade__lunch_period=lunch_period
+    for staff in Profile.objects.filter(
+        role=Profile.STAFF, active=True, grade__lunch_period=lunch_period
     ):
         class_order = orders_for_homeroom(staff)
         if class_order:
