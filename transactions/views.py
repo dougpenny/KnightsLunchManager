@@ -607,7 +607,7 @@ def new_single_deposit(request):
                 return redirect("profile-detail", profile.id)
             except Exception as e:
                 logger.error(
-                    f"An exception occured when trying to create a deposit: {e}"
+                    f"An exception occured when trying to create a deposit.\nTransaction: {new_deposit}\nException: {e}"
                 )
                 messages.error(
                     request, "An error occured creating the deposit, please try again."
