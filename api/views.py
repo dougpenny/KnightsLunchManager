@@ -70,7 +70,7 @@ def todays_menu_items(request):
         ).filter(Q(category=MenuItem.ENTREE) | Q(app_only=True))
     except Exception as e:
         logger.error(
-            f"API: An error occurred while fetching today's menu items.\nError message {e}"
+            f"API: An exception occurred while fetching today's menu items.\nException: {e}"
         )
         return Response(status=status.HTTP_404_NOT_FOUND)
 

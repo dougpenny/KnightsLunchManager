@@ -141,9 +141,9 @@ def set_inactive(request, pk):
                 request, "Successfully set {} as inactive.".format(profile.name())
             )
             return redirect("admin")
-    except Exception:
+    except Exception as e:
         logger.info(
-            "An error occured when trying to set {} as inactive".format(profile.name())
+            f"An exception occured when trying to set {profile} as inactive.\nException: {e}"
         )
         messages.error(
             request,
@@ -166,8 +166,10 @@ def set_all_inactive(request):
 
         messages.info(request, f"Successfully set {count} users as inactive.")
         return redirect("admin")
-    except Exception:
-        logger.info("An error occured when trying to set users as inactive")
+    except Exception as e:
+        logger.info(
+            "An exception occured when trying to set users as inactive.\nException: {e}"
+        )
         messages.error(request, "An error occured trying to set users as inactive")
 
     return redirect("pending-inactive")
@@ -198,7 +200,7 @@ def new_individual_card(request, pk):
             if transaction:
                 transaction.delete()
             logger.info(
-                "An error occured trying to print a new lunch card: {}".format(e)
+                f"An exception occured trying to print a new lunch card for: {profile}\nException: {e}"
             )
             messages.error(
                 request, "An error occured trying to print the new lunch card."

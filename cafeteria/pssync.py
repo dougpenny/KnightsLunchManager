@@ -142,12 +142,10 @@ def sync_powerschool_staff(client=None):
                         grade_level = homeroom_roster[count]["grade_level"]
                         count = count + 1
                     staff.grade = GradeLevel.objects.get(value=int(grade_level))
-                except Exception:
+                except Exception as e:
                     staff.grade = None
                     logger.error(
-                        "No grade level assigned to homeroom teacher: {}".format(
-                            staff.name()
-                        )
+                        f"No grade level assigned to homeroom teacher: {staff}\nException: {e}"
                     )
                 staff.students.clear()
                 for student in homeroom_roster:

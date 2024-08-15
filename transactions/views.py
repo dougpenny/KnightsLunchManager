@@ -59,7 +59,7 @@ class OrderMixin:
             transactee.save()
         except Exception as e:
             logger.error(
-                f"An error occured attempting to process order: {order}\nError message: {e}"
+                f"An exception occured attempting to process order: {order}\nException: {e}"
             )
 
     def process_daily_orders(self, day: date) -> Tuple[bool, str]:
@@ -80,7 +80,7 @@ class OrderMixin:
                 raise Exception
         except Exception as e:
             logger.error(
-                f"When processing transactions, no transactions found for: {day}\nError message: {e}"
+                f"When processing transactions, no transactions found for: {day}\nException: {e}"
             )
             return (
                 False,
@@ -97,7 +97,7 @@ class OrderMixin:
                 raise Exception
         except Exception as e:
             logger.error(
-                f"When processing a transaction, no transaction found for id: {id}\nError message: {e}"
+                f"When processing a transaction, no transaction found for id: {id}\nException: {e}"
             )
             return (
                 False,
@@ -144,7 +144,9 @@ class DeleteTransactionView(LoginRequiredMixin, View):
             transaction.delete()
             messages.success(self.request, "The transaction was successfully deleted.")
         except Exception as e:
-            logger.error("An error occured when deleting a transaction: {}".format(e))
+            logger.error(
+                f"An exception occured when deleting a transaction: {transaction}\nException: {e}"
+            )
             messages.error(self.request, "There was a problem deleting the transaction")
         return redirect(request.POST.get("path"))
 
@@ -454,14 +456,12 @@ def batch_deposit(request):
                         count = count + 1
                     except Exception as e:
                         logger.exception(
-                            "An error occured processing batch deposits: {}".format(e)
+                            f"An exception occured processing batch deposits.\nDeposit: {new_deposit}\nException: {e}"
                         )
                         messages.error(
                             request, "An error occured processing the batch deposits."
                         )
-            messages.success(
-                request, "Successfully processed {} deposits.".format(count)
-            )
+            messages.success(request, f"Successfully processed {count} deposits.")
             return redirect("transaction-deposits-batch")
     else:
         context["form"] = DepositFormSet(prefix="deposit")
@@ -607,7 +607,7 @@ def new_single_deposit(request):
                 return redirect("profile-detail", profile.id)
             except Exception as e:
                 logger.error(
-                    f"An exception occured when trying to create a deposit.\nTransaction: {new_deposit}\nException: {e}"
+                    f"An exception occured when trying to create a deposit: {new_deposit}\nException: {e}"
                 )
                 messages.error(
                     request, "An error occured creating the deposit, please try again."
@@ -632,7 +632,7 @@ def new_single_order(request):
                     ordered_items_list.append(item["menu_item"])
                 except Exception as e:
                     logger.error(
-                        f"An error occurred attempting to append ordered items list with item {item}.\nError message: {e}"
+                        f"An exception occurred attempting to append ordered items list with item {item}.\nException: {e}"
                     )
 
             if len(ordered_items_list) < 1:
@@ -664,16 +664,12 @@ def new_single_order(request):
                         )
                     messages.success(
                         request,
-                        "Successfully created an order for {}.".format(
-                            transactee.name()
-                        ),
+                        f"Successfully created an order for {transactee.name()}.",
                     )
                     return redirect("profile-detail", transactee.id)
                 except Exception as e:
                     logger.exception(
-                        "An exception occured when trying to create a transaction: {}".format(
-                            e
-                        )
+                        f"An exception occured when trying to create a transaction: {transaction}\nException: {e}"
                     )
                     messages.error(request, "An error occured creating the order.")
                     return redirect("transaction-order-create")

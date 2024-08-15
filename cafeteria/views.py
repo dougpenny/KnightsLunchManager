@@ -108,7 +108,7 @@ def delete_order(request):
                     return redirect("home")
                 except Exception as e:
                     logger.exception(
-                        f"An exception occured when trying to delete a transaction. {e}"
+                        f"An exception occured when trying to delete a transaction: {transaction}\nException: {e}"
                     )
                     messages.error(request, "There was a problem deleting your order.")
                     return redirect("todays-order")
@@ -134,7 +134,9 @@ def home(request):
             if request.user.profile.role == Profile.GUARDIAN:
                 return redirect("guardian")
         except Exception as e:
-            logger.exception(f"An exception occured for user {request.user}: {e}")
+            logger.exception(
+                f"An exception occured for user {request.user}\nException: {e}"
+            )
             return redirect("django_auth_adfs:logout")
 
         if todays_transaction(request.user.profile):
@@ -159,7 +161,7 @@ def home(request):
                                 ordered_items_list.append(menu_item)
                         except Exception as e:
                             logger.exception(
-                                f"An exception occured when an order was submitted: {e}"
+                                f"An exception occured when adding a menu item: {menu_item}\nException: {e}"
                             )
 
                     if len(ordered_items_list) < 1:
@@ -218,7 +220,7 @@ def home(request):
                             return redirect("todays-order")
                         except Exception as e:
                             logger.exception(
-                                f"An exception occured when trying to create a transaction: {e}"
+                                f"An exception occured when trying to create a transaction: {transaction}\nException: {e}"
                             )
                             messages.error(
                                 request, "There was a problem submitting your order."
