@@ -1,6 +1,7 @@
 import collections
 import copy
 import io
+import logging
 
 from pathlib import Path
 from typing import Dict, List
@@ -19,6 +20,9 @@ from django.utils import timezone
 from menu.models import MenuItem
 from profiles.models import Profile
 from transactions.models import MenuLineItem
+
+
+logger = logging.getLogger(__file__)
 
 
 def entree_report_by_period(lunch_periods: Dict) -> FileResponse:
@@ -335,10 +339,16 @@ def lunch_card_for_users(profiles: List[Profile]) -> FileResponse:
             )
         data.append(platypus.FrameBreak("role-frame"))
         if profile.role == Profile.STUDENT:
-            homeroom_teacher = profile.homeroom_teacher.user
+            homeroom_teacher_last_name = "NO HOMEROOM"
+            try:
+                homeroom_teacher_last_name = profile.homeroom_teacher.user.last_name
+            except Exception as e:
+                logger.error(
+                    f"No homeroom teacher found for {profile} when trying to print lunch card.\Error: {e}"
+                )
             data.append(
                 platypus.Paragraph(
-                    "{} - {}".format(homeroom_teacher.last_name, profile.grade),
+                    "{} - {}".format(homeroom_teacher_last_name, profile.grade),
                     role_style,
                 )
             )
