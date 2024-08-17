@@ -42,3 +42,6 @@ LOGGING = {
         "mozilla_django_oidc": {"handlers": ["console"], "level": "DEBUG"},
     },
 }
+
+# Disable Sentry.io
+sentry_sdk.init()  # noqa: F405

@@ -11,8 +11,8 @@ class GeneralForm(forms.Form):
             format="%H:%M",
             attrs={
                 "class": "shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md",
+                "readonly": "true",
                 "type": "time",
-                "disabled": "true",
             },
         ),
     )
@@ -25,21 +25,35 @@ class GeneralForm(forms.Form):
             },
         )
     )
-    closed_for_summer = forms.NullBooleanField(
+    closed_for_break = forms.NullBooleanField(
         widget=forms.RadioSelect(
+            attrs={
+                "x-model": "onBreak",
+            },
             choices=[
-                (True, "Yes"),
                 (False, "No"),
-            ]
+                (True, "Yes"),
+            ],
         )
+    )
+    closed_message = forms.CharField(
+        required=False,
+        widget=forms.Textarea(
+            attrs={
+                "class": "shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md",
+                "rows": 4,
+                "placeholder": "Enter a closed message here...",
+                "type": "text",
+            }
+        ),
     )
     debt_limit = forms.DecimalField(
         required=False,
         widget=forms.NumberInput(
             attrs={
-                "type": "number",
                 "class": "shadow-sm pl-7 focus:ring-blue-500 focus:border-blue-500 block sm:text-sm border-gray-300 rounded-md",
                 "placeholder": "0.00",
+                "type": "number",
             }
         ),
         decimal_places=2,
@@ -48,16 +62,16 @@ class GeneralForm(forms.Form):
         required=False,
         widget=forms.TextInput(
             attrs={
-                "type": "text",
                 "class": "shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md",
+                "type": "text",
             }
         ),
     )
     balance_export_path = forms.CharField(
         widget=forms.TextInput(
             attrs={
-                "type": "text",
                 "class": "shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md",
+                "type": "text",
             }
         )
     )
@@ -65,8 +79,8 @@ class GeneralForm(forms.Form):
         required=False,
         widget=forms.TextInput(
             attrs={
-                "type": "text",
                 "class": "shadow-sm focus:ring-blue-500 focus:border-blue-500 block sm:text-sm border-gray-300 rounded-md",
+                "type": "text",
             }
         ),
     )
@@ -74,9 +88,9 @@ class GeneralForm(forms.Form):
         required=False,
         widget=forms.NumberInput(
             attrs={
-                "type": "number",
                 "class": "shadow-sm pl-7 focus:ring-blue-500 focus:border-blue-500 block sm:text-sm border-gray-300 rounded-md",
                 "placeholder": "0.00",
+                "type": "number",
             }
         ),
         decimal_places=2,

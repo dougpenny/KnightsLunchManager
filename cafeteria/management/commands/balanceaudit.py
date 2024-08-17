@@ -1,7 +1,7 @@
 #
 # balanceaudit.py
 #
-# Copyright (c) 2022 Doug Penny
+# Copyright (c) 2024 Doug Penny
 # Licensed under MIT
 #
 # See LICENSE.md for license information
@@ -18,8 +18,7 @@ from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string
 from django.utils import timezone
 
-from constance import config
-
+from cafeteria.models import SiteConfiguration
 from profiles.models import Profile
 from transactions.models import Transaction
 
@@ -82,7 +81,7 @@ class Command(BaseCommand):
             return None
 
     def email_audit_report(self, incorrect_balances: List):
-        recipients_list = config.REPORTS_EMAIL.split(",")
+        recipients_list = SiteConfiguration.get_solo().reports_email.split(",")
         context = {"time": timezone.now(), "items": incorrect_balances}
         html_message = render_to_string(
             "email/balance_audit_report.html", context=context

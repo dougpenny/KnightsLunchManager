@@ -1,4 +1,7 @@
+from datetime import time
+
 from django.db import models
+from solo.models import SingletonModel
 
 
 class GradeLevel(models.Model):
@@ -77,3 +80,43 @@ class Weekday(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class SiteConfiguration(SingletonModel):
+    balance_export_path = models.CharField(
+        blank=True,
+        help_text="File path to which current balance export files should be saved.",
+        max_length=255,
+    )
+    closed_for_break = models.BooleanField(
+        default=False,
+        help_text="Is the cafeteria closed for a school break or holiday?",
+    )
+    closed_message = models.CharField(
+        blank=True,
+        help_text="The message to be displayed with the cafeteria is closed for a break or holiday.",
+    )
+    current_year = models.CharField(help_text="The current school year.", max_length=10)
+    debt_limit = models.FloatField(
+        default=0.00,
+        help_text="The debt limit at which point users are prevented from ordering.",
+    )
+    new_card_fee = models.FloatField(
+        default=0.00, help_text="The fee charged for a new lunch card."
+    )
+    order_close_time = models.TimeField(
+        default=time(8, 15), help_text="The time orders should stop being accepted."
+    )
+    order_open_time = models.TimeField(
+        default=time(0, 0), help_text="The time orders should start being accepted."
+    )
+    reports_email = models.CharField(
+        blank=True,
+        help_text="The email addresses, comma seperated, to which system reports should be sent.",
+    )
+
+    def __str__(self):
+        return "Site Configuration"
+
+    class Meta:
+        verbose_name = "Site Configuration"

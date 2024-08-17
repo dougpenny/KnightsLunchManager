@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "menu.apps.MenuConfig",
     "profiles.apps.ProfilesConfig",
     "transactions.apps.TransactionsConfig",
+    "solo.apps.SoloAppConfig",
 ]
 
 MIDDLEWARE = [
@@ -198,7 +199,10 @@ CONSTANCE_CONFIG = {
         "/",
         "File path where current balance export files should be saved.",
     ),
-    "CLOSED_FOR_SUMMER": (False, "The cafeteria is closed for the summer."),
+    "CLOSED_FOR_SUMMER": (
+        False,
+        "The cafeteria is closed for a school break or holiday.",
+    ),
     "CLOSE_TIME": (time(23, 15), "The time orders should stop being accepted.", time),
     "CURRENT_YEAR": ("", "Current school year."),
     "DEBT_LIMIT": (0.00, "Debt limit when users are prevented from ordering."),

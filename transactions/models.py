@@ -6,7 +6,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 
-from constance import config
+from cafeteria.models import SiteConfiguration
 
 
 class MenuLineItem(models.Model):
@@ -66,4 +66,4 @@ class Transaction(models.Model):
 
     @staticmethod
     def accepting_orders() -> bool:
-        return config.CLOSE_TIME > datetime.now().time()
+        return SiteConfiguration.get_solo().order_close_time > datetime.now().time()

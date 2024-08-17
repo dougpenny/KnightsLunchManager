@@ -6,7 +6,6 @@ import logging
 from pathlib import Path
 from typing import Dict, List
 
-from constance import config
 from reportlab import platypus
 from reportlab.graphics.barcode import qr
 from reportlab.lib.enums import TA_CENTER
@@ -17,6 +16,7 @@ from reportlab.lib.units import inch, mm
 from django.http import FileResponse
 from django.utils import timezone
 
+from cafeteria.models import SiteConfiguration
 from menu.models import MenuItem
 from profiles.models import Profile
 from transactions.models import MenuLineItem
@@ -328,7 +328,7 @@ def lunch_card_for_users(profiles: List[Profile]) -> FileResponse:
         data.append(platypus.FrameBreak("misc-frame"))
         data.append(
             platypus.Paragraph(
-                "NRCA Cafeteria<br/>Lunch Card<br/><br/>{}".format(config.CURRENT_YEAR),
+                f"NRCA Cafeteria<br/>Lunch Card<br/><br/>{SiteConfiguration.get_solo().current_year}",
                 normal_style,
             )
         )

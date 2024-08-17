@@ -11,6 +11,26 @@
           <div class="space-y-1">
             <form action="{% url 'general-settings' %}" method="post" class="space-y-8">
               {% csrf_token %}
+              <div class="pt-2" x-data="{onBreak: '{{ closed_for_break }}'}">
+                <div>
+                  <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Closed for Break
+                  </h3>
+                  <p class="max-w-2xl text-sm text-gray-500">
+                    Is the cafertia currently closed for a school break or holiday?
+                  </p>
+                </div>
+                <div class="mt-2">
+                  <div class="mt-1">
+                    {{ general_form.closed_for_break}}
+                  </div>
+                </div>
+                <div class="mt-4" x-show="onBreak == 'True'" x-transition>
+                  <div class="mt-1">
+                    {{ general_form.closed_message}}
+                  </div>
+                </div>
+              </div>
               <div>
                 <div>
                   <h3 class="text-lg leading-6 font-medium text-gray-900">
@@ -90,21 +110,6 @@
                   <p class="mt-2 text-xs text-gray-500" id="current-year-description">
                     The fee charged for replacement lunch cards. This amount will be automatically deducted from the current balance when a new lunch card is printed.
                   </p>
-                </div>
-              </div>
-              <div class="pt-2">
-                <div>
-                  <h3 class="text-lg leading-6 font-medium text-gray-900">
-                    Closed for the Summer
-                  </h3>
-                  <p class="max-w-2xl text-sm text-gray-500">
-                    Is the cafertia currently closed for the summer?
-                  </p>
-                </div>
-                <div class="mt-2">
-                  <div class="mt-1">
-                    {{ general_form.closed_for_summer}}
-                  </div>
                 </div>
               </div>
               <div class="pt-2">

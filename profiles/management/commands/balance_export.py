@@ -4,8 +4,7 @@ import os
 
 from django.core.management.base import BaseCommand
 
-from constance import config
-
+from cafeteria.models import SiteConfiguration
 from profiles.models import Profile
 
 
@@ -17,7 +16,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         logger.info("Exporting lunch balances...")
-        file_path = config.BALANCE_EXPORT_PATH
+        file_path = SiteConfiguration.get_solo().balance_export_path
         students = Profile.objects.filter(active=True).filter(role=Profile.STUDENT)
         filename = os.path.join(file_path, "lunch_balance.csv")
         with open(filename, "w") as csvfile:

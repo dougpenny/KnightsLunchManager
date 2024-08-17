@@ -1,7 +1,7 @@
 #
 # process_eoy.py
 #
-# Copyright (c) 2022 Doug Penny
+# Copyright (c) 2024 Doug Penny
 # Licensed under MIT
 #
 # See LICENSE.md for license information
@@ -12,8 +12,7 @@
 
 from django.core.management.base import BaseCommand
 
-from constance import config
-
+from cafeteria.models import SiteConfiguration
 from cafeteria.operations import end_of_year_process
 from profiles.models import Profile
 
@@ -22,6 +21,7 @@ class Command(BaseCommand):
     help = "Complete the end of year process in preparation for the next school year."
 
     def add_arguments(self, parser):
+        config = SiteConfiguration.get_solo()
         parser.add_argument(
             "-p",
             "--profile",
@@ -31,7 +31,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "-y",
             "--year",
-            default=config.CURRENT_YEAR,
+            default=config.current_year,
             type=str,
             help='Override the currently set school year; used when creating the rollover balance transaction. For example, entering 2019-2020 here would result in a transaction description of "Ending balance from the 2019-2020 school year."',
         )

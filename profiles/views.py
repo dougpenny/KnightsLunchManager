@@ -15,9 +15,8 @@ from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
 
-from constance import config
-
 from cafeteria.decorators import admin_access_allowed
+from cafeteria.models import SiteConfiguration
 from cafeteria.pdfgenerators import lunch_card_for_users
 from profiles.models import Profile
 from profiles.helpers import process_inactive
@@ -182,7 +181,7 @@ def new_individual_card(request, pk):
         if "waive-fee" in request.POST:
             cost = 0
         else:
-            cost = config.NEW_CARD_FEE
+            cost = SiteConfiguration.get_solo().new_card_fee
         try:
             profile = Profile.objects.get(id=pk)
             transaction = Transaction(
@@ -232,7 +231,9 @@ def reconciliation_report(request) -> FileResponse:
             0, 0, 0, 2, "NORTH RALEIGH CHRISTIAN ACADEMY", center_bold_title
         )
         worksheet.merge_range(1, 0, 1, 2, "RECONCILIATION REPORT", center_bold_title)
-        worksheet.merge_range(2, 0, 2, 2, config.CURRENT_YEAR, center_bold_title)
+        worksheet.merge_range(
+            2, 0, 2, 2, SiteConfiguration.get_solo().current_year, center_bold_title
+        )
         worksheet.set_row(2, 18)
 
         center_bold_header = workbook.add_format(

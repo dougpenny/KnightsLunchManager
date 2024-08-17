@@ -16,8 +16,6 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import timezone
 
-from constance import config
-
 from reportlab import platypus
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
@@ -25,7 +23,7 @@ from reportlab.lib.units import inch
 
 from cafeteria.decorators import admin_access_allowed
 from cafeteria.forms import GeneralForm, SchoolsModelForm, UserOrderForm
-from cafeteria.models import LunchPeriod, School
+from cafeteria.models import LunchPeriod, School, SiteConfiguration
 from cafeteria.pdfgenerators import (
     entree_report_by_period,
     lunch_card_for_users,
@@ -122,9 +120,14 @@ def delete_order(request):
 
 
 def home(request):
-    context = {"closed": False, "homeroom_teacher": False, "debt_exceeded": False}
-    if config.CLOSED_FOR_SUMMER:
-        context["closed"] = True
+    config = SiteConfiguration.get_solo()
+    context = {
+        "closed": config.closed_for_break,
+        "homeroom_teacher": False,
+        "debt_exceeded": False,
+    }
+    if context["closed"]:
+        context["closed_message"] = config.closed_message
         return render(request, "user/closed.html", context=context)
 
     context["orders_open"] = Transaction.accepting_orders()
@@ -144,9 +147,9 @@ def home(request):
 
         context["user"] = request.user
         current_balance = request.user.profile.current_balance
-        if current_balance <= -(config.DEBT_LIMIT):
+        if current_balance <= -(config.debt_limit):
             context["debt_exceeded"] = True
-            context["debt_limit"] = config.DEBT_LIMIT
+            context["debt_limit"] = config.debt_limit
         context["balance"] = current_balance
         if request.method == "POST":
             if context["orders_open"]:
@@ -467,18 +470,21 @@ def admin_dashboard(request):
 @login_required
 @admin_access_allowed
 def general_settings(request):
+    config = SiteConfiguration.get_solo()
     if request.method == "POST":
         general_form = GeneralForm(request.POST, prefix="general")
         if general_form.is_valid():
             form_data = general_form.cleaned_data
-            config.OPEN_TIME = form_data["open_time"]
-            config.CLOSE_TIME = form_data["close_time"]
-            config.CURRENT_YEAR = form_data["current_year"]
-            config.CLOSED_FOR_SUMMER = form_data["closed_for_summer"]
-            config.REPORTS_EMAIL = form_data["reports_email"]
-            config.BALANCE_EXPORT_PATH = form_data["balance_export_path"]
-            config.NEW_CARD_FEE = form_data["new_card_fee"]
-            config.DEBT_LIMIT = form_data["debt_limit"]
+            config.order_open_time = form_data["open_time"]
+            config.order_close_time = form_data["close_time"]
+            config.current_year = form_data["current_year"]
+            config.closed_for_break = form_data["closed_for_break"]
+            config.closed_message = form_data["closed_message"]
+            config.reports_email = form_data["reports_email"]
+            config.balance_export_path = form_data["balance_export_path"]
+            config.new_card_fee = form_data["new_card_fee"]
+            config.debt_limit = form_data["debt_limit"]
+            config.save()
             messages.success(request, "The general settings were successfully updated.")
         return redirect("general-settings")
     else:
@@ -486,16 +492,18 @@ def general_settings(request):
         context["general_form"] = GeneralForm(
             prefix="general",
             initial={
-                "open_time": config.OPEN_TIME,
-                "close_time": config.CLOSE_TIME,
-                "current_year": config.CURRENT_YEAR,
-                "closed_for_summer": config.CLOSED_FOR_SUMMER,
-                "reports_email": config.REPORTS_EMAIL,
-                "balance_export_path": config.BALANCE_EXPORT_PATH,
-                "new_card_fee": config.NEW_CARD_FEE,
-                "debt_limit": config.DEBT_LIMIT,
+                "open_time": config.order_open_time,
+                "close_time": config.order_close_time,
+                "closed_message": config.closed_message,
+                "current_year": config.current_year,
+                "closed_for_break": config.closed_for_break,
+                "reports_email": config.reports_email,
+                "balance_export_path": config.balance_export_path,
+                "new_card_fee": config.new_card_fee,
+                "debt_limit": config.debt_limit,
             },
         )
+        context["closed_for_break"] = config.closed_for_break
     return render(request, "admin/general_settings.html", context=context)
 
 

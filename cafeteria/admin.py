@@ -1,7 +1,7 @@
 #
 # admin.py
 #
-# Copyright (c) 2022 Doug Penny
+# Copyright (c) 2024 Doug Penny
 # Licensed under MIT
 #
 # See LICENSE.md for license information
@@ -13,8 +13,9 @@
 from django.contrib import admin
 
 from rest_framework.authtoken.admin import TokenAdmin
+from solo.admin import SingletonModelAdmin
 
-from cafeteria.models import GradeLevel, LunchPeriod, School, Weekday
+from cafeteria.models import GradeLevel, LunchPeriod, School, Weekday, SiteConfiguration
 
 
 TokenAdmin.raw_id_fields = ["user"]
@@ -69,3 +70,6 @@ class WeekdayAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+admin.site.register(SiteConfiguration, SingletonModelAdmin)
