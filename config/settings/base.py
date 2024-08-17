@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     "mozilla_django_oidc",
     "rest_framework",
     "rest_framework.authtoken",
-    "constance",
     "mathfilters",
     "api.apps.ApiConfig",
     "cafeteria.apps.CafeteriaConfig",
@@ -188,43 +187,6 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
-}
-
-# Constance Configuration
-# https://django-constance.readthedocs.io/en/latest/index.html
-CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
-
-CONSTANCE_CONFIG = {
-    "BALANCE_EXPORT_PATH": (
-        "/",
-        "File path where current balance export files should be saved.",
-    ),
-    "CLOSED_FOR_SUMMER": (
-        False,
-        "The cafeteria is closed for a school break or holiday.",
-    ),
-    "CLOSE_TIME": (time(23, 15), "The time orders should stop being accepted.", time),
-    "CURRENT_YEAR": ("", "Current school year."),
-    "DEBT_LIMIT": (0.00, "Debt limit when users are prevented from ordering."),
-    "NEW_CARD_FEE": (0.00, "Fee charged for a new lunch card."),
-    "OPEN_TIME": (time(0, 0), "The time orders should start being accepted.", time),
-    "REPORTS_EMAIL": (
-        "",
-        "Email addresses, comma seperated, to which system reports should be sent.",
-    ),
-}
-
-CONSTANCE_CONFIG_FIELDSETS = {
-    "General Settings": (
-        "OPEN_TIME",
-        "CLOSE_TIME",
-        "CLOSED_FOR_SUMMER",
-        "DEBT_LIMIT",
-        "NEW_CARD_FEE",
-        "REPORTS_EMAIL",
-        "BALANCE_EXPORT_PATH",
-        "CURRENT_YEAR",
-    ),
 }
 
 # Sentry.io
