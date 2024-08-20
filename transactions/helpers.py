@@ -40,8 +40,8 @@ def create_deposit(deposit: dict) -> Transaction:
         )
         transaction.save()
         return transaction
-    except:
-        raise Exception
+    except Exception as e:
+        raise e
 
 
 def create_order(order: dict) -> Transaction:
@@ -80,8 +80,8 @@ def create_order(order: dict) -> Transaction:
                 # Why would we recevie a transaction ID for an order that doesn't exist?
                 pass
         return new_order
-    except:
-        raise Exception
+    except Exception as e:
+        raise e
 
 
 def process_transaction(transaction: Transaction):
@@ -98,5 +98,5 @@ def process_transaction(transaction: Transaction):
         transaction.save()
         transactee.current_balance = transaction.ending_balance
         transactee.save()
-    except:
-        raise Exception
+    except Exception as e:
+        raise e

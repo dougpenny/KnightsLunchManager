@@ -1,3 +1,4 @@
+import decimal
 import io
 import logging
 import operator
@@ -181,7 +182,7 @@ def new_individual_card(request, pk):
         if "waive-fee" in request.POST:
             cost = 0
         else:
-            cost = SiteConfiguration.get_solo().new_card_fee
+            cost = decimal.Decimal(SiteConfiguration.get_solo().new_card_fee)
         try:
             profile = Profile.objects.get(id=pk)
             transaction = Transaction(
