@@ -86,8 +86,8 @@ def delete_order(request):
         if Transaction.accepting_orders():
             transaction_id = request.POST.get("itemID")
             if transaction_id:
-                transaction = Transaction.objects.get(id=transaction_id)
                 try:
+                    transaction = Transaction.objects.get(id=transaction_id)
                     for menu_line_item in transaction.line_item.all():
                         if menu_line_item.menu_item.limited:
                             today = f"{timezone.localdate()}"
@@ -104,12 +104,19 @@ def delete_order(request):
                     transaction.delete()
                     messages.success(request, "Your order was successfully deleted.")
                     return redirect("home")
+                except Transaction.DoesNotExist as e:
+                    logger.exception(
+                        f"A transaction with id {transaction_id} could not be found.\nException: {e}"
+                    )
+                    messages.error(
+                        request, "The order to be deleted could not be found."
+                    )
                 except Exception as e:
                     logger.exception(
                         f"An exception occured when trying to delete a transaction: {transaction}\nException: {e}"
                     )
                     messages.error(request, "There was a problem deleting your order.")
-                    return redirect("todays-order")
+                return redirect("todays-order")
             else:
                 messages.error(request, "No order was found to delete.")
                 return redirect("home")

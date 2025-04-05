@@ -4,13 +4,16 @@ from cafeteria.models import School
 from menu.models import MenuItem
 
 
+TEXT_INPUT_STYLE = "shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+NUMBER_INPUT_STYLE = "shadow-sm pl-7 focus:ring-blue-500 focus:border-blue-500 block sm:text-sm border-gray-300 rounded-md"
+
 class GeneralForm(forms.Form):
     open_time = forms.TimeField(
         required=False,
         widget=forms.TimeInput(
             format="%H:%M",
             attrs={
-                "class": "shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md",
+                "class": TEXT_INPUT_STYLE,
                 "readonly": "true",
                 "type": "time",
             },
@@ -20,7 +23,7 @@ class GeneralForm(forms.Form):
         widget=forms.TimeInput(
             format="%H:%M",
             attrs={
-                "class": "shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md",
+                "class": TEXT_INPUT_STYLE,
                 "type": "time",
             },
         )
@@ -40,7 +43,7 @@ class GeneralForm(forms.Form):
         required=False,
         widget=forms.Textarea(
             attrs={
-                "class": "shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md",
+                "class": TEXT_INPUT_STYLE,
                 "rows": 4,
                 "placeholder": "Enter a closed message here...",
                 "type": "text",
@@ -51,7 +54,7 @@ class GeneralForm(forms.Form):
         required=False,
         widget=forms.NumberInput(
             attrs={
-                "class": "shadow-sm pl-7 focus:ring-blue-500 focus:border-blue-500 block sm:text-sm border-gray-300 rounded-md",
+                "class": NUMBER_INPUT_STYLE,
                 "placeholder": "0.00",
                 "type": "number",
             }
@@ -62,7 +65,7 @@ class GeneralForm(forms.Form):
         required=False,
         widget=forms.TextInput(
             attrs={
-                "class": "shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md",
+                "class": TEXT_INPUT_STYLE,
                 "type": "text",
             }
         ),
@@ -70,7 +73,7 @@ class GeneralForm(forms.Form):
     balance_export_path = forms.CharField(
         widget=forms.TextInput(
             attrs={
-                "class": "shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md",
+                "class": TEXT_INPUT_STYLE,
                 "type": "text",
             }
         )
@@ -88,7 +91,7 @@ class GeneralForm(forms.Form):
         required=False,
         widget=forms.NumberInput(
             attrs={
-                "class": "shadow-sm pl-7 focus:ring-blue-500 focus:border-blue-500 block sm:text-sm border-gray-300 rounded-md",
+                "class": NUMBER_INPUT_STYLE,
                 "placeholder": "0.00",
                 "type": "number",
             }
