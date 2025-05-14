@@ -2,7 +2,7 @@
 {% block user-content %}
 {% include 'includes/messages.html' %}
 <div class="mt-4 p-8 bg-white">
-  <div class="max-w-screen-lg mx-auto mb-24 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-(--breakpoint-lg) mx-auto mb-24 px-4 sm:px-6 lg:px-8">
     <a href="{% url 'home' %}" class="inline-flex items-center text-indigo-700">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2"
         stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -24,7 +24,7 @@
       <div class="mt-8 flex flex-col">
         {% if object_list %}
           <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-            <div class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
+            <div class="align-middle inline-block min-w-full shadow-sm overflow-hidden sm:rounded-lg border-b border-gray-200">
               <table class="min-w-full divide-y divide-gray-200">
                 <thead>
                   <tr>
@@ -58,7 +58,12 @@
                         ${{ transaction.amount }}
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-center border-b border-gray-200">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {% if transaction.status == 'Complete' %}bg-green-100 text-green-800 {% elif transaction.status == 'Processing' %}bg-yellow-100 text-yellow-800 {% elif transaction.status == 'Submitted' %}bg-indigo-100 text-indigo-800 {% else %}bg-gray-100 text-gray-800{% endif %}">
+                        <span
+                        class="px-2 inline-flex text-center text-xs leading-5 font-semibold rounded-full outline
+                                {% if transaction.status == 'Complete' %}bg-green-100 text-green-800 outline-green-800
+                                {% elif transaction.status == 'Processing' %}bg-yellow-100 text-yellow-800 outline-yellow-800
+                                {% elif transaction.status == 'Submitted' %}bg-indigo-100 text-indigo-800 outline-indigo-800
+                                {% else %}bg-gray-100 text-gray-800 outline-gray-800{% endif %}">
                           {{ transaction.status }}
                         </span>
                       </td>

@@ -26,9 +26,9 @@
                     {% endif %}
                   </p>
                 </div>
-                <div class="mt-5 sm:flex-shrink-0 sm:flex sm:items-center">
+                <div class="mt-5 sm:shrink-0 sm:flex sm:items-center">
                   <a href="{% url 'pending-inactive' %}">
-                    <button type="button" name="pending-inactive" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 sm:text-sm">
+                    <button type="button" name="pending-inactive" class="inline-flex items-center px-4 py-2 border border-transparent shadow-xs font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-hidden focus:ring-3-2 focus:ring-3-offset-2 focus:ring-3-blue-400 sm:text-sm">
                       View Pending Inactive
                     </button>
                   </a>
@@ -47,7 +47,7 @@
                   </div>
                   <div class="mt-2">
                     <label for="group" class="block text-sm font-medium text-gray-700">Group</label>
-                    <select id="group" name="group" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                    <select id="group" name="group" class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-hidden focus:ring-3-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
                       <option value="NEW">New Students</option>
                       {% for school in schools %}
                         <option value="{{ school.id }}">{{ school.display_name }} Students & Staff</option>
@@ -56,8 +56,8 @@
                       <option value="ALL">All Students & Staff</option>
                     </select>
                   </div>
-                  <div class="mt-5 sm:flex-shrink-0 sm:flex sm:items-center">
-                    <button type="submit" name="action" value="print-cards" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 sm:text-sm">
+                  <div class="mt-5 sm:shrink-0 sm:flex sm:items-center">
+                    <button type="submit" name="action" value="print-cards" class="inline-flex items-center px-4 py-2 border border-transparent shadow-xs font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-hidden focus:ring-3-2 focus:ring-3-offset-2 focus:ring-3-blue-400 sm:text-sm">
                       Print Cards
                     </button>
                   </div>
@@ -72,8 +72,8 @@
                     This function will record each students' current balance, delete all transactions, and create a new transaction for the carryover balance from the previous year.
                   </p>
                 </div>
-                <div class="mt-5 sm:flex-shrink-0 sm:flex sm:items-center">
-                  <button type="button" name="operations" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400 sm:text-sm">
+                <div class="mt-5 sm:shrink-0 sm:flex sm:items-center">
+                  <button type="button" name="operations" class="inline-flex items-center px-4 py-2 border border-transparent shadow-xs font-medium rounded-md text-white bg-red-500 hover:bg-red-600 focus:outline-hidden focus:ring-3-2 focus:ring-3-offset-2 focus:ring-3-red-400 sm:text-sm">
                     Run EOY Process
                   </button>
                 </div>

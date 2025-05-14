@@ -4,8 +4,9 @@ from cafeteria.models import School
 from menu.models import MenuItem
 
 
-TEXT_INPUT_STYLE = "shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-NUMBER_INPUT_STYLE = "shadow-sm pl-7 focus:ring-blue-500 focus:border-blue-500 block sm:text-sm border-gray-300 rounded-md"
+TEXT_INPUT_STYLE = "shadow-xs focus:ring-3-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+NUMBER_INPUT_STYLE = "shadow-xs pl-7 focus:ring-3-blue-500 focus:border-blue-500 block sm:text-sm border-gray-300 rounded-md"
+
 
 class GeneralForm(forms.Form):
     open_time = forms.TimeField(
@@ -82,7 +83,7 @@ class GeneralForm(forms.Form):
         required=False,
         widget=forms.TextInput(
             attrs={
-                "class": "shadow-sm focus:ring-blue-500 focus:border-blue-500 block sm:text-sm border-gray-300 rounded-md",
+                "class": "shadow-xs focus:ring-3-blue-500 focus:border-blue-500 block sm:text-sm border-gray-300 rounded-md",
                 "type": "text",
             }
         ),
@@ -112,12 +113,12 @@ class SchoolsModelForm(forms.ModelForm):
         widgets = {
             "active": forms.CheckboxInput(
                 attrs={
-                    "class": "focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
+                    "class": "focus:ring-3-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded-sm"
                 }
             ),
             "display_name": forms.TextInput(
                 attrs={
-                    "class": "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                    "class": "mt-1 focus:ring-3-blue-500 focus:border-blue-500 block w-full shadow-xs sm:text-sm border-gray-300 rounded-md"
                 }
             ),
             "name": forms.HiddenInput(attrs={"readonly": "True"}),
@@ -129,7 +130,7 @@ class UserOrderForm(forms.Form):
         queryset=MenuItem.objects.all(),
         widget=forms.Select(
             attrs={
-                "class": "block pl-3 pr-10 py-2 text-sm border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
+                "class": "block pl-3 pr-10 py-2 text-sm border-gray-300 focus:outline-hidden focus:ring-3-blue-500 focus:border-blue-500 rounded-md"
             }
         ),
     )

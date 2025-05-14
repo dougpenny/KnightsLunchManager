@@ -12,7 +12,7 @@
   <form action="" method="post">
     {% csrf_token %}
     {{ formset.management_form }}
-    <div class="mx-8 mt-4 p-6 bg-white shadow rounded-lg">
+    <div class="mx-8 mt-4 p-6 bg-white shadow-sm rounded-lg">
       <div class="grid grid-cols-8 gap-y-2 gap-x-4 -mx-2 pb-4 mb-4">
         <div class="col-start-1 col-span-7 sm:col-span-5 px-2">
           <label for="user" class="block text-sm font-medium leading-5 text-gray-700">
@@ -38,7 +38,7 @@
           </div>
         </div>
         <div class="col-start-1 col-span-2 px-2">
-          <button type="button" id="add-item" class="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+          <button type="button" id="add-item" class="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-xs text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-500 focus:outline-hidden focus:ring-3-2 focus:ring-3-offset-2 focus:ring-3-green-500">
             <!-- Tabler name: icons/plus-->
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
               <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -51,17 +51,17 @@
       </div>
       <div class="mt-8 border-t border-gray-200 pt-5">
         <div class="flex justify-end">
-          <span class="inline-flex rounded-md shadow-sm">
+          <span class="inline-flex rounded-md shadow-xs">
             <a href="{% url 'transaction-today-orders' %}">
               <button type="button"
-                class="py-2 px-4 border border-gray-300 rounded-md text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:border-blue-300 active:bg-gray-50 active:text-gray-800 transition duration-150 ease-in-out">
+                class="py-2 px-4 border border-gray-300 rounded-md text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:outline-hidden focus:border-blue-300 active:bg-gray-50 active:text-gray-800 transition duration-150 ease-in-out">
                 Cancel
               </button>
             </a>
           </span>
-          <span class="ml-3 inline-flex rounded-md shadow-sm">
+          <span class="ml-3 inline-flex rounded-md shadow-xs">
             <button type="submit"
-              class="inline-flex justify-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 active:bg-indigo-700 transition duration-150 ease-in-out">
+              class="inline-flex justify-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-hidden focus:border-indigo-700 active:bg-indigo-700 transition duration-150 ease-in-out">
               Save
             </button>
           </span>
@@ -79,7 +79,7 @@
       <div class="mr-2">
         {{ formset.empty_form.menu_item }}
       </div>
-      <button type="button" class="remove-item inline-flex items-center p-1 border border-transparent rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+      <button type="button" class="remove-item inline-flex items-center p-1 border border-transparent rounded-full shadow-xs text-white bg-red-600 hover:bg-red-700 focus:outline-hidden focus:ring-3-2 focus:ring-3-offset-2 focus:ring-3-red-500">
         <!-- Tabler name: icon/x-->
         <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>

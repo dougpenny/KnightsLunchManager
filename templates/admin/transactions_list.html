@@ -12,7 +12,7 @@
 </h3>
 <div class="mx-8 mt-6 flex items-center justify-between">
 
-  <span class="relative z-0 inline-flex shadow-sm rounded-md">
+  <span class="relative z-0 inline-flex shadow-xs rounded-md">
 
     {% if previous_day %}
     <a href="
@@ -24,7 +24,7 @@
       {% url 'transaction-date-list' previous_day.year previous_day.month previous_day.day %}
     {% endif %}">
       <button type="button" title="{{ previous_day|date:'l, M jS' }}"
-        class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150"
+        class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-hidden focus:border-blue-300 active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150"
         aria-label="Previous">
         <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd"
@@ -43,7 +43,7 @@
   {% else %}
     -ml-px relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-700
   {% endif %}">
-      {% if view.today.date == day %}
+      {% if today == day %}
       Today
       {% else %}
       {{ day|date:'l, M jS' }}
@@ -60,7 +60,7 @@
     {% url 'transaction-date-list' next_day.year next_day.month next_day.day %}
   {% endif %}">
       <button type="button" title="{{ next_day|date:'l, M jS' }}"
-        class="-ml-px relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150"
+        class="-ml-px relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-hidden focus:border-blue-300 active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150"
         aria-label="Next">
         <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd"
@@ -132,10 +132,10 @@
               ${{ transaction.amount }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-center text-sm leading-5 text-gray-500 md:bloc">
-              <span class="px-2.5 py-0.5 inline-flex text-xs leading-4 font-medium rounded-full 
-                            {% if transaction.status == 'Complete' %}bg-green-100 text-green-800
-                            {% elif transaction.status == 'Processing' %}bg-yellow-100 text-yellow-800
-                            {% elif transaction.status == 'Submitted' %}bg-blue-100 text-blue-800
+              <span class="px-2.5 py-0.5 inline-flex text-xs text-center leading-4 font-medium rounded-full outline
+                            {% if transaction.status == 'Complete' %}bg-green-100 text-green-800 outline-green-800
+                            {% elif transaction.status == 'Processing' %}bg-yellow-100 text-yellow-800 outline-yellow-800
+                            {% elif transaction.status == 'Submitted' %}bg-indigo-100 text-indigo-800 outline-indigo-800
                             {% else %}bg-gray-100 text-gray-800{% endif %}">
                 {{ transaction.status }}
               </span>
@@ -144,7 +144,7 @@
               {{ transaction.submitted }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">
-              <div class="mx-auto flex-shrink-0 flex items-center justify-center h-20 w-20 sm:mx-0 sm:h-10 sm:w-10">
+              <div class="mx-auto shrink-0 flex items-center justify-center h-20 w-20 sm:mx-0 sm:h-10 sm:w-10">
 
                 <button @click="open({{ transaction.id }}, '{{ transaction.transactee.name|addslashes }}')">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-600" viewBox="-8 -8 40 40"
@@ -181,7 +181,7 @@
       <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
         <span class="inline-flex"></span>
         <div>
-          <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+          <nav class="relative z-0 inline-flex rounded-md shadow-xs -space-x-px" aria-label="Pagination">
             {% if page_obj.has_previous %}
               <a href="?page=1" class="relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                 <!-- Tabler name: icons/chevrons-left -->
@@ -235,7 +235,7 @@
         @click.away="cancel()">
         <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
           <div class="sm:flex sm:items-start">
-            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-24 w-24 sm:mx-0 sm:h-10 sm:w-10">
+            <div class="mx-auto shrink-0 flex items-center justify-center h-24 w-24 sm:mx-0 sm:h-10 sm:w-10">
               <svg class="h-24 w-24 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -257,17 +257,17 @@
         </div>
         <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
           <form action="{% url 'admin-delete' %}" method="post">
-            <span class="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto">
+            <span class="flex w-full rounded-md shadow-xs sm:ml-3 sm:w-auto">
               {% csrf_token %}
               <input type="hidden" name="itemID" value="" id="item-id">
               <input type="hidden" name="path" value="{{ request.path }}">
               <input type="submit" @click="confirm()" value="Delete"
-                class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-red-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-red-500 focus:outline-none focus:border-red-700 transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+                class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-red-600 text-base leading-6 font-medium text-white shadow-xs hover:bg-red-500 focus:outline-hidden focus:border-red-700 transition ease-in-out duration-150 sm:text-sm sm:leading-5">
             </span>
           </form>
-          <span class="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
+          <span class="mt-3 flex w-full rounded-md shadow-xs sm:mt-0 sm:w-auto">
             <button @click="cancel()" type="button"
-              class="inline-flex justify-center w-full rounded-md border border-gray-300 px-4 py-2 bg-white text-base leading-6 font-medium text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+              class="inline-flex justify-center w-full rounded-md border border-gray-300 px-4 py-2 bg-white text-base leading-6 font-medium text-gray-700 shadow-xs hover:text-gray-500 focus:outline-hidden focus:border-blue-300 transition ease-in-out duration-150 sm:text-sm sm:leading-5">
               Cancel
             </button>
           </span>
@@ -279,11 +279,11 @@
   <div class="mx-8 mt-12 flex items-center justify-between">
     <span class="inline-flex"></span>
     {% if view.filter == "deposits" %}
-    <div class="mt-8 flex flex-shrink-0 sm:mt-0">
-      <div class="mr-8 inline-flex rounded-md shadow">
+    <div class="mt-8 flex shrink-0 sm:mt-0">
+      <div class="mr-8 inline-flex rounded-md shadow-sm">
         <a href="{% if day %}{% url 'deposit-checklist-day' day.year day.month day.day %}{% else %}{% url 'deposit-checklist' %}{% endif %}">
           <button
-            class="inline-flex items-center justify-center pl-4 pr-5 py-2 border border-transparent text-base leading-6 rounded-md text-white bg-blue-600 hover:bg-blue-500 focus:outline-none transition duration-150 ease-in-out">
+            class="inline-flex items-center justify-center pl-4 pr-5 py-2 border border-transparent text-base leading-6 rounded-md text-white bg-blue-600 hover:bg-blue-500 focus:outline-hidden transition duration-150 ease-in-out">
             <svg xmlns="http://www.w3.org/2000/svg" class="mr-4" width="24" height="24" viewBox="0 0 24 24"
               stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
               <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -294,10 +294,10 @@
           </button>
         </a>
       </div>
-      <div class="inline-flex rounded-md shadow">
+      <div class="inline-flex rounded-md shadow-sm">
         <a href="{% if day %}{% url 'misc-receipts-report-day' day.year day.month day.day %}{% else %}{% url 'misc-receipts-report' %}{% endif %}">
           <button
-            class="inline-flex items-center justify-center pl-4 pr-5 py-2 border border-transparent text-base leading-6 rounded-md text-white bg-green-600 hover:bg-green-500 focus:outline-none transition duration-150 ease-in-out">
+            class="inline-flex items-center justify-center pl-4 pr-5 py-2 border border-transparent text-base leading-6 rounded-md text-white bg-green-600 hover:bg-green-500 focus:outline-hidden transition duration-150 ease-in-out">
             <svg xmlns="http://www.w3.org/2000/svg" class="mr-4" width="24" height="24" viewBox="0 0 24 24"
               stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
               <path stroke="none" d="M0 0h24v24H0z" />
@@ -312,11 +312,11 @@
       </div>
     </div>
     {% elif view.filter == "orders" and day %}
-    <div class="mt-8 flex flex-shrink-0 sm:mt-0">
-      <div class="inline-flex rounded-md shadow">
+    <div class="mt-8 flex shrink-0 sm:mt-0">
+      <div class="inline-flex rounded-md shadow-sm">
         <a href="{% url 'transaction-date-process' day.year day.month day.day %}">
           <button
-            class="inline-flex items-center justify-center pl-4 pr-5 py-2 border border-transparent text-base leading-6 rounded-md text-white bg-green-600 hover:bg-green-500 focus:outline-none transition duration-150 ease-in-out">
+            class="inline-flex items-center justify-center pl-4 pr-5 py-2 border border-transparent text-base leading-6 rounded-md text-white bg-green-600 hover:bg-green-500 focus:outline-hidden transition duration-150 ease-in-out">
             <svg xmlns="http://www.w3.org/2000/svg" class="mr-4" width="24" height="24" viewBox="0 0 24 24"
               stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
               <path stroke="none" d="M0 0h24v24H0z" />
@@ -335,11 +335,11 @@
   {% else %}
   <h3 class="w-full text-center mt-14 text-lg font-medium text-gray-700 sm:text-3xl">
     {% if view.filter == "deposits" %}
-    There are no deposits{% if day %} for {% if view.today.date == day %}today{% else %}{{ day|date:'l, M jS' }}{% endif %}{% endif %}.
+    There are no deposits{% if day %} for {% if today == day %}today{% else %}{{ day|date:'l, M jS' }}{% endif %}{% endif %}.
     {% elif view.filter == "orders" %}
-    There are no orders{% if day %} for {% if view.today.date == day %}today{% else %}{{ day|date:'l, M jS' }}{% endif %}{% endif %}.
+    There are no orders{% if day %} for {% if today == day %}today{% else %}{{ day|date:'l, M jS' }}{% endif %}{% endif %}.
     {% else %}
-    There are no transactions for {% if view.today.date == day %}today{% else %}{{ day|date:'l, M jS' }}{% endif %}.
+    There are no transactions for {% if today == day %}today{% else %}{{ day|date:'l, M jS' }}{% endif %}.
     {% endif %}
   </h3>
   {% endif %}

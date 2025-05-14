@@ -11,10 +11,10 @@
     @keydown.window.escape="sidebarOpen = false">
     {% include 'admin/mobile_menu.html' %}
     {% include 'admin/menu.html' %}
-    <div x-init="$el.focus()" class="flex-1 overflow-y-auto overflow-x-hidden focus:outline-none" tabindex="0">
-      <div class="relative flex-shrink-0 flex h-16 bg-white border-b border-gray-200 lg:border-none">
+    <div x-init="$el.focus()" class="flex-1 overflow-y-auto overflow-x-hidden focus:outline-hidden" tabindex="0">
+      <div class="relative shrink-0 flex h-16 bg-white border-b border-gray-200 lg:border-none">
         <button @click.stop="sidebarOpen = true"
-          class="px-4 border-r border-gray-200 text-gray-400 focus:outline-none focus:bg-gray-100 focus:text-gray-600 lg:hidden"
+          class="px-4 border-r border-gray-200 text-gray-400 focus:outline-hidden focus:bg-gray-100 focus:text-gray-600 lg:hidden"
           aria-label="Open sidebar">
           <svg class="h-6 w-6 transition ease-in-out duration-150" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
@@ -33,7 +33,7 @@
                   </svg>
                 </div>
                 <input id="search_field" name="q"
-                  class="block w-full h-full pl-8 pr-3 py-2 border-transparent text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-0 focus:border-transparent sm:text-sm"
+                  class="block w-full h-full pl-8 pr-3 py-2 border-transparent text-gray-900 placeholder-gray-500 focus:ring-0 sm:text-sm"
                   placeholder="Search Students & Staff" type="search" />
               </div>
             </form>

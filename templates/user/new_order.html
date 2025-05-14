@@ -1,7 +1,7 @@
 {% extends "user/base_user.html" %}
 {% block user-content %}
 {% include 'includes/messages.html' %}
-<div class="mt-4 mx-auto bg-white overflow-hidden shadow sm:rounded-lg sm:max-w-2xl">
+<div class="mt-4 mx-auto bg-white overflow-hidden shadow-sm sm:rounded-lg sm:max-w-2xl">
   <div class="px-4 py-5 sm:px-10 sm:py-6">
     <div class="lg:text-center">
       {% if not orders_open %}
@@ -51,7 +51,7 @@
             {% endfor %}
           </div>
         <div class="flex items-start justify-between">
-          <button type="button" id="add-item" class="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+          <button type="button" id="add-item" class="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-xs text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-500 focus:outline-hidden focus:ring-3-2 focus:ring-3-offset-2 focus:ring-3-green-500">
             <!-- Tabler name: icons/plus-->
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
               <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -61,7 +61,7 @@
             <span>Add Item</span>
           </button>
           <div>
-            <button type="submit" id="submit-button" class="mt-6 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <button type="submit" id="submit-button" class="mt-6 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-xs text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-hidden focus:ring-3-2 focus:ring-3-offset-2 focus:ring-3-indigo-500">
               Submit Order
             </button>
           </div>
@@ -80,12 +80,13 @@
 {% comment %} Template for adding additional menu items. {% endcomment %}
 <div id="empty-menu-item-row"  style="display:none">
   <div class="menu-item-row mt-4">
+    {% if formset %}
     <label for="{{ formset.empty_form.menu_item.html_name }}" class="block text-sm font-medium text-gray-700">{{ formset.empty_form.menu_item.label }}</label>
     <div class="mt-1 flex items-center">
       <div class="mr-2">
         {{ formset.empty_form.menu_item }}
       </div>
-      <button type="button" class="remove-item inline-flex items-center p-1 border border-transparent rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+      <button type="button" class="remove-item inline-flex items-center p-1 border border-transparent rounded-full shadow-xs text-white bg-red-600 hover:bg-red-700 focus:outline-hidden focus:-3-2 focus:ring-3-offset-2 focus:ring-3-red-500">
         <!-- Tabler name: icon/x-->
         <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -94,6 +95,7 @@
         </svg>
       </button>
     </div>
+  {% endif %}
   </div>
 </div>
 {% endblock %}

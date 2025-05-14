@@ -9,7 +9,7 @@ class ItemOrderForm(forms.Form):
         queryset=MenuItem.objects.all(),
         widget=forms.Select(
             attrs={
-                "class": "block pl-2 pr-10 text-base leading-none text-gray-800 border-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
+                "class": "block pl-2 pr-10 text-base leading-none text-gray-800 border-gray-400 focus:outline-hidden focus:ring-3-blue-500 focus:border-blue-500 rounded-md"
             }
         ),
     )
@@ -52,7 +52,7 @@ class TransactionDepositForm(forms.Form):
         choices=DEPOSIT_TYPE_CHOICES,
         widget=forms.Select(
             attrs={
-                "class": "block pr-10 py-1.5 text-base leading-none text-gray-800 border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-md"
+                "class": "block pr-10 py-1.5 text-base leading-none text-gray-800 border-gray-300 focus:ring-3-blue-500 focus:border-blue-500 rounded-md"
             }
         ),
     )
@@ -61,7 +61,7 @@ class TransactionDepositForm(forms.Form):
         required=False,
         widget=forms.TextInput(
             attrs={
-                "class": "shadow-sm py-1 w-full focus:ring-blue-500 focus:border-blue-500 block sm:text-sm border-gray-300 rounded-md"
+                "class": "shadow-xs py-1 w-full focus:ring-3-blue-500 focus:border-blue-500 block sm:text-sm border-gray-300 rounded-md"
             }
         ),
     )
@@ -69,7 +69,7 @@ class TransactionDepositForm(forms.Form):
         decimal_places=2,
         widget=forms.NumberInput(
             attrs={
-                "class": "shadow-sm pl-7 py-1 w-1/2 focus:ring-blue-500 focus:border-blue-500 block sm:text-sm border-gray-300 rounded-md",
+                "class": "shadow-xs pl-7 py-1 w-1/2 focus:ring-3-blue-500 focus:border-blue-500 block sm:text-sm border-gray-300 rounded-md",
                 "placeholder": "0.00",
             }
         ),

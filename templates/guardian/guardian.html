@@ -1,7 +1,7 @@
 {% extends "guardian/base_guardian.html" %}
 {% block user-content %}
 {% include 'includes/messages.html' %}
-<div class="mt-4 px-8 py-4 bg-white shadow">
+<div class="mt-4 px-8 py-4 bg-white shadow-sm">
   <div class="mx-auto px-4 sm:px-16 lg:px-24">
 {% if children %}
 <form action="{% url 'guardian-submit' %}" method="post">
@@ -15,7 +15,7 @@
           </h3>
           <div class="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap">
             <div class="mt-1 flex items-center text-m leading-5 text-gray-700 sm:text-l sm:mt-2 sm:mr-6">
-              <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-green-500 sm:h-6 sm:w-6" viewBox="0 0 20 20" fill="currentColor">
+              <svg class="shrink-0 mr-1.5 h-5 w-5 text-green-500 sm:h-6 sm:w-6" viewBox="0 0 20 20" fill="currentColor">
                 <path
                   d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
                 <path fill-rule="evenodd"
@@ -29,7 +29,7 @@
           <div>
             <div class="mt-4 text-m leading-5 text-gray-700 sm:text-l sm:mt-8 sm:mr-6">
               <label for="order-{{ forloop.counter }}">Today's order:</label>
-              <select id="order-{{ forloop.counter }}" name="student-{{ child.id }}" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+              <select id="order-{{ forloop.counter }}" name="student-{{ child.id }}" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-hidden focus:ring-3-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                 <option value="" selected>None</option>
                 {% for item in menu %}
                   <option value="{{ item.id }}">{{ item.name }} - ${{ item.cost }}</option>
@@ -38,7 +38,7 @@
             </div>
           </div>
         </div>
-        <div class="justify-self-end mt-8 sm:self-end flex-shrink-0">
+        <div class="justify-self-end mt-8 sm:self-end shrink-0">
           <a class="inline-flex items-center text-indigo-700" href="#">
             <span class="hover:underline">View Transactions</span>
             <svg xmlns="http://www.w3.org/2000/svg" class="ml-3 mb-1 icon icon-tabler icon-tabler-chevron-right" width="20" height="20" viewBox="0 0 20 20" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -53,7 +53,7 @@
 <div class="mt-10 mb-6">
   <div class="flex justify-center">
     <button type="submit"
-      class="inline-flex justify-center py-2 px-4 border border-transparent text-lg leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 active:bg-indigo-700 transition duration-150 ease-in-out">
+      class="inline-flex justify-center py-2 px-4 border border-transparent text-lg leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-hidden focus:border-indigo-700 active:bg-indigo-700 transition duration-150 ease-in-out">
       Submit Order
     </button>
   </div>

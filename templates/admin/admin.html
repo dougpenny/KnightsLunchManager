@@ -1,7 +1,7 @@
 {% extends "admin/base_admin.html" %}
 {% block admin-content %}
 <!-- Page header -->
-<div class="bg-white shadow">
+<div class="bg-white shadow-sm">
   <div class="px-4 sm:px-6 lg:max-w-6xl lg:mx-auto lg:px-8">
     <div class="py-6 md:flex md:items-center md:justify-between lg:border-t lg:border-gray-200">
       <div class="flex-1 min-w-0">
@@ -20,15 +20,15 @@
 
 <div class="mt-8">
   <div class="max-w-6xl pb-8 border-b border-gray-300 mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="pb-5 space-y-3 sm:flex sm:items-center sm:justify-between sm:space-x-4 sm:space-y-0">
+    <div class="pb-5 space-y-3 sm:flex sm:items-center sm:justify-between sm:gap-x-4 sm:gap-y-0">
       <h2 class="text-lg leading-6 font-medium text-gray-900">
         Today's Entree Orders
       </h2>
-      <div class="flex space-x-3">
+      <div class="flex gap-x-3">
         <a href="{% url 'entrees-report' %}">
-          <span class="shadow-sm rounded-md">
+          <span class="shadow-xs rounded-md">
             <button type="button"
-              class="inline-flex items-center px-4 py-2 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-blue-800 hover:bg-blue-600 focus:outline-none focus:border-blue-700 active:bg-blue-700 transition ease-in-out duration-150">
+              class="inline-flex items-center px-4 py-2 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-blue-800 hover:bg-blue-600 focus:outline-hidden focus:border-blue-700 active:bg-blue-700 transition ease-in-out duration-150">
               <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-download mr-3" width="24"
                 height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                 stroke-linecap="round" stroke-linejoin="round">
@@ -45,7 +45,7 @@
     </div>
     <div class="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2" x-max="1">
       {% for menu_item, count in total_item_counts.items %}
-      <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="bg-white overflow-hidden shadow-sm rounded-lg">
         <div class="p-5">
           <div class="flex items-center">
             <div class="w-0 flex-1">
@@ -82,13 +82,13 @@
 </div>
 
 <div class="mt-4">
-  <div x-data="{ tab: {{ first_lunch.id }} }" class="max-w-6xl pb-12 mx-auto px-4 sm:px-6 lg:px-8 border-b border-gray-300">
+  <div x-data="{ tab: {{ lunch_periods.0.id }} }" class="max-w-6xl pb-12 mx-auto px-4 sm:px-6 lg:px-8 border-b border-gray-300">
     {% load cafeteria_extras %}
     <div class="sm:hidden">
       <label for="selected-tab" class="sr-only">Select a tab</label>
-      <select id="selected-tab" name="selected-tab" x-model="tab" class="block w-full focus:ring-blue-500 focus:border-blue-500 border-gray-300 rounded-md">
-      {% for lunch_period in period_item_counts %}
-        <option value="{{ lunch_period.id }}">{{ lunch_period }}</option>
+      <select id="selected-tab" name="selected-tab" x-model="tab" class="block w-full focus:ring-3-blue-500 focus:border-blue-500 border-gray-300 rounded-md">
+      {% for period in lunch_periods %}
+        <option value="{{ period.id }}">{{ period }}</option>
       {% endfor %}
       </select>
     </div>
@@ -96,27 +96,29 @@
       <div class="border-b border-gray-200">
         <nav class="-mb-px flex" aria-label="Tabs">
         {% for lunch_period in period_item_counts %}
-          {% if period_item_counts|forKey:lunch_period %}
           <a href="#" :class="{ 'border-blue-600 text-blue-700': tab === {{ lunch_period.id }}, 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': tab != {{ lunch_period.id }} }" @click="tab = {{ lunch_period.id }}" class="w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm">
             {{ lunch_period }}
           </a>
-          {% endif %}
         {% endfor %}
         </nav>
       </div>
     </div>
     {% for lunch_period, counts in period_item_counts.items %}
       <div x-show="tab === {{ lunch_period.id }}" class="mt-6">
-        <div class="pb-3 space-y-3 sm:flex sm:items-start sm:justify-between sm:space-x-4 sm:space-y-0">
+        <div class="pb-3 space-y-3 sm:flex sm:items-start sm:justify-between sm:gap-x-4 sm:gap-y-0">
           <h2 class="text-lg leading-6 font-medium text-gray-900">
-            Entree Orders for {{ lunch_period }}
+            {% if period_item_counts|forKey:lunch_period %}
+              Entree Orders for {{ lunch_period }}
+            {% else %}
+              No entree orders for {{ lunch_period }}
+            {% endif %}
           </h2>
         </div>
         {% if lunch_period.floating_staff %}
           {% if period_item_counts|forKey:lunch_period %}
             <div x-data="confirmAction()" class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
               <div
-                class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
+                class="align-middle inline-block min-w-full shadow-sm overflow-hidden sm:rounded-lg border-b border-gray-200">
                 <table class="min-w-full divide-y divide-gray-200">
                   <thead>
                     <tr>
@@ -158,9 +160,13 @@
                         class="px-6 py-4 whitespace-nowrap text-center border-b border-gray-200 text-sm leading-5 text-gray-900">
                         ${{ transaction.amount }}
                       </td>
-                      <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                      <td class="px-6 py-4 whitespace-nowrap text-center border-b border-gray-200">
                         <span
-                          class="px-2 inline-flex text-center text-xs leading-5 font-semibold rounded-full {% if transaction.status == 'Complete' %}bg-green-100 text-green-800 {% elif transaction.status == 'Processing' %}bg-yellow-100 text-yellow-800 {% elif transaction.status == 'Submitted' %}bg-indigo-100 text-indigo-800 {% else %}bg-gray-100 text-gray-800{% endif %}">
+                          class="px-2 inline-flex text-center text-xs leading-5 font-semibold rounded-full outline
+                                  {% if transaction.status == 'Complete' %}bg-green-100 text-green-800 outline-green-800
+                                  {% elif transaction.status == 'Processing' %}bg-yellow-100 text-yellow-800 outline-yellow-800
+                                  {% elif transaction.status == 'Submitted' %}bg-indigo-100 text-indigo-800 outline-indigo-800
+                                  {% else %}bg-gray-100 text-gray-800 outline-gray-800{% endif %}">
                           {{ transaction.status }}
                         </span>
                       </td>
@@ -169,7 +175,7 @@
                         {{ transaction.submitted|date:'g:i a' }}
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">
-                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-20 w-20 sm:mx-0 sm:h-10 sm:w-10">
+                        <div class="mx-auto shrink-0 flex items-center justify-center h-20 w-20 sm:mx-0 sm:h-10 sm:w-10">
                           <button @click="open({{ transaction.id }}, '{{ transaction.transactee.name|addslashes }}')">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-600" viewBox="-8 -8 40 40"
                               stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -195,7 +201,7 @@
                   @click.away="cancel()">
                   <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div class="sm:flex sm:items-start">
-                      <div class="mx-auto flex-shrink-0 flex items-center justify-center h-24 w-24 sm:mx-0 sm:h-10 sm:w-10">
+                      <div class="mx-auto shrink-0 flex items-center justify-center h-24 w-24 sm:mx-0 sm:h-10 sm:w-10">
                         <svg class="h-24 w-24 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                           stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -217,17 +223,17 @@
                   </div>
                   <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                     <form action="{% url 'admin-delete' %}" method="post">
-                      <span class="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto">
+                      <span class="flex w-full rounded-md shadow-xs sm:ml-3 sm:w-auto">
                         {% csrf_token %}
                         <input type="hidden" name="itemID" value="" id="item-id">
                         <input type="hidden" name="path" value="{{ request.path }}">
                         <input type="submit" @click="confirm()" value="Delete"
-                          class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-red-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-red-500 focus:outline-none focus:border-red-700 transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+                          class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-red-600 text-base leading-6 font-medium text-white shadow-xs hover:bg-red-500 focus:outline-hidden focus:border-red-700 transition ease-in-out duration-150 sm:text-sm sm:leading-5">
                       </span>
                     </form>
-                    <span class="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
+                    <span class="mt-3 flex w-full rounded-md shadow-xs sm:mt-0 sm:w-auto">
                       <button @click="cancel()" type="button"
-                        class="inline-flex justify-center w-full rounded-md border border-gray-300 px-4 py-2 bg-white text-base leading-6 font-medium text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+                        class="inline-flex justify-center w-full rounded-md border border-gray-300 px-4 py-2 bg-white text-base leading-6 font-medium text-gray-700 shadow-xs hover:text-gray-500 focus:outline-hidden focus:border-blue-300 transition ease-in-out duration-150 sm:text-sm sm:leading-5">
                         Cancel
                       </button>
                     </span>
@@ -235,15 +241,11 @@
                 </div>
               </div>
             </div>
-          {% else %}
-            <h3 class="mt-2 text-l leading-8 font-extrabold tracking-tight text-gray-900 sm:text-xl sm:leading-10">
-              There are no staff orders today.
-            </h3>
           {% endif %}
         {% else %}
           <div class="grid grid-cols-2 gap-5">
             {% for menu_item, count in counts.items %}
-              <div class="bg-white overflow-hidden shadow rounded-lg">
+              <div class="bg-white overflow-hidden shadow-sm rounded-lg">
                 <div class="p-5">
                   <div class="flex items-center">
                     <div class="w-0 flex-1">
@@ -261,12 +263,12 @@
           </div>
         {% endif %}
         
-        {% if lunch_period.teacher_distributes %}
+        {% if lunch_period.teacher_distributes and period_item_counts|forKey:lunch_period %}
           <div class="mt-6">
             <a href="{% url 'class-orders-report' lunch_period.id %}">
-              <span class="shadow-sm rounded-md">
+              <span class="shadow-xs rounded-md">
                 <button type="button"
-                  class="inline-flex items-center px-4 py-2 border border-transparent text-base leading-6 rounded-md text-white bg-blue-800 hover:bg-blue-600 focus:outline-none focus:border-blue-700 active:bg-blue-700 transition ease-in-out duration-150">
+                  class="inline-flex items-center px-4 py-2 border border-transparent text-base leading-6 rounded-md text-white bg-blue-800 hover:bg-blue-600 focus:outline-hidden focus:border-blue-700 active:bg-blue-700 transition ease-in-out duration-150">
                   <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-download mr-3" width="24"
                     height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                     stroke-linecap="round" stroke-linejoin="round">
@@ -289,7 +291,7 @@
     <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-2" x-max="1">
       {% if limited_item_orders %}
       {% for limited_item, customers in limited_item_orders.items %}
-      <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="bg-white overflow-hidden shadow-sm rounded-lg">
         <div class="bg-green-100 border-b border-gray-200 px-4 py-5 sm:px-6">
           <div class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-nowrap">
             <div class="ml-4 mt-2">
@@ -297,11 +299,11 @@
                 {{ limited_item }}
               </h3>
             </div>
-            <div class="ml-4 mt-2 flex-shrink-0">
+            <div class="ml-4 mt-2 shrink-0">
               <a href="{% url 'limited-items-report' limited_item.id %}">
-                <span class="inline-flex rounded-md shadow-sm">
+                <span class="inline-flex rounded-md shadow-xs">
                   <button type="button"
-                    class="relative inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-green-600 hover:bg-green-500 focus:outline-none focus:border-green-700 active:bg-green-700">
+                    class="relative inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-green-600 hover:bg-green-500 focus:outline-hidden focus:border-green-700 active:bg-green-700">
                     Print Report
                   </button>
                 </span>
@@ -329,7 +331,7 @@
       {% endfor %}
       {% endif %}
 
-      <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="bg-white overflow-hidden shadow-sm rounded-lg">
         <div class="bg-red-100 border-b border-gray-200 px-4 py-5 sm:px-6">
           <div class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-nowrap">
             <div class="ml-4 mt-2">
@@ -337,11 +339,11 @@
                 Top Debtors
               </h3>
             </div>
-            <div class="ml-4 mt-2 flex-shrink-0">
+            <div class="ml-4 mt-2 shrink-0">
               <a href="{% url 'profile-debt-list' %}">
-                <span class="inline-flex rounded-md shadow-sm">
+                <span class="inline-flex rounded-md shadow-xs">
                   <button type="button"
-                    class="relative inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-red-600 hover:bg-red-500 focus:outline-none focus:border-red-700 active:bg-red-700">
+                    class="relative inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-red-600 hover:bg-red-500 focus:outline-hidden focus:border-red-700 active:bg-red-700">
                     View all
                   </button>
                 </span>
@@ -371,7 +373,7 @@
 
       {% comment %}
       <div class="relative">
-        <dl class="rounded-lg bg-white shadow sm:grid sm:grid-cols-2">
+        <dl class="rounded-lg bg-white shadow-sm sm:grid sm:grid-cols-2">
           <div class="flex flex-col border-b border-gray-100 p-6 text-center sm:border-0 sm:border-r">
             <dt class="order-2 mt-2 text-lg leading-6 font-medium text-gray-500" id="item-1">
               Balance

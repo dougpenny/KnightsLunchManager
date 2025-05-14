@@ -20,6 +20,7 @@ from django.views.generic import ListView, DetailView
 from django.views.generic import DayArchiveView, TodayArchiveView
 
 from cafeteria.decorators import admin_access_allowed
+from cafeteria.models import SiteConfiguration
 from menu.models import MenuItem
 from profiles.models import Profile
 from transactions.models import Transaction, MenuLineItem
@@ -112,6 +113,11 @@ class TransactionMixin:
     allow_empty = True
     paginate_by = 20
     date_field = "submitted"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["today"] = timezone.localdate()
+        return context
 
     def get_queryset(self):
         queryset = None
@@ -402,7 +408,10 @@ class UsersTodayArchiveView(LoginRequiredMixin, TodayArchiveView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["homeroom_teacher"] = False
+        context["closed"] = SiteConfiguration.get_solo().closed_for_break
         context["orders_open"] = Transaction.accepting_orders()
+        context["now"] = timezone.localdate()
         if self.request.user.profile.role == Profile.STAFF:
             if self.request.user.profile.students.all():
                 context["homeroom_teacher"] = True
@@ -423,6 +432,9 @@ class UsersTransactionsArchiveView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["homeroom_teacher"] = False
+        context["closed"] = SiteConfiguration.get_solo().closed_for_break
+        context["orders_open"] = Transaction.accepting_orders()
         if self.request.user.profile.role == Profile.STAFF:
             if self.request.user.profile.students.all():
                 context["homeroom_teacher"] = True

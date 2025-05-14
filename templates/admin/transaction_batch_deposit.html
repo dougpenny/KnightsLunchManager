@@ -14,7 +14,7 @@
 <div id="app">
   <form action="" method="post">
     {% csrf_token %}
-    <div class="mx-8 mt-4 p-8 bg-white shadow rounded-lg">
+    <div class="mx-8 mt-4 p-8 bg-white shadow-sm rounded-lg">
       {{ form.management_form }}
       {% for deposit_form in form %}
         <div class="flex flex-wrap gap-y-3 gap-x-4 -mx-2 pb-4 mb-4 border-b border-gray-200">
@@ -34,7 +34,7 @@
             <label for="{{ deposit_form.deposit_type.label }}" class="block text-sm font-medium leading-5 text-gray-700">
               Type
             </label>
-            <div class="mt-1 rounded-sm">
+            <div class="mt-1 rounded-xs">
               {{ deposit_form.deposit_type }}
             </div>
           </div>
@@ -43,7 +43,7 @@
             <label for="{{ deposit_form.ref.label }}" class="block text-sm font-medium leading-5 text-gray-700">
               Reference
             </label>
-            <div class="mt-1 rounded-sm">
+            <div class="mt-1 rounded-xs">
               {{ deposit_form.ref }}
             </div>
             <p class="block text-xs font-extralight text-gray-500">
@@ -55,7 +55,7 @@
             <label for="{{ deposit_form.amount.label}}" class="block text-sm font-medium leading-5 text-gray-700">
               Amount
             </label>
-            <div class="mt-1 rounded-sm relative">
+            <div class="mt-1 rounded-xs relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <span class="text-gray-500 sm:text-sm">
                   $
@@ -68,9 +68,9 @@
         </div>
       {% endfor %}
       <div class="flex justify-end">
-        <span class="mt-8 mr-8 inline-flex rounded-md shadow-sm">
+        <span class="mt-8 mr-8 inline-flex rounded-md shadow-xs">
           <button type="submit"
-            class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:border-blue-700 active:bg-blue-700 transition duration-150 ease-in-out">
+            class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-xs text-white bg-blue-600 hover:bg-blue-500 focus:outline-hidden focus:border-blue-700 active:bg-blue-700 transition duration-150 ease-in-out">
             Save
           </button>
         </span>

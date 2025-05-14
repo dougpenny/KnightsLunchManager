@@ -132,6 +132,7 @@ def home(request):
         "closed": config.closed_for_break,
         "homeroom_teacher": False,
         "debt_exceeded": False,
+        "formset": None,
     }
     if context["closed"]:
         context["closed_message"] = config.closed_message
@@ -450,11 +451,16 @@ def admin_dashboard(request):
     time = timezone.localtime()
     context["time"] = time
     context["user"] = request.user
+
     orders = Transaction.objects.filter(submitted__date=time.date())
+    context["orders"] = orders
     context["limited_item_orders"] = get_limited_item_orders(orders)
     context["total_item_counts"] = get_item_counts(orders)
+
+    lunch_periods = LunchPeriod.objects.all()
+    context["lunch_periods"] = lunch_periods
     lunch_period_counts = {}
-    for lunch_period in LunchPeriod.objects.all():
+    for lunch_period in lunch_periods:
         lunch_period_counts[lunch_period] = get_item_counts(
             orders.filter(transactee__grade__lunch_period=lunch_period)
         )
@@ -465,12 +471,13 @@ def admin_dashboard(request):
     if staff_orders and staff_period:
         lunch_period_counts[staff_period] = staff_orders
     context["period_item_counts"] = lunch_period_counts
-    context["orders"] = orders
+
     context["debtors"] = Profile.objects.filter(
         active=True, current_balance__lt=0
     ).order_by("current_balance", "user__last_name")[:5]
-    first_lunch = LunchPeriod.objects.filter(sort_order=0).first()
-    context["first_lunch"] = first_lunch
+
+    context["orders_open"] = Transaction.accepting_orders()
+
     return render(request, "admin/admin.html", context=context)
 
 
