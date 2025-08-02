@@ -193,5 +193,5 @@ REST_FRAMEWORK = {
 sentry_sdk.init(
     dsn="https://3b9e30470f1df096b1b2f68529dd4f72@o4506650567311360.ingest.sentry.io/4506651708751872",
     sample_rate=0.6,
-    release="lunch-manager@2.5.0",
+    release="lunch-manager@2.6.0",
 )

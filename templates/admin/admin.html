@@ -55,7 +55,7 @@
                   {{ menu_item.name }}
                 </h2>
                 <h2 class="mt-6 mb-4 text-5xl leading-9 font-medium text-center text-gray-900">
-                  {% if count|mod:menu_item.slices_per  == 0 %}
+                  {% if count|mod:menu_item.slices_per == 0 %}
                     {{ count|intdiv:menu_item.slices_per }} Pizza{{ count|div:menu_item.slices_per|pluralize }}
                   {% else %}
                     {{ count|intdiv:menu_item.slices_per|add:1 }} Pizza{{ count|intdiv:menu_item.slices_per|add:1|pluralize }}
