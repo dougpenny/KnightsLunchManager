@@ -1,5 +1,7 @@
 import uuid
 
+from django.utils import timezone
+
 from profiles.models import Profile
 from transactions.helpers import process_transaction
 from transactions.models import Transaction
