@@ -29,7 +29,10 @@ def process_inactive(profile: Profile) -> Profile:
     profile.active = False
     profile.pending = False
     profile.save()
-    profile.user.is_active = False
-    profile.user.save()
+    account = profile.user
+    account.is_active = False
+    account.username = f"{account.username}-inactive-{timezone.now().date()}"
+    account.email = ""
+    account.save()
 
     return profile

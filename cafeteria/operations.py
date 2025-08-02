@@ -60,6 +60,10 @@ def check_for_inactive(profiles: QuerySet):
                 profile.save()
                 account = profile.user
                 account.is_active = False
+                account.username = (
+                    f"{account.username}-inactive-{timezone.now().date()}"
+                )
+                account.email = ""
                 account.save()
                 logger.info(
                     "{} has not synced from PowerSchool in more than 2 days; marked inactive.".format(
