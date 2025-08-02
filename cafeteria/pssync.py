@@ -95,6 +95,7 @@ def sync_powerschool_staff(client=None):
                     "role": Profile.STAFF,
                     "room": room,
                     "active": True,
+                    "pending": False,
                     "user_number": member["teacher_number"],
                 },
             )
@@ -194,6 +195,7 @@ def sync_powerschool_students(client=None):
                         "role": Profile.STUDENT,
                         "school": School.objects.get(id=int(member["school_dcid"])),
                         "active": True,
+                        "pending": False,
                         "user_number": member["student_number"],
                     },
                 )
