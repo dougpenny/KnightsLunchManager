@@ -75,9 +75,10 @@ def sync_powerschool_staff(client=None):
     )
     newly_created = 0
     for member in active_staff:
+        no_sync = member.get("homeroom") == "no-sync"
         email_address = member.get("email")
         # if the staff member does not have an email address, they are skipped
-        if email_address:
+        if email_address and not no_sync:
             school_phone = member.get("school_phone")
             if school_phone:
                 phone = f"x{school_phone[-4:]}"
