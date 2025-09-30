@@ -36,7 +36,7 @@ class MenuItem(models.Model):
     sequence = models.SmallIntegerField(help_text="Order item will appear in menu")
     short_name = models.CharField(
         help_text="Will be used on reports to quickly identify the item",
-        max_length=20,
+        max_length=24,
         blank=True,
     )
 
