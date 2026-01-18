@@ -1,13 +1,13 @@
-django==5.2.9
+django==5.2.10
 djangorestframework==3.16.1
-django-auth-adfs==1.15.1
+django-auth-adfs==1.16.0
 psycopg==3.3.2
 gunicorn==23.0.0
 python-dotenv==1.2.1
-reportlab==4.4.7
+reportlab==4.4.9
 XlsxWriter==3.2.9
 mozilla-django-oidc==5.0.2
 django-mathfilters==1.0.0
 pypowerschool==0.2.0
-sentry-sdk[django]==2.48.0
+sentry-sdk[django]==2.49.0
 django-solo==2.5.1
