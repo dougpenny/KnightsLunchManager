@@ -1,3 +1,15 @@
+#
+# profiles/views.py
+#
+# Copyright (c) 2026 Doug Penny
+# Licensed under MIT
+#
+# See LICENSE.md for license information
+#
+# SPDX-License-Identifier: MIT
+#
+
+
 import decimal
 import io
 import logging
@@ -9,12 +21,15 @@ from functools import reduce
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, AccessMixin
+from django.contrib.sessions.models import Session
 from django.db.models import Q
 from django.http import FileResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views.generic import DetailView, ListView
+from django.views.generic.list import MultipleObjectMixin
 
 from cafeteria.decorators import admin_access_allowed
 from cafeteria.models import SiteConfiguration
@@ -27,7 +42,7 @@ from transactions.models import Transaction
 logger = logging.getLogger(__file__)
 
 
-class ProfileMixin:
+class ProfileMixin(MultipleObjectMixin):
     allow_empty = True
     ascending = True
     filter = None
@@ -104,26 +119,12 @@ class ProfileSearchResultsView(LoginRequiredMixin, ProfileMixin, ListView):
         context["query"] = self.request.GET.get("q")
         return context
 
-    # def get_queryset(self):  # new
-    #     query = self.request.GET.get('q')
-    #     if query:
-    #         query_list = query.split()
-    #         result = Profile.objects.filter(
-    #             reduce(operator.or_, (Q(user__first_name__icontains=q) for q in query_list)) |
-    #             reduce(operator.or_, (Q(user__last_name__icontains=q) for q in query_list))
-    #         )
-    #         return result
-    #     else:
-    #         return Profile.objects.none()
-
 
 @login_required
 @admin_access_allowed
 def pending_inactive_students(request):
-    if request.method == "POST":
-        pass
-    else:
-        context = {}
+    context = {}
+    if request.method != "POST":
         context["inactive"] = True
         context["object_list"] = Profile.objects.filter(pending=True)
 
@@ -168,7 +169,7 @@ def set_all_inactive(request):
         return redirect("admin")
     except Exception as e:
         logger.info(
-            "An exception occured when trying to set users as inactive.\nException: {e}"
+            f"An exception occured when trying to set users as inactive.\nException: {e}"
         )
         messages.error(request, "An error occured trying to set users as inactive")
 
@@ -211,7 +212,7 @@ def new_individual_card(request, pk):
 
 @login_required
 @admin_access_allowed
-def reconciliation_report(request) -> FileResponse:
+def reconciliation_report(request) -> FileResponse | HttpResponseRedirect:
     debtors = Profile.objects.filter(active=True).filter(pending=True)
     workbook_name = "reconciliation-report.xlsx"
     if debtors:

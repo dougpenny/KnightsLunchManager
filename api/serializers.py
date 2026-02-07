@@ -1,7 +1,7 @@
 #
 # serializers.py
 #
-# Copyright (c) 2022 Doug Penny
+# Copyright (c) 2026 Doug Penny
 # Licensed under MIT
 #
 # See LICENSE.md for license information
@@ -101,6 +101,10 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ["current_balance", "grade", "id", "lunch_uuid", "name", "user_number"]
+
+
+class SessionKeySerializer(serializers.Serializer):
+    session_key = serializers.CharField()
 
 
 class UserSearchSerializer(serializers.ModelSerializer):

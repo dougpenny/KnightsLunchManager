@@ -34,12 +34,16 @@ LOGGING = {
         "console": {"class": "logging.StreamHandler", "formatter": "app"},
     },
     "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
         "django_auth_adfs": {
             "handlers": ["console"],
             "level": "DEBUG",
+            "propagate": False,
         },
-        "django": {"handlers": ["console"], "level": "DEBUG", "propagate": True},
-        "mozilla_django_oidc": {"handlers": ["console"], "level": "DEBUG"},
     },
 }
 

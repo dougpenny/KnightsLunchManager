@@ -1,3 +1,15 @@
+#
+# cafeteria/urls.py
+#
+# Copyright (c) 2026 Doug Penny
+# Licensed under MIT
+#
+# See LICENSE.md for license information
+#
+# SPDX-License-Identifier: MIT
+#
+
+
 from django.urls import include, path
 
 from cafeteria import views
@@ -14,16 +26,12 @@ urlpatterns = [
     path(
         "homeroom-orders/", HomeroomOrdersArchiveView.as_view(), name="homeroom-orders"
     ),
-    # path('submit-order/', views.submit_order, name='submit'),
     path("todays-order/", UsersTodayArchiveView.as_view(), name="todays-order"),
     path(
         "transactions/",
         UsersTransactionsArchiveView.as_view(),
         name="user-transactions",
     ),
-    # Guardian specific pages
-    path("guardian/", views.guardian_home, name="guardian"),
-    path("guardian-submit-order/", views.guardian_submit_order, name="guardian-submit"),
     # Admin dashboard pages
     path("admin/", views.admin_dashboard, name="admin"),
     path(

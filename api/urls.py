@@ -1,7 +1,7 @@
 #
 # urls.py
 #
-# Copyright (c) 2022 Doug Penny
+# Copyright (c) 2026 Doug Penny
 # Licensed under MIT
 #
 # See LICENSE.md for license information
@@ -15,6 +15,7 @@ from django.urls import path
 from api import views
 
 urlpatterns = [
+    path("auth/session", views.session_key, name="create-session"),
     path("menu/entrees/today", views.todays_menu_items, name="todays-items"),
     path("order/<uuid:id>", views.user_order_lookup, name="user-order"),
     path("order/submit", views.user_order_submit, name="submit-order"),

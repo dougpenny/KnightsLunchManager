@@ -1,5 +1,19 @@
+#
+# profiles/models.py
+#
+# Copyright (c) 2026 Doug Penny
+# Licensed under MIT
+#
+# See LICENSE.md for license information
+#
+# SPDX-License-Identifier: MIT
+#
+
+
+from decimal import Decimal
 import uuid
 
+from django.contrib import admin
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -27,7 +41,9 @@ class Profile(models.Model):
         related_query_name="guardian",
         symmetrical=False,
     )
-    current_balance = models.DecimalField(default=0, decimal_places=2, max_digits=6)
+    current_balance = models.DecimalField(
+        default=Decimal("0"), decimal_places=2, max_digits=6
+    )
     grade = models.ForeignKey(
         GradeLevel, on_delete=models.CASCADE, default=None, null=True
     )
@@ -61,12 +77,10 @@ class Profile(models.Model):
     def __str__(self):
         return self.name()
 
+    @admin.display(ordering="user__last_name")
     def last_first(self):
-        return self.user.last_name + ", " + self.user.first_name
+        return f"{self.user.last_name}, {self.user.first_name}" if self.user else ""
 
-    last_first.admin_order_field = "user__last_name"
-
+    @admin.display(ordering="user__last_name")
     def name(self):
-        return self.user.first_name + " " + self.user.last_name
-
-    name.admin_order_field = "user__last_name"
+        return f"{self.user.first_name} {self.user.last_name}" if self.user else ""

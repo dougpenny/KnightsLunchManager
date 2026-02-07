@@ -34,7 +34,6 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django.contrib.staticfiles",
     "django_auth_adfs",
-    "mozilla_django_oidc",
     "rest_framework",
     "rest_framework.authtoken",
     "mathfilters",
@@ -56,7 +55,6 @@ MIDDLEWARE = [
     "django.contrib.sites.middleware.CurrentSiteMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "cafeteria.middleware.ClearLimitedItemsCache",
-    "mozilla_django_oidc.middleware.SessionRefresh",
 ]
 
 CACHES = {
@@ -113,7 +111,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTHENTICATION_BACKENDS = (
     "django_auth_adfs.backend.AdfsAuthCodeBackend",
-    "cafeteria.auth.PowerSchoolGuardianOIDC",
     "django.contrib.auth.backends.ModelBackend",
 )
 
@@ -131,19 +128,7 @@ AUTH_ADFS = {
     "GROUP_TO_FLAG_MAPPING": {"is_staff": "Cafeteria", "is_superuser": "IT Department"},
 }
 
-OIDC_RP_CLIENT_ID = os.getenv("POWERSCHOOL_CLIENT_ID", "")
-OIDC_RP_CLIENT_SECRET = os.getenv("POWERSCHOOL_CLIENT_SECRET", "")
-OIDC_OP_AUTHORIZATION_ENDPOINT = (
-    os.getenv("POWERSCHOOL_URL", "") + "oauth2/authorize.action"
-)
-OIDC_OP_TOKEN_ENDPOINT = os.getenv("POWERSCHOOL_URL", "") + "oauth2/token.action"
-OIDC_OP_USER_ENDPOINT = os.getenv("POWERSCHOOL_URL", "") + "oauth2/userinfo.action"
-OIDC_OP_JWKS_ENDPOINT = os.getenv("POWERSCHOOL_URL", "") + "ws/unifiedclassroom/jwks"
-OIDC_RP_SIGN_ALGO = "RS512"
-OIDC_RP_SCOPES = "openid email profile"
-OIDC_USERNAME_ALGO = "cafeteria.auth.generate_username"
-OIDC_OP_LOGOUT_URL_METHOD = "cafeteria.auth.powerschool_logout"
-# OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 30
+# Security settings
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Email settings
@@ -181,8 +166,8 @@ MEDIA_URL = "/resources/"
 # https://www.django-rest-framework.org/api-guide/settings/
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
@@ -193,5 +178,5 @@ REST_FRAMEWORK = {
 sentry_sdk.init(
     dsn="https://3b9e30470f1df096b1b2f68529dd4f72@o4506650567311360.ingest.sentry.io/4506651708751872",
     sample_rate=0.6,
-    release="lunch-manager@2.6.0",
+    release="lunch-manager@2.7.0",
 )

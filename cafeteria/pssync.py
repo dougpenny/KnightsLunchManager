@@ -1,7 +1,7 @@
 #
 # pssync.py
 #
-# Copyright (c) 2022 Doug Penny
+# Copyright (c) 2026 Doug Penny
 # Licensed under MIT
 #
 # See LICENSE.md for license information
@@ -26,15 +26,15 @@ logger = logging.getLogger(__file__)
 
 
 def new_powerschool_client() -> powerschool.Client:
-    if os.getenv("POWERSCHOOL_URL") is None:
-        raise Exception("POWERSCHOOL_URL environment variable not defined")
     base_url = os.getenv("POWERSCHOOL_URL")
-    if os.getenv("POWERSCHOOL_CLIENT_ID") is None:
-        raise Exception("POWERSCHOOL_CLIENT_ID environment variable not defined")
+    if base_url is None:
+        raise Exception("POWERSCHOOL_URL environment variable not defined")
     client_id = os.getenv("POWERSCHOOL_CLIENT_ID")
-    if os.getenv("POWERSCHOOL_CLIENT_SECRET") is None:
-        raise Exception("POWERSCHOOL_CLIENT_SECRET environment variable not defined")
+    if client_id is None:
+        raise Exception("POWERSCHOOL_CLIENT_ID environment variable not defined")
     client_secret = os.getenv("POWERSCHOOL_CLIENT_SECRET")
+    if client_secret is None:
+        raise Exception("POWERSCHOOL_CLIENT_SECRET environment variable not defined")
     return powerschool.Client(base_url, client_id, client_secret)
 
 

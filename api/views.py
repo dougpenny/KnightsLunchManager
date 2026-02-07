@@ -1,7 +1,7 @@
 #
-# views.py
+# api/views.py
 #
-# Copyright (c) 2022 Doug Penny
+# Copyright (c) 2026 Doug Penny
 # Licensed under MIT
 #
 # See LICENSE.md for license information
@@ -60,6 +60,25 @@ class UserSearch(generics.ListAPIView):
         Q(profile__role=Profile.STUDENT) | Q(profile__role=Profile.STAFF)
     )
     serializer_class = serializers.UserSearchSerializer
+
+
+@api_view(["POST"])
+def session_key(request):
+    request.session.create()
+
+    # Attach user to session so admin recognizes them
+    request.session["_auth_user_id"] = str(request.user.pk)
+    request.session["_auth_user_backend"] = "django.contrib.auth.backends.ModelBackend"
+    request.session["_auth_user_hash"] = request.user.get_session_auth_hash()
+    request.session.save()
+
+    serializer = serializers.SessionKeySerializer(
+        {
+            "session_key": request.session.session_key,
+        }
+    )
+
+    return Response(serializer.data)
 
 
 @api_view(["GET"])
