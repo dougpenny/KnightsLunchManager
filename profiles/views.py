@@ -90,6 +90,20 @@ class ProfileMixin(MultipleObjectMixin):
         return queryset.order_by(sorting)
 
 
+class ProfileAppDetailView(LoginRequiredMixin, DetailView):
+    model = Profile
+    template_name = "admin/app_profile_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        profile = kwargs["object"]
+        context["transactions"] = Transaction.objects.filter(
+            transactee=profile
+        ).order_by("-submitted")
+        context["students"] = profile.students.all()
+        return context
+
+
 class ProfileDetailView(LoginRequiredMixin, DetailView):
     model = Profile
     template_name = "admin/profile_detail.html"

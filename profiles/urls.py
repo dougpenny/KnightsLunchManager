@@ -17,6 +17,9 @@ from profiles import views
 urlpatterns = [
     path("", views.ProfileListView.as_view(), name="profile-list"),
     path("<int:pk>/", views.ProfileDetailView.as_view(), name="profile-detail"),
+    path(
+        "app/<int:pk>/", views.ProfileAppDetailView.as_view(), name="profile-app-detail"
+    ),
     path("<int:pk>/set-inactive", views.set_inactive, name="profile-set-inactive"),
     path("<int:pk>/new-card", views.new_individual_card, name="profile-new-card"),
     path(
