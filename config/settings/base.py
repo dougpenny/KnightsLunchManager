@@ -67,15 +67,10 @@ CACHES = {
 
 ROOT_URLCONF = "config.urls"
 
-# Templates Directory
-TEMPLATE_DIR = BASE_DIR / "templates/"
-
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [
-            TEMPLATE_DIR,
-        ],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
