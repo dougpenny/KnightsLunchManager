@@ -1,0 +1,16 @@
+{
+    "name": "lunchmanager",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "watch:css": "npx @tailwindcss/cli -i ./resources/css/input.css -o ./static/css/styles.css --watch",
+        "build:css": "npx @tailwindcss/cli -i ./resources/css/input.css -o ./static/css/styles.css --minify"
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@tailwindcss/forms": "^0.5.11",
+        "tailwindcss": "^4.1.8"
+    }
+}
