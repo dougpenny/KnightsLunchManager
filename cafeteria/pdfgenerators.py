@@ -209,15 +209,13 @@ def order_report_for_limited_items(limited_item_orders: Dict) -> FileResponse:
                     customer = customer + f" ({item.quantity})"
             customer = (
                 customer
-                + f' - {order.transactee.grade if order.transactee.grade else "Staff"}'
+                + f" - {order.transactee.grade if order.transactee.grade else 'Staff'}"
             )
             data.append(platypus.Paragraph(customer, customer_style))
     document.build(data)
     buffer.seek(0)
     today = timezone.now()
-    report_name = "limited_items_{}-{}-{}.pdf".format(
-        today.year, today.month, today.day
-    )
+    report_name = f"limited_items_{today.year}-{today.month}-{today.day}.pdf"
     return FileResponse(buffer, as_attachment=True, filename=report_name)
 
 
@@ -334,9 +332,7 @@ def lunch_card_for_users(profiles: List[Profile]) -> FileResponse:
         )
         if profile.cards_printed > 1:
             data.append(platypus.FrameBreak("number-frame"))
-            data.append(
-                platypus.Paragraph("R{}".format(profile.cards_printed), small_style)
-            )
+            data.append(platypus.Paragraph(f"R{profile.cards_printed}", small_style))
         data.append(platypus.FrameBreak("role-frame"))
         if profile.role == Profile.STUDENT:
             homeroom_teacher_last_name = "NO HOMEROOM"
@@ -344,11 +340,11 @@ def lunch_card_for_users(profiles: List[Profile]) -> FileResponse:
                 homeroom_teacher_last_name = profile.homeroom_teacher.user.last_name
             except Exception as e:
                 logger.error(
-                    f"No homeroom teacher found for {profile} when trying to print lunch card.\Error: {e}"
+                    f"No homeroom teacher found for {profile} when trying to print lunch card.\nError: {e}"
                 )
             data.append(
                 platypus.Paragraph(
-                    "{} - {}".format(homeroom_teacher_last_name, profile.grade),
+                    f"{homeroom_teacher_last_name} - {profile.grade}",
                     role_style,
                 )
             )
@@ -424,7 +420,7 @@ def orders_report_by_homeroom(todays_orders: List) -> FileResponse:
             document.bottomMargin + item_frame_height + entree_frame_height,
             frame_width,
             student_frame_height,
-            id="student-frame-{}".format(frame),
+            id=f"student-frame-{frame}",
         )
         frames.append(column)
 

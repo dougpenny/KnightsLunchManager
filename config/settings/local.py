@@ -9,7 +9,7 @@ DATABASES = {
         "NAME": "postgres",
         "USER": "postgres",
         "PASSWORD": "postgres",
-        "HOST": "postgres",
+        "HOST": "localhost",
         "PORT": "5432",
     }
 }
@@ -25,7 +25,7 @@ LOGGING = {
     "formatters": {
         "app": {
             "format": (
-                "%(asctime)s [%(levelname)-8s] " "(%(module)s.%(funcName)s) %(message)s"
+                "%(asctime)s [%(levelname)-8s] (%(module)s.%(funcName)s) %(message)s"
             ),
             "datefmt": "%Y-%m-%d %H:%M:%S",
         },
@@ -38,6 +38,18 @@ LOGGING = {
             "handlers": ["console"],
             "level": "DEBUG",
             "propagate": True,
+        },
+        "django.utils.autoreload": {
+            "level": "WARNING",
+        },
+        "autoreload.tick": {
+            "level": "WARNING",
+        },
+        "django.db.backends": {
+            "level": "WARNING",
+        },
+        "django.utils.debug_sql": {
+            "level": "WARNING",
         },
         "django_auth_adfs": {
             "handlers": ["console"],
